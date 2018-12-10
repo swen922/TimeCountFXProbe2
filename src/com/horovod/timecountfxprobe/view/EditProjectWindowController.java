@@ -3,8 +3,18 @@ package com.horovod.timecountfxprobe.view;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
+import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.user.AllUsers;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,18 +25,20 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 public class EditProjectWindowController {
 
     private MainApp mainApp;
     private Project myProject;
-    private EditProjectWindowController editProjectWindowController;
+
+    private ObservableMap<String, WorkDay> workDays = FXCollections.observableHashMap();
+    private ObservableList<WorkDay> workDaysList = FXCollections.observableArrayList(workDays.values());
 
     private boolean isChanged = false;
     private List<String> changedFields = new ArrayList<>();
@@ -75,6 +87,9 @@ public class EditProjectWindowController {
     private Label workSum;
 
     @FXML
+    private Label hoursSum;
+
+    @FXML
     private Button exportToCSVButton;
 
     @FXML
@@ -91,10 +106,10 @@ public class EditProjectWindowController {
 
 
     @FXML
-    private TableView<WorkTime> workTimeTableView;
+    private TableView<WorkDay> workTimeTableView;
 
     @FXML
-    private TableColumn<WorkTime, String> datesTableColumn;
+    private TableColumn<WorkDay, String> datesTableColumn;
 
 
 
@@ -151,8 +166,81 @@ public class EditProjectWindowController {
 
         POnumberTextField.setText(myProject.getPONumber());
         pathToFolderTextField.setText(myProject.getFolderPath());
+        workSum.textProperty().bind(myProject.workSumProperty());
+        hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
+
+        initializeTable();
 
     }
+
+    private void initializeTable() {
+
+        if (workDays == null) {
+            workDays = FXCollections.observableHashMap();
+        }
+        workDays.clear();
+
+        List<Integer> des = new ArrayList<>();
+
+        for (WorkTime wt : myProject.getWork()) {
+            String dateString = wt.getDateString();
+
+            if (!des.contains(wt.getDesignerID())) {
+                des.add(wt.getDesignerID());
+            }
+
+            if (!workDays.containsKey(dateString)) {
+                WorkDay workDay = new WorkDay(dateString);
+                workDay.addWorkTime(wt.getDesignerID(), wt.getTimeDouble());
+                workDays.put(dateString, workDay);
+            }
+            else {
+                WorkDay existingDay = workDays.get(wt.getDateString());
+                existingDay.addWorkTime(wt.getDesignerID(), wt.getTimeDouble());
+            }
+
+        }
+
+        for (Integer i : des) {
+            TableColumn<WorkDay, Double> column = new TableColumn<>();
+            column.setText(AllUsers.getOneUser(i).getFullName());
+            column.setStyle("-fx-alignment: CENTER;");
+            column.setMaxWidth(1500);
+
+            workTimeTableView.getColumns().add(column);
+
+            column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, Double>, ObservableValue<Double>>() {
+                @Override
+                public ObservableValue<Double> call(TableColumn.CellDataFeatures<WorkDay, Double> param) {
+                    double time = param.getValue().getWorkTimeForDesigner(i);
+                    return new SimpleDoubleProperty(time).asObject();
+                }
+            });
+        }
+
+
+        datesTableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<WorkDay, String> param) {
+                String date = param.getValue().getDateString();
+                return new SimpleStringProperty(date);
+            }
+        });
+        datesTableColumn.setStyle("-fx-alignment: CENTER;");
+
+        workDaysList = FXCollections.observableArrayList(workDays.values());
+
+        SortedList<WorkDay> sortedList = new SortedList<>(workDaysList, new Comparator<WorkDay>() {
+            @Override
+            public int compare(WorkDay o1, WorkDay o2) {
+                return o2.getDateString().compareTo(o1.getDateString());
+            }
+        });
+
+        workTimeTableView.setItems(sortedList);
+
+    }
+
 
     public void initOpenFolderButton() {
         String startPath = "/Volumes/design/";
@@ -208,7 +296,7 @@ public class EditProjectWindowController {
             descriptionTextArea.setEditable(false);
             POnumberTextField.setEditable(false);
             pathToFolderTextField.setEditable(false);
-            workTimeTableView.setEditable(false);
+            //workTimeTableView.setEditable(false);
         }
         else {
             topColoredPane.setStyle(null);
@@ -220,7 +308,7 @@ public class EditProjectWindowController {
             descriptionTextArea.setEditable(true);
             POnumberTextField.setEditable(true);
             pathToFolderTextField.setEditable(true);
-            workTimeTableView.setEditable(true);
+            //workTimeTableView.setEditable(true);
         }
     }
 

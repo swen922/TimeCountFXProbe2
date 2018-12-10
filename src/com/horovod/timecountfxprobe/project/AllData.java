@@ -727,13 +727,19 @@ public class AllData {
         if (input.endsWith("11") || input.endsWith("12") || input.endsWith("13") || input.endsWith("14")) {
             return "часов";
         }
+        if (input.endsWith(".0")) {
+            return "часов";
+        }
+        if (input.endsWith(".1") || input.endsWith(".2") || input.endsWith(".3") || input.endsWith(".4")) {
+            return "часа";
+        }
         if (input.endsWith("1")) {
             return "час";
         }
         else if (input.endsWith("2") || input.endsWith("3") || input.endsWith("4")) {
             return "часа";
         }
-        else if (!input.contains(",")) {
+        else if (!input.contains(",") && !input.contains(".")) {
             return "часов";
         }
         return "часа";

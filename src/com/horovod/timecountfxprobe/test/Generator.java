@@ -179,9 +179,9 @@ public class Generator {
 
         int minusDays = 0;
 
-        for (int j = 0; j <= 400; j++) {
+        for (int j = 0; j <= 100; j++) {
             int projectID = (int) (Math.random() * 10 + 1);
-            if (j % 10 == 0) {
+            if (j % 2 == 0) {
                 minusDays++;
             }
             int ID = (int) (Math.random() * 6 + 1);
