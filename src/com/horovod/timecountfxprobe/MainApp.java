@@ -112,7 +112,7 @@ public class MainApp extends Application {
         }
     }
 
-    public void showEditProjectWindow() {
+    public void showEditProjectWindow(int projectIDnumber) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/EditProjectWindow.fxml"));
@@ -123,8 +123,10 @@ public class MainApp extends Application {
             Scene scene = new Scene(editWindow);
             editProjectStage.setScene(scene);
 
-            AllData.editProjectWindowController = (EditProjectWindowController) loader.getController();
-            AllData.editProjectWindowController.setMainApp(this);
+            EditProjectWindowController controller = (EditProjectWindowController) loader.getController();
+            controller.setMainApp(this);
+            AllData.editProjectWindowControllers.put(projectIDnumber, controller);
+            AllData.openEditProjectStages.put(projectIDnumber, editProjectStage);
 
             editProjectStage.show();
 

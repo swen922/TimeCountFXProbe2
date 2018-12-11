@@ -67,7 +67,11 @@ public class AllData {
     private static Stage statStage;
 
     public static TableProjectsManagerController tableProjectsManagerController;
-    public static EditProjectWindowController editProjectWindowController;
+    public static Map<Integer, Stage> openEditProjectStages = new HashMap<>();
+    //public static EditProjectWindowController editProjectWindowController;
+    public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new HashMap();
+
+
 
 
 

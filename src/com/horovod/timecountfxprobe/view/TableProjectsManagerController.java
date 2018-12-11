@@ -61,7 +61,6 @@ public class TableProjectsManagerController {
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
     private XYChart.Series<String, Integer> series;
 
-    //private DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
 
 
     @FXML
@@ -256,8 +255,17 @@ public class TableProjectsManagerController {
                 manageButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
+
                         setIDnumberForEditProject(entry.getKey());
-                        mainApp.showEditProjectWindow();
+
+                        if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
+                            mainApp.showEditProjectWindow(entry.getKey());
+
+                        }
+                        else {
+                            AllData.openEditProjectStages.get(entry.getKey()).close();
+                            AllData.openEditProjectStages.get(entry.getKey()).show();
+                        }
                     }
                 });
 
@@ -910,17 +918,6 @@ public class TableProjectsManagerController {
                 ex.printStackTrace();
             }
         }
-    }
-
-    public void handleRevealFile() {
-        /*try {
-            File file = new File("/_jToys");
-            URI uri = file.toURI();
-            //Desktop.getDesktop()
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
     }
 
 

@@ -6,10 +6,8 @@ import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,17 +16,21 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.awt.*;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 
@@ -39,10 +41,10 @@ public class EditProjectWindowController {
 
     private ObservableMap<String, WorkDay> workDays = FXCollections.observableHashMap();
     private ObservableList<WorkDay> workDaysList = FXCollections.observableArrayList(workDays.values());
+    private List<TableColumn<WorkDay, String>> listColumns = FXCollections.observableArrayList();
 
     private boolean isChanged = false;
     private List<String> changedFields = new ArrayList<>();
-
 
 
     @FXML
@@ -108,8 +110,6 @@ public class EditProjectWindowController {
     @FXML
     private TableView<WorkDay> workTimeTableView;
 
-    @FXML
-    private TableColumn<WorkDay, String> datesTableColumn;
 
 
 
@@ -167,20 +167,36 @@ public class EditProjectWindowController {
         POnumberTextField.setText(myProject.getPONumber());
         pathToFolderTextField.setText(myProject.getFolderPath());
         workSum.textProperty().bind(myProject.workSumProperty());
-        hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
+        //hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
 
         initializeTable();
 
     }
 
-    private void initializeTable() {
+    public void initializeTable() {
+
+        hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
 
         if (workDays == null) {
             workDays = FXCollections.observableHashMap();
         }
         workDays.clear();
 
+        if (listColumns == null) {
+            listColumns = FXCollections.observableArrayList();
+        }
+        listColumns.clear();
+
+        workTimeTableView.getColumns().clear();
+
+        TableColumn<WorkDay, String> datesTableColumn = new TableColumn<>("Дни");
+        workTimeTableView.getColumns().add(datesTableColumn);
+        datesTableColumn.setStyle("-fx-alignment: CENTER;");
+        listColumns.add(datesTableColumn);
+
         List<Integer> des = new ArrayList<>();
+
+        System.out.println(myProject.getWork().size());
 
         for (WorkTime wt : myProject.getWork()) {
             String dateString = wt.getDateString();
@@ -198,35 +214,56 @@ public class EditProjectWindowController {
                 WorkDay existingDay = workDays.get(wt.getDateString());
                 existingDay.addWorkTime(wt.getDesignerID(), wt.getTimeDouble());
             }
-
         }
 
-        for (Integer i : des) {
-            TableColumn<WorkDay, Double> column = new TableColumn<>();
-            column.setText(AllUsers.getOneUser(i).getFullName());
-            column.setStyle("-fx-alignment: CENTER;");
-            column.setMaxWidth(1500);
-
-            workTimeTableView.getColumns().add(column);
-
-            column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, Double>, ObservableValue<Double>>() {
-                @Override
-                public ObservableValue<Double> call(TableColumn.CellDataFeatures<WorkDay, Double> param) {
-                    double time = param.getValue().getWorkTimeForDesigner(i);
-                    return new SimpleDoubleProperty(time).asObject();
-                }
-            });
-        }
-
-
-        datesTableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
+        des.sort(new Comparator<Integer>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<WorkDay, String> param) {
-                String date = param.getValue().getDateString();
-                return new SimpleStringProperty(date);
+            public int compare(Integer o1, Integer o2) {
+                return Integer.compare(o1, o2);
             }
         });
-        datesTableColumn.setStyle("-fx-alignment: CENTER;");
+
+        Callback<TableColumn<WorkDay, String>, TableCell<WorkDay, String>> cellFactory =
+                (TableColumn<WorkDay, String> p) -> new EditProjectWindowController.EditCell();
+
+
+        for (Integer i : des) {
+            TableColumn<WorkDay, String> column = new TableColumn<>();
+            column.setEditable(true);
+            column.setText(AllUsers.getOneUser(i).getFullName());
+            //column.setStyle("-fx-alignment: CENTER;");
+            column.setStyle("-fx-alignment: CENTER; -fx-font-size:11px;");
+            //column.setStyle("-fx-font-size:7px");
+
+            column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
+                @Override
+                public ObservableValue<String> call(TableColumn.CellDataFeatures<WorkDay, String> param) {
+                    return new SimpleStringProperty(String.valueOf(AllData.formatDouble(param.getValue().getWorkTimeForDesigner(i))));
+                }
+            });
+
+            column.setCellFactory(cellFactory);
+
+            column.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<WorkDay, String>>() {
+                @Override
+                public void handle(TableColumn.CellEditEvent<WorkDay, String> event) {
+
+                    System.out.println("before myProject.getWork size = " + myProject.getWork());
+
+                    double newTimeDouble = Double.parseDouble(event.getNewValue());
+                    AllData.addWorkTime(myProject.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
+                    System.out.println("after myProject.getWork size = " + myProject.getWork());
+                    initializeTable();
+                }
+            });
+
+
+
+            listColumns.add(column);
+
+        }
+
+
 
         workDaysList = FXCollections.observableArrayList(workDays.values());
 
@@ -237,7 +274,38 @@ public class EditProjectWindowController {
             }
         });
 
+        System.out.println("sortedList size = " + sortedList.size());
+
+        datesTableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<WorkDay, String> param) {
+                String date = param.getValue().getDateString();
+                return new SimpleStringProperty(date);
+            }
+        });
+
+        workTimeTableView.getColumns().setAll(listColumns);
+
         workTimeTableView.setItems(sortedList);
+        sortedList.comparatorProperty().bind(workTimeTableView.comparatorProperty());
+        workDaysList.sort(new Comparator<WorkDay>() {
+            @Override
+            public int compare(WorkDay o1, WorkDay o2) {
+                return o2.getDateString().compareTo(o1.getDateString());
+            }
+        });
+
+
+        //datesTableColumn.setMinWidth(100);
+        //datesTableColumn.setPrefWidth(200);
+        datesTableColumn.setMaxWidth(200);
+
+
+        for (TableColumn<WorkDay, String> tc : listColumns) {
+            tc.setMinWidth(100);
+            //tc.setPrefWidth(200);
+            tc.setMaxWidth(300);
+        }
 
     }
 
@@ -357,5 +425,115 @@ public class EditProjectWindowController {
 
 
     }
+
+    class EditCell extends TableCell<WorkDay, String> {
+        private TextField textField;
+
+        public EditCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+
+            super.updateItem(item, empty);
+            if (empty) {
+
+                setText(null);
+                setGraphic(null);
+            }
+            else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            String oldText = getString();
+            textField = new TextField(oldText);
+            textField.setAlignment(Pos.CENTER);
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    KeyCode keyCode = event.getCode();
+                    if (keyCode == KeyCode.ENTER) {
+                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        EditProjectWindowController.EditCell.this.getTableView().requestFocus();
+                        EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
+                        initializeTable();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue) {
+                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        EditProjectWindowController.EditCell.this.getTableView().requestFocus();
+                        EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
+                        initializeTable();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            EditProjectWindowController.EditCell.this.textField.selectAll();
+
+        }
+
+        private String formatStringInput(String oldText, String input) {
+            String newText = input.replaceAll(" ", ".");
+            newText = newText.replaceAll("-", ".");
+            newText = newText.replaceAll(",", ".");
+            newText = newText.replaceAll("=", ".");
+
+            Double newTimeDouble = null;
+            try {
+                newTimeDouble = Double.parseDouble(newText);
+            } catch (NumberFormatException e) {
+                return oldText;
+            }
+            if (newTimeDouble != null) {
+                newText = String.valueOf(AllData.formatDouble(newTimeDouble));
+                return newText;
+            }
+
+            return oldText;
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
+    // конец класса EditCell
 
 }

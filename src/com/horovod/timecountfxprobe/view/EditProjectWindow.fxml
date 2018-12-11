@@ -4,7 +4,6 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -12,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.EditProjectWindowController">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.EditProjectWindowController">
    <children>
       <AnchorPane fx:id="topColoredPane" layoutX="138.0" layoutY="14.0" prefHeight="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -92,10 +91,11 @@
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="260.0" />
       <AnchorPane layoutX="200.0" layoutY="337.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="265.0">
          <children>
-            <Label contentDisplay="CENTER" layoutX="104.0" layoutY="6.0" text="Рабочее время в проекте" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="7.0">
+            <Button layoutX="21.0" layoutY="1.0" mnemonicParsing="false" prefHeight="15.0" text="Добавить рабочий день" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="4.0">
                <font>
-                  <Font name="System Bold" size="13.0" />
-               </font></Label>
+                  <Font size="11.0" />
+               </font>
+            </Button>
             <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="400.0" spacing="5.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label contentDisplay="CENTER" text="Всего на сегодня:" />
@@ -107,14 +107,10 @@
                   <Label fx:id="hoursSum" contentDisplay="CENTER" text="часов" />
                </children>
             </HBox>
-            <TableView fx:id="workTimeTableView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
-               <columns>
-                  <TableColumn fx:id="datesTableColumn" maxWidth="3000.0" prefWidth="75.0" text="Дни" />
-               </columns>
+            <TableView fx:id="workTimeTableView" editable="true" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="30.0">
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-               </columnResizePolicy>
-            </TableView>
+               </columnResizePolicy></TableView>
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="50.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">

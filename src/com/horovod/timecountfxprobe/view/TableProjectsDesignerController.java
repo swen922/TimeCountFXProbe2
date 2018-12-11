@@ -305,6 +305,12 @@ public class TableProjectsDesignerController {
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
+
+                // код для мгновенного обновления страниц у менеджера
+                if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
+                    AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                }
+
                 filterField.setText("-");
                 filterField.clear();
             }

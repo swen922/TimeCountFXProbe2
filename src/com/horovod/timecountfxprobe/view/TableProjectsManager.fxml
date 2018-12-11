@@ -103,7 +103,7 @@
                         <Font name="System Bold" size="16.0" />
                      </font>
                   </Button>
-                  <Button fx:id="selectTMPButton" mnemonicParsing="false" onAction="#handleRevealFile" prefHeight="50.0" prefWidth="100.0" text="Копия прежнего" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Копия прежнего" textAlignment="CENTER" wrapText="true" />
                </children>
                <padding>
                   <Insets top="15.0" />
