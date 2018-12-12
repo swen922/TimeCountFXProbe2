@@ -699,6 +699,16 @@ public class AllData {
         }
     }
 
+    public static void deleteZeroTime(int projectIDnumber) {
+        Iterator<WorkTime> iter = AllData.getAnyProject(projectIDnumber).getWork().iterator();
+        while (iter.hasNext()) {
+            WorkTime wt = iter.next();
+            if (wt.getTime() == 0) {
+                iter.remove();
+            }
+        }
+    }
+
 
 
     /** методы-утилиты */

@@ -38,6 +38,7 @@ public class EditProjectWindowController {
 
     private MainApp mainApp;
     private Project myProject;
+    private Stage myStage;
 
     private ObservableMap<String, WorkDay> workDays = FXCollections.observableHashMap();
     private ObservableList<WorkDay> workDaysList = FXCollections.observableArrayList(workDays.values());
@@ -92,6 +93,9 @@ public class EditProjectWindowController {
     private Label hoursSum;
 
     @FXML
+    private Button addWorkDayButton;
+
+    @FXML
     private Button exportToCSVButton;
 
     @FXML
@@ -129,7 +133,13 @@ public class EditProjectWindowController {
         this.myProject = myProject;
     }
 
+    public Stage getMyStage() {
+        return myStage;
+    }
 
+    public void setMyStage(Stage myStage) {
+        this.myStage = myStage;
+    }
 
     @FXML
     private void initialize() {
@@ -190,13 +200,11 @@ public class EditProjectWindowController {
         workTimeTableView.getColumns().clear();
 
         TableColumn<WorkDay, String> datesTableColumn = new TableColumn<>("Дни");
-        workTimeTableView.getColumns().add(datesTableColumn);
+        //workTimeTableView.getColumns().add(datesTableColumn);
         datesTableColumn.setStyle("-fx-alignment: CENTER;");
         listColumns.add(datesTableColumn);
 
         List<Integer> des = new ArrayList<>();
-
-        System.out.println(myProject.getWork().size());
 
         for (WorkTime wt : myProject.getWork()) {
             String dateString = wt.getDateString();
@@ -231,9 +239,15 @@ public class EditProjectWindowController {
             TableColumn<WorkDay, String> column = new TableColumn<>();
             column.setEditable(true);
             column.setText(AllUsers.getOneUser(i).getFullName());
-            //column.setStyle("-fx-alignment: CENTER;");
-            column.setStyle("-fx-alignment: CENTER; -fx-font-size:11px;");
-            //column.setStyle("-fx-font-size:7px");
+            column.setStyle("-fx-alignment: CENTER;");
+            //column.setStyle("-fx-alignment: CENTER; -fx-font-size:11px;");
+
+            /*Label headerLabel = new Label(AllUsers.getOneUser(i).getFullName());
+            headerLabel.setWrapText(true);
+            headerLabel.setAlignment(Pos.CENTER);
+            headerLabel.setMinWidth(Control.USE_PREF_SIZE);
+            headerLabel.setMinHeight(50);
+            column.setGraphic(headerLabel);*/
 
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
                 @Override
@@ -248,19 +262,20 @@ public class EditProjectWindowController {
                 @Override
                 public void handle(TableColumn.CellEditEvent<WorkDay, String> event) {
 
-                    System.out.println("before myProject.getWork size = " + myProject.getWork());
-
+                    /**м TODO Не забыть, что у дизайнеров должно обновляться после внесения правок.
+                     * TODO Видимо, тут нужен запуск thread с обновлением на сервер */
+                    String fullName = event.getTableColumn().getText();
                     double newTimeDouble = Double.parseDouble(event.getNewValue());
-                    AllData.addWorkTime(myProject.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
-                    System.out.println("after myProject.getWork size = " + myProject.getWork());
+                    int designerID = AllUsers.getOneUserForFullName(fullName).getIDNumber();
+                    String dateString = event.getRowValue().getDateString();
+
+                    AllData.addWorkTime(myProject.getIdNumber(), AllData.parseDate(dateString), designerID, newTimeDouble);
+                    AllData.deleteZeroTime(designerID);
                     initializeTable();
                 }
             });
 
-
-
             listColumns.add(column);
-
         }
 
 
@@ -273,8 +288,6 @@ public class EditProjectWindowController {
                 return o2.getDateString().compareTo(o1.getDateString());
             }
         });
-
-        System.out.println("sortedList size = " + sortedList.size());
 
         datesTableColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
             @Override
@@ -295,15 +308,9 @@ public class EditProjectWindowController {
             }
         });
 
-
-        //datesTableColumn.setMinWidth(100);
-        //datesTableColumn.setPrefWidth(200);
         datesTableColumn.setMaxWidth(200);
-
-
         for (TableColumn<WorkDay, String> tc : listColumns) {
             tc.setMinWidth(100);
-            //tc.setPrefWidth(200);
             tc.setMaxWidth(300);
         }
 
@@ -413,6 +420,10 @@ public class EditProjectWindowController {
                 initializeArchiveCheckBox();
             }
         }
+    }
+
+    public void handleAddWorkDayButton() {
+        mainApp.showAddWorkDayDialog(myProject.getIdNumber(), myStage);
     }
 
 

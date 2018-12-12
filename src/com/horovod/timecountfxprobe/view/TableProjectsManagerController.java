@@ -384,6 +384,9 @@ public class TableProjectsManagerController {
     @FXML
     public void initialize() {
 
+        /** TODO сюда или в mainApp добавить setStageTitle("Имя пользователя")
+         * */
+
         // Отработка методов данных
         AllData.deleteZeroTime();
         AllData.rebuildTodayWorkSumProperty();

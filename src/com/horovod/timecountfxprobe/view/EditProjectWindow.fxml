@@ -91,7 +91,7 @@
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="260.0" />
       <AnchorPane layoutX="200.0" layoutY="337.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="265.0">
          <children>
-            <Button layoutX="21.0" layoutY="1.0" mnemonicParsing="false" prefHeight="15.0" text="Добавить рабочий день" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="4.0">
+            <Button fx:id="addWorkDayButton" layoutX="21.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleAddWorkDayButton" prefHeight="15.0" text="Добавить рабочий день" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="4.0">
                <font>
                   <Font size="11.0" />
                </font>
@@ -99,7 +99,7 @@
             <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="400.0" spacing="5.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label contentDisplay="CENTER" text="Всего на сегодня:" />
-                  <Label fx:id="workSum" alignment="CENTER" contentDisplay="CENTER" text="504.5" textAlignment="CENTER" textFill="#f3622d">
+                  <Label fx:id="workSum" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="#f3622d">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>

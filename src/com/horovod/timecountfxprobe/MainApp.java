@@ -125,11 +125,36 @@ public class MainApp extends Application {
 
             EditProjectWindowController controller = (EditProjectWindowController) loader.getController();
             controller.setMainApp(this);
+            controller.setMyStage(editProjectStage);
+
             AllData.editProjectWindowControllers.put(projectIDnumber, controller);
             AllData.openEditProjectStages.put(projectIDnumber, editProjectStage);
 
             editProjectStage.show();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showAddWorkDayDialog(int projectIDnumber, Stage editProjectStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/AddWorkDayDialog.fxml"));
+            AnchorPane addWindow = (AnchorPane) loader.load();
+
+            Stage addWorkStage = new Stage();
+            addWorkStage.setTitle("Добавление рабочего дня");
+            addWorkStage.initOwner(editProjectStage);
+            addWorkStage.initModality(Modality.WINDOW_MODAL);
+
+            Scene scene = new Scene(addWindow);
+            addWorkStage.setScene(scene);
+            AddWorkDayDialogController controller = loader.getController();
+            controller.setProjectIDnumber(projectIDnumber);
+            controller.setMyStage(addWorkStage);
+
+            addWorkStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,6 +178,7 @@ public class MainApp extends Application {
             loginWindowController.setStage(logWinStage);
             logWinStage.showAndWait();
         } catch (IOException e) {
+            e.printStackTrace();
 
         }
     }
@@ -175,7 +201,7 @@ public class MainApp extends Application {
             loginWindowOnStartController.setStage(logWinStage);
             logWinStage.showAndWait();
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -200,6 +226,7 @@ public class MainApp extends Application {
                 AllData.setStatStage(statStage);
 
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         else {

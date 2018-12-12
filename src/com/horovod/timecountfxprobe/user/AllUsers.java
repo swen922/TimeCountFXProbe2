@@ -107,15 +107,6 @@ public class AllUsers {
         }
     }
 
-    /** Метод нужен, чтобы добавлять в список произвольные тексты,
-     * например "Выйти в окно логина" */
-    public static synchronized void addStringToLoggedUsers(String newString) {
-        if (!usersLogged.contains(newString)) {
-            AllUsers.usersLogged.add(newString);
-        }
-    }
-
-
 
     public static boolean isUsersLoggedContainsUser(int loggedUser) {
         return AllUsers.usersLogged.contains(AllUsers.getOneUser(loggedUser).getFullName());

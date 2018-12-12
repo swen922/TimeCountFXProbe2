@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="180.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.AddWorkDayDialogController">
+   <children>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="101.0" layoutY="36.0" text="Добавить новый день в проект" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Separator layoutX="174.0" layoutY="126.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0" />
+      <HBox alignment="CENTER" layoutX="68.0" prefHeight="30.0" prefWidth="200.0" spacing="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <HBox alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="180.0" spacing="10.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="40.0" prefWidth="180.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" text="Дата:" textAlignment="CENTER" />
+                        <DatePicker fx:id="datePicker" prefWidth="180.0" promptText="Выберите дату ---&gt;" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="clearDatePickerButton" mnemonicParsing="false" onAction="#handleClearDatePicker" text="X" />
+               </children>
+            </HBox>
+            <HBox alignment="BOTTOM_CENTER" prefHeight="40.0" prefWidth="180.0" spacing="10.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="40.0" prefWidth="180.0" spacing="10.0">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" text="Дизайнер" textAlignment="CENTER" />
+                        <ChoiceBox fx:id="designersChoiceBox" prefWidth="200.0" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="clearDesignersChoiceBoxButton" mnemonicParsing="false" onAction="#handleClearChoiceBox" text="X" />
+               </children>
+            </HBox>
+            <VBox alignment="TOP_CENTER" prefHeight="40.0" prefWidth="70.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="Время" textAlignment="CENTER" />
+                  <TextField fx:id="workTimeTextField" alignment="CENTER" prefWidth="70.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <Separator layoutX="164.0" layoutY="116.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="115.0" />
+      <HBox alignment="CENTER" layoutX="183.0" layoutY="101.0" prefHeight="40.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="125.0">
+         <children>
+            <Button fx:id="cancelButton" mnemonicParsing="false" onAction="#handleCancelButton" text="Отмена" />
+            <Button fx:id="okButton" mnemonicParsing="false" onAction="#handleOKButton" text="Сохранить" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

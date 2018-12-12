@@ -119,12 +119,12 @@ public class Generator {
     public static void generateUsers() {
         for (int i = 1; i <= 7; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
-            AllUsers.getOneUser("des"+i).setFullName("Good Designer Number " + i);
+            AllUsers.getOneUser("des"+i).setFullName("Good Designer" + i);
         }
 
         for (int i = 1; i <= 2; i++) {
             AllUsers.createUser("man" + i, "pass", Role.MANAGER);
-            AllUsers.getOneUser("man"+i).setFullName("Good Manager Number " + i);
+            AllUsers.getOneUser("man"+i).setFullName("Good Manager" + i);
         }
 
         AllUsers.addLoggedUserByIDnumber(2);
@@ -205,6 +205,9 @@ public class Generator {
         AllData.addNewProject(new Project("Nestle", "Сидоренко Юлия", descr01));
         AllData.addNewProject(new Project("Nestle", "Гладченко Наталья, Елагина Мария", descr02));
         AllData.addNewProject(new Project("Nestle", "Климова Дарья", descr03));
+
+        AllData.addWorkTime(12, LocalDate.now().minusDays(1), 3, 2.0);
+        AllData.addWorkTime(12, LocalDate.now().minusDays(2), 2, 2.0);
 
     }
 
