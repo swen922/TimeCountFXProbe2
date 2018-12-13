@@ -15,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -928,7 +929,21 @@ public class TableProjectsManagerController {
 
     public void testAdd() {
 
-        AllData.addWorkTime(12, LocalDate.now(),5, 60);
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                System.out.println("inside call()");
+                AllData.addWorkTime(12, LocalDate.now(),5, 60);
+                return null;
+            }
+        };
+
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+
+
+        //AllData.addWorkTime(12, LocalDate.now(),5, 60);
 
         //TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
         //testBackgroundUpdate01.testBackgroundAddTime();
