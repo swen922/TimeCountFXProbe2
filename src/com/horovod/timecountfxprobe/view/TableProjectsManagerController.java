@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -97,7 +98,7 @@ public class TableProjectsManagerController {
     private Label todayWorkSumLabel;
 
     @FXML
-    private Label yesterdayWorkSumLabel;
+    private Label workSumLabel;
 
     @FXML
     private Button buttonReload;
@@ -148,11 +149,11 @@ public class TableProjectsManagerController {
 
     /** Временные кнопки под тестирование */
 
-    /*@FXML
+    @FXML
     private Button testAddButton;
 
     @FXML
-    private Button testDeleteButton;*/
+    private Button testDeleteButton;
 
 
 
@@ -390,7 +391,6 @@ public class TableProjectsManagerController {
         // Отработка методов данных
         AllData.deleteZeroTime();
         AllData.rebuildTodayWorkSumProperty();
-        AllData.rebuildYesterdayWorkSumProperty();
         //AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
         //AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
         //AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
@@ -513,7 +513,8 @@ public class TableProjectsManagerController {
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
 
         todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
-        yesterdayWorkSumLabel.textProperty().bind(AllData.yesterdayWorkSumProperty().asString());
+        workSumLabel.textProperty().bind(AllData.workSumProjectsProperty().asString());
+        AllData.rebuildWorkSum();
         AllData.rebuildDesignerRatingPosition();
 
         initializeChart();
@@ -925,14 +926,31 @@ public class TableProjectsManagerController {
 
 
 
-    /*public void testAdd() {
-        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        testBackgroundUpdate01.testBackgroundAddTime();
+    public void testAdd() {
+
+        AllData.addWorkTime(12, LocalDate.now(),5, 60);
+
+        //TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
+        //testBackgroundUpdate01.testBackgroundAddTime();
+        //testBackgroundUpdate01.test5();
+
+        /*Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                AllData.addWorkTime(12, LocalDate.now(),5, 100);
+            }
+        };
+
+        Thread t = new Thread(runnable);
+        t.setDaemon(true);
+        t.start();*/
     }
 
     public void testDelete() {
-        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        testBackgroundUpdate01.testBackgroundDeleteTime();
-    }*/
+        /*TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
+        testBackgroundUpdate01.testBackgroundDeleteTime();*/
+
+        AllData.addWorkTime(12, LocalDate.now(),5, 20);
+    }
 
 }

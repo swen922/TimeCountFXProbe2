@@ -767,7 +767,7 @@ public class TableProjectsDesignerController {
                         commitEdit(formatStringInput(oldText, textField.getText()));
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        initialize();
+                        //initialize();
                         //projectsTable.refresh();
                     }
                 }
@@ -779,7 +779,7 @@ public class TableProjectsDesignerController {
                         commitEdit(formatStringInput(oldText, textField.getText()));
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        initialize();
+                        //initialize();
                         //projectsTable.refresh();
                     }
                 }

@@ -283,6 +283,7 @@ public class Project {
 
     public synchronized void setWorkSumProperty(String workSumProperty) {
         this.workSumProperty.set(workSumProperty);
+        //this.workSumProperty = new SimpleStringProperty(workSumProperty);
     }
 
     @XmlElement(name = "listworks")

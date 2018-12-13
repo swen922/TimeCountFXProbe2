@@ -13,6 +13,7 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -32,13 +33,15 @@ public class AllData {
     private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
 
     private static ObservableMap<Integer, Project> allProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
+    public static ObservableList<Project> allProjectsList = FXCollections.emptyObservableList();
     private static ObservableMap<Integer, Project> activeProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
+    public static ObservableList<Project> activeProjectsList = FXCollections.emptyObservableList();
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
-    private static volatile IntegerProperty workSumProjectsProperty = new SimpleIntegerProperty(workSumProjects.get());
+    private static volatile DoubleProperty workSumProjectsProperty = new SimpleDoubleProperty(AllData.intToDouble(workSumProjects.get()));
+
 
     private static DoubleProperty todayWorkSumProperty = new SimpleDoubleProperty(0);
-    private static DoubleProperty yesterdayWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty weekWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty monthWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty yearWorkSumProperty = new SimpleDoubleProperty(0);
@@ -112,42 +115,39 @@ public class AllData {
         AllData.allProjects.clear();
         AllData.allProjects.putAll(newAllProjects);
         rebuildActiveProjects();
+        allProjectsList.clear();
+        allProjectsList.addAll(allProjects.values());
     }
 
     public static Map<Integer, Project> getActiveProjects() {
         return activeProjects;
     }
 
-    public static synchronized void setActiveProjects(ObservableMap<Integer, Project> newActiveProjects) {
-        AllData.activeProjects = newActiveProjects;
-    }
-
-
 
     public static int getWorkSumProjects() {
         return workSumProjects.get();
     }
 
-    public static synchronized void setWorkSumProjects(int newWorkSumProjects) {
-        AllData.workSumProjects.set(newWorkSumProjects);
-        AllData.workSumProjectsProperty().set(newWorkSumProjects);
-    }
-
-    public static synchronized void addWorkSumProjects(int addTime) {
+    private static synchronized void addWorkSumProjects(int addTime) {
         AllData.workSumProjects.addAndGet(addTime);
-        AllData.workSumProjectsProperty().set(workSumProjects.get());
+        AllData.workSumProjectsProperty.set(AllData.intToDouble(addTime + workSumProjects.get()));
     }
 
-    public static int getWorkSumProjectsProperty() {
+    public static double getWorkSumProjectsProperty() {
         return workSumProjectsProperty.get();
     }
 
-    public static IntegerProperty workSumProjectsProperty() {
+    public static DoubleProperty workSumProjectsProperty() {
         return workSumProjectsProperty;
     }
 
-    public static void setWorkSumProjectsProperty(int newWorkSumProjectsProperty) {
-        AllData.workSumProjectsProperty.set(newWorkSumProjectsProperty);
+    public static synchronized void rebuildWorkSum() {
+        int counter = 0;
+        for (Project p : allProjects.values()) {
+            counter += p.getWorkSum();
+        }
+        AllData.workSumProjects.set(counter);
+        AllData.workSumProjectsProperty.set(AllData.intToDouble(counter));
     }
 
 
@@ -159,47 +159,20 @@ public class AllData {
         return todayWorkSumProperty;
     }
 
-    public static void setTodayWorkSumProperty(double todayWorkSumProperty) {
-        AllData.todayWorkSumProperty.set(todayWorkSumProperty);
-    }
-
-
     public static synchronized void rebuildTodayWorkSumProperty() {
-        AllData.todayWorkSumProperty.set(0);
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(LocalDate.now())) {
                 counter += p.getWorkSumForDate(LocalDate.now());
             }
         }
+        AllData.todayWorkSumProperty.set(0);
         AllData.todayWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
 
-    public static double getYesterdayWorkSumProperty() {
-        return yesterdayWorkSumProperty.get();
-    }
-
-    public static DoubleProperty yesterdayWorkSumProperty() {
-        return yesterdayWorkSumProperty;
-    }
-
-    public static void setYesterdayWorkSumProperty(double yesterdayWorkSumProperty) {
-        AllData.yesterdayWorkSumProperty.set(yesterdayWorkSumProperty);
-    }
-
-    public static synchronized void rebuildYesterdayWorkSumProperty() {
-        AllData.yesterdayWorkSumProperty.set(0);
-        int counter = 0;
-        for (Project p : allProjects.values()) {
-            if (p.containsWorkTime(LocalDate.now().minusDays(1))) {
-                counter += p.getWorkSumForDate(LocalDate.now().minusDays(1));
-            }
-        }
-        AllData.yesterdayWorkSumProperty.set(AllData.intToDouble(counter));
-    }
-
-
+    /** TODO Сделать для недельных, месячных и годовых сумм
+     * методы, аналогичные этому: rebuildYesterdayWorkSumProperty() – см. выше */
 
     public static double getWeekWorkSumProperty() {
         return weekWorkSumProperty.get();
@@ -207,10 +180,6 @@ public class AllData {
 
     public static DoubleProperty weekWorkSumPropertyProperty() {
         return weekWorkSumProperty;
-    }
-
-    public static void setWeekWorkSumProperty(double weekWorkSumProperty) {
-        AllData.weekWorkSumProperty.set(weekWorkSumProperty);
     }
 
     public static double getMonthWorkSumProperty() {
@@ -221,20 +190,12 @@ public class AllData {
         return monthWorkSumProperty;
     }
 
-    public static void setMonthWorkSumProperty(double monthWorkSumProperty) {
-        AllData.monthWorkSumProperty.set(monthWorkSumProperty);
-    }
-
     public static double getYearWorkSumProperty() {
         return yearWorkSumProperty.get();
     }
 
     public static DoubleProperty yearWorkSumPropertyProperty() {
         return yearWorkSumProperty;
-    }
-
-    public static void setYearWorkSumProperty(double yearWorkSumProperty) {
-        AllData.yearWorkSumProperty.set(yearWorkSumProperty);
     }
 
 
@@ -248,12 +209,7 @@ public class AllData {
         return designerDayWorkSumProperty;
     }
 
-    public static synchronized void setDesignerDayWorkSumProperty(double day) {
-        AllData.designerDayWorkSumProperty.set(day);
-    }
-
     public static synchronized void rebuildDesignerDayWorkSumProperty() {
-        AllData.designerDayWorkSumProperty.set(0);
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
@@ -272,12 +228,7 @@ public class AllData {
         return designerWeekWorkSumProperty;
     }
 
-    public static synchronized void setDesignerWeekWorkSumProperty(double newDesignerWeekWorkSumProperty) {
-        AllData.designerWeekWorkSumProperty.set(newDesignerWeekWorkSumProperty);
-    }
-
     public static synchronized void rebuildDesignerWeekWorkSumProperty(int year, int week) {
-        AllData.designerWeekWorkSumProperty.set(0);
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndWeek(AllUsers.getCurrentUser(), year, week)) {
@@ -287,7 +238,6 @@ public class AllData {
         AllData.designerWeekWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
-
     public static double getDesignerMonthWorkSumProperty() {
         return designerMonthWorkSumProperty.get();
     }
@@ -296,12 +246,7 @@ public class AllData {
         return designerMonthWorkSumProperty;
     }
 
-    public static synchronized void setDesignerMonthWorkSumProperty(double newDesignerMonthWorkSumProperty) {
-        AllData.designerMonthWorkSumProperty.set(newDesignerMonthWorkSumProperty);
-    }
-
     public static synchronized void rebuildDesignerMonthWorkSumProperty(int year, int month) {
-        AllData.designerMonthWorkSumProperty().set(0);
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndMonth(AllUsers.getCurrentUser(), year, month)) {
@@ -319,12 +264,7 @@ public class AllData {
         return designerYearWorkSumProperty;
     }
 
-    public static void setDesignerYearWorkSumProperty(double newDesignerYearWorkSumProperty) {
-        AllData.designerYearWorkSumProperty.set(newDesignerYearWorkSumProperty);
-    }
-
     public static synchronized void rebuildDesignerYearWorkSumProperty(int year) {
-        AllData.designerYearWorkSumProperty().set(0);
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndYear(AllUsers.getCurrentUser(), year)) {
@@ -334,6 +274,7 @@ public class AllData {
         AllData.designerYearWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
+
     public static int getDesignerRatingPosition() {
         return designerRatingPosition.get();
     }
@@ -342,9 +283,6 @@ public class AllData {
         return designerRatingPosition;
     }
 
-    public static synchronized void setDesignerRatingPosition(int newDesignerRatingPosition) {
-        AllData.designerRatingPosition.set(newDesignerRatingPosition);
-    }
 
     public static void rebuildDesignerRatingPosition() {
 
@@ -367,9 +305,6 @@ public class AllData {
 
         designerRatingPosition.set(result + 1);
     }
-
-
-
 
 
 
@@ -549,10 +484,6 @@ public class AllData {
 
 
 
-
-
-
-
     /** Методы добавления, удаления проектов */
 
     public synchronized static boolean addNewProject(Project newProject) {
@@ -560,10 +491,10 @@ public class AllData {
             allProjects.put(newProject.getIdNumber(), newProject);
             activeProjects.put(newProject.getIdNumber(), newProject);
 
-            // Добавляем время в общее суммарное
+            /*// Добавляем время в общее суммарное
             int tmp = workSumProjects.get();
             tmp += newProject.getWorkSum();
-            workSumProjects.set(tmp);
+            workSumProjects.set(tmp);*/
 
             return true;
         }
@@ -583,6 +514,7 @@ public class AllData {
                 tmp = 0;
             }
             workSumProjects.set(tmp);
+
 
             return true;
         }
@@ -616,6 +548,7 @@ public class AllData {
 
     // Перед применением данного метода ВСЕГДА сначала вызывать isProjectExist(int idProject),
     // то есть проверять проект на существование
+    // Проверку сюда вставлять нельзя, т.к. при отсутствии непонятно, что возвращать
     public static boolean isProjectArchive(int idProject) {
         return allProjects.get(idProject).isArchive();
     }
@@ -627,16 +560,18 @@ public class AllData {
 
         if (isProjectExist(projectIDnumber) && (!isProjectArchive(projectIDnumber))) {
             Project project = getOneActiveProject(projectIDnumber);
-
             int difference = project.addWorkTime(correctDate, idUser, newTime);
             addWorkSumProjects(difference);
 
+            // TODO  Сюда вставить ребилды всех полей
+
             if (idUser == AllUsers.getCurrentUser() && correctDate.equals(LocalDate.now())) {
-
                 int old = AllData.doubleToInt(designerDayWorkSumProperty.get());
-
                 designerDayWorkSumProperty.set(AllData.intToDouble(old + difference));
             }
+
+
+
 
             return true;
         }
