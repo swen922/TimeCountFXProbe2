@@ -9,42 +9,25 @@ import java.time.LocalDate;
 public class TestBackgroundUpdate01 {
 
 
-
-    public void test5() {
-
-        AllData.addWorkTime(12, LocalDate.now(),5, 20);
-        AllData.addWorkTime(12, LocalDate.now(),5, 40);
-        AllData.addWorkTime(12, LocalDate.now(),5, 60);
-    }
-
-    int prevous = 0;
-
     public void testBackgroundAddTime() {
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                AllData.addWorkTime(12, LocalDate.now(),3, 60);
 
-                /*Project p = AllData.getOneActiveProject(10);
-                if (p.containsWorkTime(5, LocalDate.now().minusDays(2))) {
-                    prevous = AllData.getOneActiveProject(10).getWorkSumForDesignerAndDate(5, LocalDate.now().minusDays(2));
-                }*/
+                if (AllData.getTableProjectsDesignerController() != null) {
+                    AllData.getTableProjectsDesignerController().initialize();
+                }
 
-                System.out.println("inside run");
-
-                AllData.addWorkTime(12, LocalDate.now(),5, 100);
-
-                /*Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        AllData.getTableProjectsDesignerController().initialize();
-                    }
-                });*/
             }
         };
 
-        Thread t = new Thread(runnable);
+        Platform.runLater(runnable);
+
+        /*Thread t = new Thread(runnable);
         t.setDaemon(true);
-        t.start();
+        t.start();*/
     }
 
     public void testBackgroundDeleteTime() {
@@ -52,19 +35,19 @@ public class TestBackgroundUpdate01 {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                AllData.addWorkTime(10, LocalDate.now().minusDays(2),5, AllData.intToDouble(prevous));
+                AllData.addWorkTime(12, LocalDate.now(),3, 20);
 
-                Platform.runLater(new Runnable() {
-                    @Override public void run() {
-                        AllData.getTableProjectsDesignerController().initialize();
-                    }
-                });
+                if (AllData.getTableProjectsDesignerController() != null) {
+                    AllData.getTableProjectsDesignerController().initialize();
+                }
             }
         };
 
-        Thread t = new Thread(runnable);
+        Platform.runLater(runnable);
+
+        /*Thread t = new Thread(runnable);
         t.setDaemon(true);
-        t.start();
+        t.start();*/
 
     }
 

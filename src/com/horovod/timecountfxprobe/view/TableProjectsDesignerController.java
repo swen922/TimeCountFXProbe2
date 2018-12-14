@@ -47,6 +47,7 @@ public class TableProjectsDesignerController {
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
     private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
 
+
     private ObservableList<String> datesForChart;
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
     private XYChart.Series<String, Integer> series;
@@ -175,7 +176,7 @@ public class TableProjectsDesignerController {
         AllData.deleteZeroTime();
         AllData.rebuildDesignerDayWorkSumProperty();
         AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
-        AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
+        AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
         AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
 

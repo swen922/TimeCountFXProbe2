@@ -8,6 +8,7 @@ import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -929,7 +930,7 @@ public class TableProjectsManagerController {
 
     public void testAdd() {
 
-        Task<Void> task = new Task<Void>() {
+        /*Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
                 System.out.println("inside call()");
@@ -938,34 +939,24 @@ public class TableProjectsManagerController {
             }
         };
 
-        Thread t = new Thread(task);
-        t.setDaemon(true);
-        t.start();
+        *//** ОБЯЗАТЕЛЬНО к использованию! *//*
+        Platform.runLater(task);*/
 
-
-        //AllData.addWorkTime(12, LocalDate.now(),5, 60);
-
-        //TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        //testBackgroundUpdate01.testBackgroundAddTime();
-        //testBackgroundUpdate01.test5();
-
-        /*Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                AllData.addWorkTime(12, LocalDate.now(),5, 100);
-            }
-        };
-
-        Thread t = new Thread(runnable);
+        /*Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();*/
+
+
+        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
+        testBackgroundUpdate01.testBackgroundAddTime();
+
     }
 
     public void testDelete() {
-        /*TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        testBackgroundUpdate01.testBackgroundDeleteTime();*/
+        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
+        testBackgroundUpdate01.testBackgroundDeleteTime();
 
-        AllData.addWorkTime(12, LocalDate.now(),5, 20);
+        //AllData.addWorkTime(12, LocalDate.now(),5, 20);
     }
 
 }
