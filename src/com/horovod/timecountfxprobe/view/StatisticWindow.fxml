@@ -162,7 +162,7 @@
                   </ChoiceBox>
                </children>
             </HBox>
-            <Button fx:id="buttonReloadBarChart" contentDisplay="CENTER" layoutX="850.0" layoutY="40.0" mnemonicParsing="false" onAction="#handleButtonReloadBarChart" text="Обновить данные" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="10.0">
+            <Button fx:id="buttonReloadBarChart" contentDisplay="CENTER" layoutX="850.0" layoutY="40.0" mnemonicParsing="false" onAction="#handleButtonReloadBarChart" text="Обновить график" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="10.0">
                <font>
                   <Font size="11.0" />
                </font>

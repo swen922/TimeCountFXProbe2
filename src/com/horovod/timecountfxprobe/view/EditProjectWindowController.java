@@ -178,6 +178,7 @@ public class EditProjectWindowController {
         POnumberTextField.setText(myProject.getPONumber());
         pathToFolderTextField.setText(myProject.getFolderPath());
         workSum.textProperty().bind(myProject.workSumProperty());
+        // Эта строчка перенесена в initializeTable()
         //hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
 
         initializeTable();
@@ -272,6 +273,7 @@ public class EditProjectWindowController {
 
                     AllData.addWorkTime(myProject.getIdNumber(), AllData.parseDate(dateString), designerID, newTimeDouble);
                     AllData.deleteZeroTime(designerID);
+                    AllData.tableProjectsManagerController.initialize();
                     initializeTable();
                 }
             });
@@ -398,11 +400,9 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
-                initializeArchiveCheckBox();
             }
             else {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
-                initializeArchiveCheckBox();
             }
         }
         else {
@@ -414,13 +414,13 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
-                initializeArchiveCheckBox();
             }
             else if (option.get() == ButtonType.CANCEL) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
-                initializeArchiveCheckBox();
             }
         }
+        initializeArchiveCheckBox();
+        AllData.tableProjectsManagerController.initialize();
     }
 
     public void handleAddWorkDayButton() {
@@ -498,7 +498,7 @@ public class EditProjectWindowController {
                 public void handle(KeyEvent event) {
                     KeyCode keyCode = event.getCode();
                     if (keyCode == KeyCode.ENTER) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
                         EditProjectWindowController.EditCell.this.getTableView().requestFocus();
                         EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
                         initializeTable();
@@ -510,7 +510,7 @@ public class EditProjectWindowController {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     if (!newValue) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
                         EditProjectWindowController.EditCell.this.getTableView().requestFocus();
                         EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
                         initializeTable();
@@ -520,26 +520,6 @@ public class EditProjectWindowController {
             });
             EditProjectWindowController.EditCell.this.textField.selectAll();
 
-        }
-
-        private String formatStringInput(String oldText, String input) {
-            String newText = input.replaceAll(" ", ".");
-            newText = newText.replaceAll("-", ".");
-            newText = newText.replaceAll(",", ".");
-            newText = newText.replaceAll("=", ".");
-
-            Double newTimeDouble = null;
-            try {
-                newTimeDouble = Double.parseDouble(newText);
-            } catch (NumberFormatException e) {
-                return oldText;
-            }
-            if (newTimeDouble != null) {
-                newText = String.valueOf(AllData.formatDouble(newTimeDouble));
-                return newText;
-            }
-
-            return oldText;
         }
 
         private String getString() {

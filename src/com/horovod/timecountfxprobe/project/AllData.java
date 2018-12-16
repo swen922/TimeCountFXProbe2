@@ -355,7 +355,6 @@ public class AllData {
 
     public static void rebuildDesignerRatingPosition() {
 
-        designerRatingPosition.set(0);
         Map<Integer, Integer> places = new TreeMap<>(Collections.reverseOrder());
 
         for (User u : AllUsers.getUsers().values()) {
@@ -371,7 +370,7 @@ public class AllData {
 
         List<Integer> listPlaces = new ArrayList<>(places.values());
         int result = listPlaces.indexOf(AllUsers.getCurrentUser());
-
+        
         designerRatingPosition.set(result + 1);
     }
 
@@ -728,6 +727,26 @@ public class AllData {
             return "часов";
         }
         return "часа";
+    }
+
+    public static String formatStringInput(String oldText, String input) {
+        String newText = input.replaceAll(" ", ".");
+        newText = newText.replaceAll("-", ".");
+        newText = newText.replaceAll(",", ".");
+        newText = newText.replaceAll("=", ".");
+
+        Double newTimeDouble = null;
+        try {
+            newTimeDouble = Double.parseDouble(newText);
+        } catch (NumberFormatException e) {
+            return oldText;
+        }
+        if (newTimeDouble != null) {
+            newText = String.valueOf(AllData.formatDouble(newTimeDouble));
+            return newText;
+        }
+
+        return oldText;
     }
 
 

@@ -39,13 +39,19 @@ import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
 
-
     private MainApp mainApp;
     private Stage stage;
     private StatisticWindowController statisticWindowController;
 
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
     private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
+    private Predicate<Map.Entry<Integer, Project>> filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
+        @Override
+        public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+            return true;
+        }
+    };
+    private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
 
 
     private ObservableList<String> datesForChart;
@@ -172,13 +178,14 @@ public class TableProjectsDesignerController {
          * сюда внутрь класса, а в AllData оставить только глобальные суммы по всем дизайнерам */
 
         // Отработка методов данных
-        LocalDate today = LocalDate.now();
         AllData.deleteZeroTime();
         AllData.rebuildDesignerDayWorkSumProperty();
+        LocalDate today = LocalDate.now();
         AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
         AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
         AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
+        handleFilters();
 
         sortTableProjects();
 
@@ -257,49 +264,7 @@ public class TableProjectsDesignerController {
             }
         });
 
-
-
-        FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, p -> true);
-
-        filterField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
-                    @Override
-                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (newValue == null || newValue.isEmpty()) {
-                            return true;
-                        }
-
-                        String lowerCaseFilter = newValue.toLowerCase().trim();
-
-                        String workTimeInTable = "0.0";
-                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), LocalDate.now())) {
-                            workTimeInTable = String.valueOf(AllData.intToDouble(integerProjectEntry.getValue().
-                                    getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())));
-                        }
-
-                        if (String.valueOf(integerProjectEntry.getValue().getIdNumber()).contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (workTimeInTable.contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (integerProjectEntry.getValue().getCompany().toLowerCase().contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (integerProjectEntry.getValue().getInitiator().toLowerCase().contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        else if (integerProjectEntry.getValue().getDescription().toLowerCase().contains(lowerCaseFilter)) {
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-                sortTableProjects();
-            }
-        });
+        filterDataWrapper.setPredicate(filterPredicate);
 
 
         columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
@@ -339,7 +304,72 @@ public class TableProjectsDesignerController {
 
     }
 
-    // Может, перенести весь метод в AllData или в другой общий класс?
+
+    public void addPredicateToFilter() {
+
+        filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
+            @Override
+            public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+
+                String newValue = filterField.getText();
+
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+
+                String lowerCaseFilter = newValue.toLowerCase().trim();
+                boolean result = true;
+
+                if (lowerCaseFilter.contains(" ")) {
+                    String[] allParts = lowerCaseFilter.split(" ");
+                    List<Boolean> resultList = new ArrayList<>();
+
+                    for (String s : allParts) {
+                        boolean res = containsString(integerProjectEntry.getValue(), s);
+                        resultList.add(res);
+                    }
+                    for (boolean b : resultList) {
+                        result = b;
+                        if (!b) {break;}
+                    }
+                    return result;
+                }
+                else {
+                    result = containsString(integerProjectEntry.getValue(), lowerCaseFilter);
+                }
+                return result;
+            }
+        };
+
+        initialize();
+    }
+
+
+    private boolean containsString(Project project, String input) {
+        String workTimeInTable = "0.0";
+        if (project.containsWorkTime()) {
+            workTimeInTable = String.valueOf(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())));
+        }
+        if (String.valueOf(project.getIdNumber()).contains(input)) {
+            return true;
+        }
+        else if (workTimeInTable.contains(input)) {
+            return true;
+        }
+        else if (project.getCompany().toLowerCase().contains(input)) {
+            return true;
+        }
+        else if (project.getInitiator().toLowerCase().contains(input)) {
+            return true;
+        }
+        else if (project.getDescription().toLowerCase().contains(input)) {
+            return true;
+        }
+        return false;
+    }
+
+
+
 
     public void initLoggedUsersChoiceBox() {
 
@@ -490,10 +520,14 @@ public class TableProjectsDesignerController {
     }
 
 
-
-
     public void handleDeleteSearch() {
         filterField.setText("");
+        filterDataWrapper.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
+            @Override
+            public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                return true;
+            }
+        });
     }
 
     public void sortTableProjects() {
@@ -554,14 +588,14 @@ public class TableProjectsDesignerController {
 
     private void handleFilters() {
 
-        filterField.clear();
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
         if (fromDate != null && tillDate != null) {
 
             if (showMyProjectsCheckBox.isSelected()) {
-                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+
+                filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
                         if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), fromDate, tillDate)) {
@@ -570,12 +604,11 @@ public class TableProjectsDesignerController {
                         return false;
                     }
                 });
-                initialize();
-                //projectsTable.refresh();
 
             }
             else {
-                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+
+                filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
                         if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
@@ -584,13 +617,12 @@ public class TableProjectsDesignerController {
                         return false;
                     }
                 });
-                initialize();
-                //projectsTable.refresh();
             }
         }
         else {
             if (showMyProjectsCheckBox.isSelected()) {
-                filterData = new FilteredList<>(this.tableProjects, new Predicate<Map.Entry<Integer, Project>>() {
+
+                filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
                         if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser())) {
@@ -599,13 +631,20 @@ public class TableProjectsDesignerController {
                         return false;
                     }
                 });
-                initialize();
+
             }
             else {
-                filterData = new FilteredList<>(this.tableProjects, p -> true);
-                initialize();
+                filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
+                    @Override
+                    public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+                        return true;
+                    }
+                });
             }
         }
+
+        sortTableProjects();
+        projectsTable.refresh();
     }
 
 
@@ -765,7 +804,7 @@ public class TableProjectsDesignerController {
                 public void handle(KeyEvent event) {
                     KeyCode keyCode = event.getCode();
                     if (keyCode == KeyCode.ENTER) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
                         //initialize();
@@ -777,7 +816,7 @@ public class TableProjectsDesignerController {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     if (!newValue) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
                         EditingCell.this.getTableView().requestFocus();
                         EditingCell.this.getTableView().getSelectionModel().selectAll();
                         //initialize();
@@ -789,25 +828,7 @@ public class TableProjectsDesignerController {
 
         }
 
-        private String formatStringInput(String oldText, String input) {
-            String newText = input.replaceAll(" ", ".");
-            newText = newText.replaceAll("-", ".");
-            newText = newText.replaceAll(",", ".");
-            newText = newText.replaceAll("=", ".");
 
-            Double newTimeDouble = null;
-            try {
-                newTimeDouble = Double.parseDouble(newText);
-            } catch (NumberFormatException e) {
-                return oldText;
-            }
-            if (newTimeDouble != null) {
-                newText = String.valueOf(AllData.formatDouble(newTimeDouble));
-                return newText;
-            }
-
-            return oldText;
-        }
 
         private String getString() {
             return getItem() == null ? "" : getItem().toString();

@@ -73,14 +73,6 @@ public class AddWorkDayDialogController {
         designersChoiceBox.setItems(designers);
     }
 
-    public void checkDatePicker() {
-        LocalDate date = datePicker.getValue();
-        if (date != null) {
-            if (date.compareTo(LocalDate.now()) > 0) {
-                datePicker.setValue(null);
-            }
-        }
-    }
 
     public void handleClearDatePicker() {
         datePicker.setValue(null);
@@ -95,18 +87,66 @@ public class AddWorkDayDialogController {
     }
 
     public void handleOKButton() {
-        System.out.println("inside handleOKButton()");
+
         if (datePicker.getValue() == null || designersChoiceBox.getValue() == null ||
                 workTimeTextField.getText() == null || workTimeTextField.getText().isEmpty()) {
-            System.out.println("NOK!");
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Укажите все данные");
             alert.setHeaderText("Укажите корректную дату,\nдизайнера и рабочее время");
             alert.showAndWait();
         }
         else {
-            String timeString = workTimeTextField.getText();
+            LocalDate date = checkDatePicker();
+            Double time = checkWorkTime();
+            if (date == null) {
+                datePicker.setValue(null);
+                return;
+            }
+            if (time == null) {
+                workTimeTextField.setText(null);
+                return;
+            }
+
+            System.out.println(projectIDnumber);
+            System.out.println(datePicker.getValue());
+            System.out.println(AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber());
+            System.out.println(time);
+            AllData.addWorkTime(projectIDnumber, datePicker.getValue(), AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber(), time);
         }
+    }
+
+    private LocalDate checkDatePicker() {
+        LocalDate result = null;
+        if (datePicker.getValue().isAfter(LocalDate.now())) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Некорректно указана дата!");
+            alert.setHeaderText("Укажите корректную дату");
+            alert.showAndWait();
+        }
+        else {
+            result = datePicker.getValue();
+        }
+        return result;
+    }
+
+    private double checkWorkTime() {
+
+        String newText = workTimeTextField.getText().replaceAll(" ", ".");
+        newText = newText.replaceAll("-", ".");
+        newText = newText.replaceAll(",", ".");
+        newText = newText.replaceAll("=", ".");
+
+        Double result = null;
+        try {
+            result = Double.parseDouble(newText);
+        } catch (NumberFormatException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Некорректно указано время!");
+            alert.setHeaderText("Укажите корректное рабочее время");
+            alert.showAndWait();
+        }
+        System.out.println(result == null);
+        return result;
     }
 
 

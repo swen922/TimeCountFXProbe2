@@ -70,7 +70,7 @@
                   <Separator />
                   <HBox alignment="CENTER" minWidth="430.0" prefHeight="40.0" spacing="10.0">
                      <children>
-                        <TextField fx:id="filterField" prefHeight="26.0" prefWidth="400.0" promptText="Найти проект">
+                        <TextField fx:id="filterField" onAction="#addPredicateToFilter" onKeyPressed="#addPredicateToFilter" onKeyTyped="#addPredicateToFilter" prefHeight="26.0" prefWidth="400.0" promptText="Найти проект">
                            <opaqueInsets>
                               <Insets right="2010.0" />
                            </opaqueInsets>

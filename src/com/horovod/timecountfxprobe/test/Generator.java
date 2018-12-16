@@ -129,6 +129,7 @@ public class Generator {
 
         AllUsers.addLoggedUserByIDnumber(2);
         AllUsers.addLoggedUserByIDnumber(3);
+        AllUsers.addLoggedUserByIDnumber(8);
     }
 
 
@@ -202,9 +203,12 @@ public class Generator {
         String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";
         String descr03 = "Nescafe Gold label doypack 150g 250g 2018_12 - мейл от Климовой 06.12.2018 в 12.52 - корректировка текстов упаковок Нескафе Голд дойпак 150 г и 250 г";
 
+        String descr04 = "Rossia leaflet NEW";
+
         AllData.addNewProject(new Project("Nestle", "Сидоренко Юлия", descr01));
         AllData.addNewProject(new Project("Nestle", "Гладченко Наталья, Елагина Мария", descr02));
         AllData.addNewProject(new Project("Nestle", "Климова Дарья", descr03));
+        AllData.addNewProject(new Project("Nestle", "Сидоренко Юлия, Климова Дарья", descr04));
 
         AllData.addWorkTime(12, LocalDate.now().minusDays(1), 3, 2.0);
         AllData.addWorkTime(12, LocalDate.now().minusDays(2), 2, 2.0);
