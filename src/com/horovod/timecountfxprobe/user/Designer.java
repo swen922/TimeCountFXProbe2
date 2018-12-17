@@ -23,9 +23,6 @@ public class Designer implements User {
         this.nameLogin = nameLogin.toLowerCase();
     }
 
-    public Designer() {
-    }
-
     @XmlElement(name = "designeridnumber")
     public int getIDNumber() {
         return IDNumber;

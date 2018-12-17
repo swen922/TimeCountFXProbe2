@@ -18,9 +18,6 @@ public class Manager implements User {
         this.nameLogin = nameLogin.toLowerCase();
     }
 
-    public Manager() {
-    }
-
     @XmlElement(name = "manageridnumber")
     public int getIDNumber() {
         return IDNumber;

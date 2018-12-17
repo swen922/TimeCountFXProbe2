@@ -6,34 +6,33 @@ import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
 public class AddWorkDayDialogController {
-    int projectIDnumber;
-    ObservableList<String> designers = FXCollections.observableArrayList();
-    Stage myStage;
+    private int projectIDnumber;
+    private ObservableList<String> designers = FXCollections.observableArrayList();
+    private Stage myStage;
+    private EditProjectWindowController editProjectWindowController;
 
-
-    public int getProjectIDnumber() {
-        return projectIDnumber;
-    }
 
     public void setProjectIDnumber(int projectIDnumber) {
         this.projectIDnumber = projectIDnumber;
-    }
-
-    public Stage getMyStage() {
-        return myStage;
     }
 
     public void setMyStage(Stage myStage) {
         this.myStage = myStage;
     }
 
+    public void setEditProjectWindowController(EditProjectWindowController editProjectWindowController) {
+        this.editProjectWindowController = editProjectWindowController;
+    }
 
     @FXML
     private DatePicker datePicker;
@@ -71,6 +70,16 @@ public class AddWorkDayDialogController {
             }
         }
         designersChoiceBox.setItems(designers);
+
+        workTimeTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode keyCode = event.getCode();
+                if (keyCode == KeyCode.ENTER) {
+                    handleOKButton();
+                }
+            }
+        });
     }
 
 
@@ -88,48 +97,42 @@ public class AddWorkDayDialogController {
 
     public void handleOKButton() {
 
-        if (datePicker.getValue() == null || designersChoiceBox.getValue() == null ||
-                workTimeTextField.getText() == null || workTimeTextField.getText().isEmpty()) {
+        LocalDate date = checkDatePicker();
+        Double time = checkWorkTime();
+
+        if (date == null || designersChoiceBox.getValue() == null || time == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Укажите все данные");
             alert.setHeaderText("Укажите корректную дату,\nдизайнера и рабочее время");
             alert.showAndWait();
         }
         else {
-            LocalDate date = checkDatePicker();
-            Double time = checkWorkTime();
-            if (date == null) {
-                datePicker.setValue(null);
-                return;
-            }
-            if (time == null) {
-                workTimeTextField.setText(null);
-                return;
-            }
-
             System.out.println(projectIDnumber);
             System.out.println(datePicker.getValue());
             System.out.println(AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber());
             System.out.println(time);
             AllData.addWorkTime(projectIDnumber, datePicker.getValue(), AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber(), time);
+            editProjectWindowController.initializeTable();
+            AllData.tableProjectsManagerController.initialize();
+            myStage.close();
         }
     }
 
     private LocalDate checkDatePicker() {
-        LocalDate result = null;
+
+        if (datePicker.getValue() == null) {
+            return null;
+        }
+
         if (datePicker.getValue().isAfter(LocalDate.now())) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Некорректно указана дата!");
-            alert.setHeaderText("Укажите корректную дату");
-            alert.showAndWait();
+            datePicker.setValue(null);
+            return null;
         }
-        else {
-            result = datePicker.getValue();
-        }
-        return result;
+
+        return datePicker.getValue();
     }
 
-    private double checkWorkTime() {
+    private Double checkWorkTime() {
 
         String newText = workTimeTextField.getText().replaceAll(" ", ".");
         newText = newText.replaceAll("-", ".");
@@ -140,12 +143,8 @@ public class AddWorkDayDialogController {
         try {
             result = Double.parseDouble(newText);
         } catch (NumberFormatException e) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Некорректно указано время!");
-            alert.setHeaderText("Укажите корректное рабочее время");
-            alert.showAndWait();
+            workTimeTextField.setText(null);
         }
-        System.out.println(result == null);
         return result;
     }
 

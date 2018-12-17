@@ -26,11 +26,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.awt.*;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
@@ -41,9 +45,10 @@ public class EditProjectWindowController {
     private Project myProject;
     private Stage myStage;
 
-    private ObservableMap<String, WorkDay> workDays = FXCollections.observableHashMap();
-    private ObservableList<WorkDay> workDaysList = FXCollections.observableArrayList(workDays.values());
+    private ObservableMap<String, WorkDay> workDays;
+    private ObservableList<WorkDay> workDaysList;
     private List<TableColumn<WorkDay, String>> listColumns = FXCollections.observableArrayList();
+    private List<Integer> des = new ArrayList<>();
 
     private boolean isChanged = false;
     private List<String> changedFields = new ArrayList<>();
@@ -94,10 +99,16 @@ public class EditProjectWindowController {
     private Label hoursSum;
 
     @FXML
+    private Label designersWorkSums;
+
+    @FXML
     private Button addWorkDayButton;
 
     @FXML
-    private Button exportToCSVButton;
+    private Button exportButton;
+
+    @FXML
+    private ChoiceBox<String> selectFormatChoiceBox;
 
     @FXML
     private Button cancelButton;
@@ -181,6 +192,8 @@ public class EditProjectWindowController {
         // Эта строчка перенесена в initializeTable()
         //hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
 
+        initSelectFormatChoiceBox();
+
         initializeTable();
 
     }
@@ -199,14 +212,16 @@ public class EditProjectWindowController {
         }
         listColumns.clear();
 
+        if (des == null) {
+            des = new ArrayList<>();
+        }
+        des.clear();
+
         workTimeTableView.getColumns().clear();
 
-        TableColumn<WorkDay, String> datesTableColumn = new TableColumn<>("Дни");
-        //workTimeTableView.getColumns().add(datesTableColumn);
+        TableColumn<WorkDay, String> datesTableColumn = new TableColumn<>("Дата");
         datesTableColumn.setStyle("-fx-alignment: CENTER;");
         listColumns.add(datesTableColumn);
-
-        List<Integer> des = new ArrayList<>();
 
         for (WorkTime wt : myProject.getWork()) {
             String dateString = wt.getDateString();
@@ -242,14 +257,6 @@ public class EditProjectWindowController {
             column.setEditable(true);
             column.setText(AllUsers.getOneUser(i).getFullName());
             column.setStyle("-fx-alignment: CENTER;");
-            //column.setStyle("-fx-alignment: CENTER; -fx-font-size:11px;");
-
-            /*Label headerLabel = new Label(AllUsers.getOneUser(i).getFullName());
-            headerLabel.setWrapText(true);
-            headerLabel.setAlignment(Pos.CENTER);
-            headerLabel.setMinWidth(Control.USE_PREF_SIZE);
-            headerLabel.setMinHeight(50);
-            column.setGraphic(headerLabel);*/
 
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
                 @Override
@@ -281,8 +288,6 @@ public class EditProjectWindowController {
             listColumns.add(column);
         }
 
-
-
         workDaysList = FXCollections.observableArrayList(workDays.values());
 
         SortedList<WorkDay> sortedList = new SortedList<>(workDaysList, new Comparator<WorkDay>() {
@@ -311,12 +316,37 @@ public class EditProjectWindowController {
             }
         });
 
+        initDesignersWorkSums();
+
         datesTableColumn.setMaxWidth(200);
         for (TableColumn<WorkDay, String> tc : listColumns) {
             tc.setMinWidth(100);
             tc.setMaxWidth(300);
         }
+    }
 
+    public void initDesignersWorkSums() {
+        if (!workDays.isEmpty()) {
+            StringBuilder sb = new StringBuilder("Итого:   ");
+
+            Map<Integer, Integer> counterMap = new HashMap<>();
+
+            for (int i : des) {
+                for (WorkDay wd : workDaysList) {
+                    if (!counterMap.containsKey(i)) {
+                        counterMap.put(i, AllData.doubleToInt(wd.getWorkTimeForDesigner(i)));
+                    }
+                    else {
+                        int old = counterMap.get(i);
+                        counterMap.put(i, (AllData.doubleToInt(wd.getWorkTimeForDesigner(i)) + old));
+                    }
+                }
+                double result = AllData.intToDouble(counterMap.get(i));
+                sb.append(AllUsers.getOneUser(i).getFullName()).append(" = ").append(result).append(" ").
+                        append(AllData.formatHours(String.valueOf(result))).append(";   ");
+            }
+            designersWorkSums.setText(sb.toString());
+        }
     }
 
 
@@ -424,18 +454,125 @@ public class EditProjectWindowController {
     }
 
     public void handleAddWorkDayButton() {
-        mainApp.showAddWorkDayDialog(myProject.getIdNumber(), myStage);
+        mainApp.showAddWorkDayDialog(myProject.getIdNumber(), myStage, this);
     }
 
+    private void initSelectFormatChoiceBox() {
+        if (selectFormatChoiceBox.getItems().isEmpty()) {
+            selectFormatChoiceBox.getItems().add("в CSV");
+            selectFormatChoiceBox.getItems().add("в Текст");
+            selectFormatChoiceBox.setValue("в CSV");
 
+        }
+    }
 
+    public void handleExport() {
+
+        if (selectFormatChoiceBox.getValue().equals("в CSV")) {
+            writeCSV();
+        }
+        else {
+
+        }
+    }
 
     public void writeCSV() {
-        /*Writer writer = null;
-        File file = new File("/_jToys/example1.csv");
-        writer = new BufferedWriter(new FileWriter(file));*/
 
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
+        chooser.getExtensionFilters().add(extFilter);
 
+        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+        chooser.setInitialDirectory(new File(path));
+        String fileName = "Проект id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
+        chooser.setInitialFileName(fileName);
+
+        File file = chooser.showSaveDialog(myStage);
+
+        if (file != null) {
+            if (!file.getPath().endsWith(".csv")) {
+                file = new File(file.getPath() + ".csv");
+            }
+        }
+
+        if (file != null) {
+
+            try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                writer.write("Дата" + "\t");
+
+                for (int i = 0; i < des.size(); i++) {
+                    String desName = null;
+                    if (AllUsers.getOneUser(des.get(i)).getFullName() != null) {
+                        desName = AllUsers.getOneUser(des.get(i)).getFullName();
+                    }
+                    else {
+                        desName = AllUsers.getOneUser(des.get(i)).getNameLogin();
+                    }
+
+                    if (i == (des.size() - 1)) {
+                        writer.write(desName + "\n");
+                    }
+                    else {
+                        writer.write(desName + "\t");
+                    }
+                }
+
+                for (WorkDay wd : workDaysList) {
+                    writer.write(wd.getDateString() + "\t");
+
+                    for (int j = 0; j < des.size(); j++) {
+                        if (j == (des.size() - 1)) {
+                            writer.write(AllData.formatWorkTime(wd.getWorkTimeForDesigner(des.get(j))) + "\n");
+                        }
+                        else {
+                            writer.write(AllData.formatWorkTime(wd.getWorkTimeForDesigner(des.get(j))) + "\t");
+                        }
+                    }
+                }
+
+                writer.write("\n");
+
+                if (!workDays.isEmpty()) {
+
+                    Map<Integer, Integer> counterMap = new HashMap<>();
+
+                    for (int k = 0; k < des.size(); k++) {
+
+                        if (k == 0) {
+                            writer.write("Итого по дизайнерам:\t");
+                        }
+
+                        for (WorkDay wd : workDaysList) {
+                            if (!counterMap.containsKey(des.get(k))) {
+                                counterMap.put(des.get(k), AllData.doubleToInt(wd.getWorkTimeForDesigner(des.get(k))));
+                            }
+                            else {
+                                int old = counterMap.get(des.get(k));
+                                counterMap.put(des.get(k), (AllData.doubleToInt(wd.getWorkTimeForDesigner(des.get(k))) + old));
+                            }
+                        }
+
+                        double result = AllData.intToDouble(counterMap.get(des.get(k)));
+
+                        if (k == (des.size() - 1)) {
+                            writer.write(AllData.formatWorkTime(result) + "\n");
+                        }
+                        else {
+                            writer.write(AllData.formatWorkTime(result) + "\t");
+                        }
+                    }
+                    writer.write("\n");
+                }
+
+                writer.write("\n");
+                writer.write("Итого в проекте: " + "\t" + AllData.formatWorkTime(myProject.getWorkSumDouble()) + "\n");
+                writer.flush();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     class EditCell extends TableCell<WorkDay, String> {

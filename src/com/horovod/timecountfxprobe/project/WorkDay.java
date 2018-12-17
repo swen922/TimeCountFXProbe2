@@ -46,8 +46,8 @@ public class WorkDay {
 
     public void addWorkTime(int designerIDnumber, double timeDouble) {
         if (this.workTimeMap.containsKey(designerIDnumber)) {
-            double oldtime = getWorkTimeMap().get(designerIDnumber);
-            getWorkTimeMap().put(designerIDnumber, AllData.formatDouble(oldtime + timeDouble));
+            double oldtime = this.workTimeMap.get(designerIDnumber);
+            this.workTimeMap.put(designerIDnumber, AllData.formatDouble(oldtime + timeDouble));
         }
         else {
             getWorkTimeMap().put(designerIDnumber, timeDouble);

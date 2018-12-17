@@ -138,7 +138,7 @@ public class MainApp extends Application {
         }
     }
 
-    public void showAddWorkDayDialog(int projectIDnumber, Stage editProjectStage) {
+    public void showAddWorkDayDialog(int projectIDnumber, Stage editProjectStage, EditProjectWindowController editProjectWindowController) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/AddWorkDayDialog.fxml"));
@@ -154,6 +154,7 @@ public class MainApp extends Application {
             AddWorkDayDialogController controller = loader.getController();
             controller.setProjectIDnumber(projectIDnumber);
             controller.setMyStage(addWorkStage);
+            controller.setEditProjectWindowController(editProjectWindowController);
 
             addWorkStage.showAndWait();
         } catch (IOException e) {
