@@ -11,9 +11,10 @@ public class Designer implements User {
     private Role role = Role.DESIGNER;
     private String fullName;
     private String email;
+    private double workHourValue = 0.0;
 
     /**
-     * TODO в графон вставить проверку nameLogin на уникальность,
+     * TODO в графон в создании юзера вставить проверку nameLogin на уникальность,
      * чтобы не было дублей логина в системе
      * */
 
@@ -75,22 +76,33 @@ public class Designer implements User {
         this.email = newEmail;
     }
 
+    @XmlElement(name = "designerworkhourvalue")
+    public double getWorkHourValue() {
+        return workHourValue;
+    }
+
+    public void setWorkHourValue(double workHourValue) {
+        this.workHourValue = workHourValue;
+    }
+
+
+    /** TODO В методах equals и hashcode использовать ТОЛЬКО неизменяемые
+     * или редкоизменяемые поля, т.к. иначе сломается после смены мейла или стоимости часа */
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Designer designer = (Designer) o;
-        return getIDNumber() == designer.getIDNumber() &&
-                Objects.equals(getNameLogin(), designer.getNameLogin()) &&
-                getRole() == designer.getRole() &&
-                Objects.equals(getFullName(), designer.getFullName()) &&
-                Objects.equals(getEmail(), designer.getEmail());
+        return IDNumber == designer.IDNumber &&
+                Objects.equals(nameLogin, designer.nameLogin) &&
+                role == designer.role;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getIDNumber(), getNameLogin(), getRole(), getFullName(), getEmail());
+        return Objects.hash(IDNumber, nameLogin, role);
     }
 
     @Override
@@ -100,6 +112,8 @@ public class Designer implements User {
                 ", nameLogin='" + nameLogin + '\'' +
                 ", role=" + role +
                 ", fullName='" + fullName + '\'' +
-                '}' + "\n";
+                ", email='" + email + '\'' +
+                ", workHourValue=" + workHourValue +
+                '}';
     }
 }

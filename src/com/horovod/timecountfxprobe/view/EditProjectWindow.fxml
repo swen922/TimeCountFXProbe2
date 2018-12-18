@@ -26,7 +26,7 @@
                </children>
             </AnchorPane>
             <CheckBox fx:id="archiveCheckBox" layoutX="696.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleArchiveCheckBox" text="Архивный" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
-            <TextArea fx:id="projectNameTextArea" editable="false" layoutX="207.0" layoutY="-75.0" prefHeight="40.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="5.0" />
+            <TextArea fx:id="descriptionTextArea" editable="false" layoutX="207.0" layoutY="-75.0" onKeyTyped="#listenChanges" prefHeight="40.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="5.0" />
             <Button fx:id="openFolderButton" alignment="CENTER" contentDisplay="CENTER" layoutX="562.0" layoutY="15.0" mnemonicParsing="false" onAction="#initOpenFolderButton" prefHeight="40.0" prefWidth="70.0" text="Открыть папку" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="5.0">
                <font>
                   <Font size="11.0" />
@@ -42,47 +42,37 @@
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextArea fx:id="companyNameTextArea" maxWidth="250.0" minWidth="150.0" prefHeight="40.0" wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="5.0" />
+            <TextArea fx:id="companyNameTextArea" maxWidth="250.0" minWidth="150.0" onKeyTyped="#listenChanges" prefHeight="40.0" wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="5.0" />
             <Label text="Менеджер" AnchorPane.leftAnchor="380.0" AnchorPane.topAnchor="17.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextArea fx:id="managerTextArea" prefHeight="40.0" prefWidth="300.0" wrapText="true" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
-            <Label layoutX="28.0" layoutY="80.0" text="Описание" AnchorPane.leftAnchor="33.0" AnchorPane.topAnchor="63.0">
+            <TextArea fx:id="managerTextArea" onKeyTyped="#listenChanges" prefHeight="40.0" prefWidth="300.0" wrapText="true" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+            <Label layoutX="26.0" layoutY="122.0" text="Комментарий" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="85.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextArea fx:id="descriptionTextArea" layoutX="53.0" layoutY="6.0" prefHeight="40.0" wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0" />
-            <Label layoutX="26.0" layoutY="122.0" text="Комментарий" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="105.0">
-               <font>
-                  <Font size="11.0" />
-               </font>
-            </Label>
-            <TextArea fx:id="commentTextArea" layoutX="63.0" layoutY="16.0" prefHeight="40.0" promptText="Впишите любой комментарий по этому проекту, например где брать исходник. Комментарий будет виден всем дизайнерам и менеджерам." wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="95.0">
-               <font>
-                  <Font size="11.0" />
-               </font>
-            </TextArea>
+            <TextArea fx:id="commentTextArea" layoutX="63.0" layoutY="16.0" onKeyTyped="#listenChanges" prefHeight="85.0" promptText="Впишите любой комментарий по этому проекту, например где брать исходник. Комментарий будет виден всем дизайнерам и менеджерам." wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0" />
             <Label layoutX="20.0" layoutY="173.0" prefWidth="70.0" text="Связанные проекты" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="140.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextField fx:id="linkedProjectsTextField" layoutX="100.0" layoutY="165.0" promptText="Внесите id-номера связанных проектов" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="140.0" />
+            <TextField fx:id="linkedProjectsTextField" layoutX="100.0" layoutY="165.0" onKeyTyped="#listenChanges" promptText="Внесите id-номера связанных проектов" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="140.0" />
             <Label layoutX="380.0" layoutY="166.0" text="Номер РО" AnchorPane.rightAnchor="170.0" AnchorPane.topAnchor="145.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextField fx:id="POnumberTextField" layoutX="450.0" layoutY="160.0" prefWidth="150.0" promptText="Внесите номер PO" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
+            <TextField fx:id="POnumberTextField" layoutX="450.0" layoutY="160.0" onKeyTyped="#listenChanges" prefWidth="150.0" promptText="Внесите номер PO" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
             <Label layoutX="38.0" layoutY="194.0" text="Путь к папке" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="175.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextField fx:id="pathToFolderTextField" layoutX="100.0" layoutY="200.0" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="170.0">
+            <TextField fx:id="pathToFolderTextField" layoutX="100.0" layoutY="200.0" onKeyTyped="#listenChanges" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="170.0">
                <font>
                   <Font size="10.0" />
                </font>
@@ -125,10 +115,10 @@
             </HBox>
             <HBox alignment="CENTER_RIGHT" layoutX="213.0" layoutY="-36.0" prefHeight="100.0" prefWidth="500.0" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0">
                <children>
-                  <Button fx:id="cancelButton" mnemonicParsing="false" text="Отмена" />
-                  <Button fx:id="revertButton" mnemonicParsing="false" text="Вернуть как было" />
-                  <Button fx:id="saveButton" mnemonicParsing="false" text="Сохранить " />
-                  <Button fx:id="saveAndCloseButton" mnemonicParsing="false" text="Сохранить и закрыть" />
+                  <Button fx:id="revertButton" mnemonicParsing="false" onAction="#handleRevertButton" text="Вернуть как было" />
+                  <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveButton" text="Сохранить " />
+                  <Button fx:id="saveAndCloseButton" mnemonicParsing="false" onAction="#handleSaveAndCloseButton" text="Сохранить и закрыть" />
+                  <Button fx:id="closeButton" mnemonicParsing="false" text="Закрыть" />
                </children>
             </HBox>
          </children>

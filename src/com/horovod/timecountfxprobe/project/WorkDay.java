@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe.project;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class WorkDay {
@@ -52,6 +53,17 @@ public class WorkDay {
         else {
             getWorkTimeMap().put(designerIDnumber, timeDouble);
         }
+        deleteZeroWorks();
+    }
+
+    private void deleteZeroWorks() {
+        Iterator<Map.Entry<Integer, Double>> iter = workTimeMap.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<Integer, Double> entry = iter.next();
+            if (entry.getValue() == 0) {
+                iter.remove();
+            }
+        }
     }
 
     public double getWorkTimeForDesigner(int designerID) {
@@ -61,5 +73,13 @@ public class WorkDay {
         else {
             return 0;
         }
+    }
+
+    public boolean containsWorkTime() {
+        return !workTimeMap.isEmpty();
+    }
+
+    public boolean containsWorkTimeForDesigner(int designerIDnumber) {
+        return workTimeMap.containsKey(designerIDnumber);
     }
 }

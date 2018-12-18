@@ -6,6 +6,8 @@ import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.user.Designer;
+import com.horovod.timecountfxprobe.user.User;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -51,7 +54,8 @@ public class EditProjectWindowController {
     private List<Integer> des = new ArrayList<>();
 
     private boolean isChanged = false;
-    private List<String> changedFields = new ArrayList<>();
+    private List<Node> changedFields = new ArrayList<>();
+    private Map<Node, String> textAreas = new HashMap<>();
 
 
     @FXML
@@ -60,8 +64,8 @@ public class EditProjectWindowController {
     @FXML
     private Label idNumberLabel;
 
-    @FXML
-    private TextArea projectNameTextArea;
+    /*@FXML
+    private TextArea projectNameTextArea;*/
 
     @FXML
     private Button openFolderButton;
@@ -111,7 +115,7 @@ public class EditProjectWindowController {
     private ChoiceBox<String> selectFormatChoiceBox;
 
     @FXML
-    private Button cancelButton;
+    private Button closeButton;
 
     @FXML
     private Button revertButton;
@@ -163,8 +167,12 @@ public class EditProjectWindowController {
         // id-номер проекта
         idNumberLabel.setText(String.valueOf(myProject.getIdNumber()));
 
+        descriptionTextArea.setText(myProject.getDescription());
+        textAreas.put(descriptionTextArea, descriptionTextArea.getText());
+
         // название папки
-        projectNameTextArea.setText(myProject.getDescription().split(" - ")[0].trim());
+        /*projectNameTextArea.setText(myProject.getDescription().split(" - ")[0].trim());
+        textAreas.put(projectNameTextArea, projectNameTextArea.getText());*/
 
         // инициализация кнопки открытия папки – прописано в FXML
 
@@ -172,31 +180,37 @@ public class EditProjectWindowController {
         initializeArchiveCheckBox();
 
         companyNameTextArea.setText(myProject.getCompany());
-        managerTextArea.setText(myProject.getInitiator());
-        descriptionTextArea.setText(myProject.getDescription());
-        commentTextArea.setText(myProject.getComment());
+        textAreas.put(companyNameTextArea, companyNameTextArea.getText());
+        managerTextArea.setText(myProject.getManager());
+        textAreas.put(managerTextArea, managerTextArea.getText());
+
+        if (myProject.getComment() != null && !myProject.getComment().isEmpty()) {
+            commentTextArea.setText(myProject.getComment());
+        }
+        textAreas.put(commentTextArea, commentTextArea.getText());
 
         if (myProject.getLinkedProjects() != null && !myProject.getLinkedProjects().isEmpty()) {
-            StringBuilder sb = new StringBuilder("");
-            for (int p : myProject.getLinkedProjects()) {
-                sb.append(AllData.getAnyProject(p).getIdNumber()).append(", ");
-            }
-            String linked = sb.toString().trim();
-            linked = linked.substring(0, (linked.length() - 1));
-            linkedProjectsTextField.setText(linked);
+            linkedProjectsTextField.setText(myProject.getLinkedProjects());
         }
+        textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
 
         POnumberTextField.setText(myProject.getPONumber());
+        textAreas.put(POnumberTextField, POnumberTextField.getText());
         pathToFolderTextField.setText(myProject.getFolderPath());
+        textAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
         workSum.textProperty().bind(myProject.workSumProperty());
         // Эта строчка перенесена в initializeTable()
         //hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
+
+        initSaveButtons();
 
         initSelectFormatChoiceBox();
 
         initializeTable();
 
     }
+
+
 
     public void initializeTable() {
 
@@ -244,7 +258,16 @@ public class EditProjectWindowController {
         des.sort(new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
-                return Integer.compare(o1, o2);
+                // Первый вариант сортировки – по номеру ID юзера
+                //return Integer.compare(o1, o2);
+
+                // Новый вариант сортировки – по полному имени,
+                // надо тогда первой фамилию писать всегда в полном имени
+                Designer des1 = (Designer) AllUsers.getOneUser(o1);
+                Designer des2 = (Designer) AllUsers.getOneUser(o2);
+                String fullName1 = des1.getFullName();
+                String fullName2 = des2.getFullName();
+                return fullName1.compareTo(fullName2);
             }
         });
 
@@ -398,7 +421,7 @@ public class EditProjectWindowController {
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
             openFolderButton.setDisable(true);
             archiveCheckBox.setSelected(true);
-            projectNameTextArea.setEditable(false);
+            //projectNameTextArea.setEditable(false);
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
             descriptionTextArea.setEditable(false);
@@ -410,7 +433,7 @@ public class EditProjectWindowController {
             topColoredPane.setStyle(null);
             openFolderButton.setDisable(false);
             archiveCheckBox.setSelected(false);
-            projectNameTextArea.setEditable(true);
+            //projectNameTextArea.setEditable(true);
             companyNameTextArea.setEditable(true);
             managerTextArea.setEditable(true);
             descriptionTextArea.setEditable(true);
@@ -468,11 +491,11 @@ public class EditProjectWindowController {
 
     public void handleExport() {
 
-        if (selectFormatChoiceBox.getValue().equals("в CSV")) {
+        if (selectFormatChoiceBox.getValue().equalsIgnoreCase("в CSV")) {
             writeCSV();
         }
-        else {
-
+        else if (selectFormatChoiceBox.getValue().equalsIgnoreCase("в Текст")) {
+            writeText();
         }
     }
 
@@ -501,6 +524,7 @@ public class EditProjectWindowController {
 
                 writer.write("Дата" + "\t");
 
+                // Заголовок таблицы
                 for (int i = 0; i < des.size(); i++) {
                     String desName = null;
                     if (AllUsers.getOneUser(des.get(i)).getFullName() != null) {
@@ -518,6 +542,7 @@ public class EditProjectWindowController {
                     }
                 }
 
+                // Цифры в таблице
                 for (WorkDay wd : workDaysList) {
                     writer.write(wd.getDateString() + "\t");
 
@@ -533,6 +558,7 @@ public class EditProjectWindowController {
 
                 writer.write("\n");
 
+                // Итог по каждому дизайнеру
                 if (!workDays.isEmpty()) {
 
                     Map<Integer, Integer> counterMap = new HashMap<>();
@@ -565,15 +591,217 @@ public class EditProjectWindowController {
                     writer.write("\n");
                 }
 
+                // Итог обший
                 writer.write("\n");
                 writer.write("Итого в проекте: " + "\t" + AllData.formatWorkTime(myProject.getWorkSumDouble()) + "\n");
                 writer.flush();
             }
             catch (Exception ex) {
-                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Ошибка записи");
+                alert.setHeaderText("Ошибка при сохранении файла");
+                alert.showAndWait();
             }
         }
     }
+
+
+    public void writeText() {
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+        chooser.getExtensionFilters().add(extFilter);
+
+        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+        chooser.setInitialDirectory(new File(path));
+        String fileName = "Проект id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
+        chooser.setInitialFileName(fileName);
+
+        File file = chooser.showSaveDialog(myStage);
+
+        if (file != null) {
+            if (!file.getPath().endsWith(".txt")) {
+                file = new File(file.getPath() + ".txt");
+            }
+        }
+
+        if (file != null) {
+
+            try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                writer.write("Рабочее время по проекту id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()) + "\n");
+                writer.write("\n");
+                writer.write("\n");
+
+                for (WorkDay wd : workDaysList) {
+                    writer.write(wd.getDateString() + ":\n");
+
+                    for (int i = 0; i < des.size(); i++) {
+                        if (wd.containsWorkTimeForDesigner(des.get(i))) {
+                            Designer designer = (Designer) AllUsers.getOneUser(des.get(i));
+                            String desName = designer.getNameLogin();
+                            if (designer.getFullName() != null && !designer.getFullName().isEmpty()) {
+                                desName = designer.getFullName();
+                            }
+                            writer.write(desName + " = " + AllData.formatWorkTime(wd.getWorkTimeForDesigner(des.get(i))) + " " +
+                                    AllData.formatHours(String.valueOf(wd.getWorkTimeForDesigner(des.get(i)))) + "\n");
+                        }
+                    }
+                    writer.write("\n");
+
+
+                }
+
+                writer.write(designersWorkSums.getText().replaceAll("Итого:   ", "Итого:\n").replaceAll(";   ", "\n"));
+                writer.write("\n");
+                writer.write("Итого в проекте: " + AllData.formatWorkTime(myProject.getWorkSumDouble()) + " " +
+                        AllData.formatHours(String.valueOf(myProject.getWorkSumDouble())) + "\n");
+                writer.flush();
+            }
+            catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Ошибка записи");
+                alert.setHeaderText("Ошибка при сохранении файла");
+                alert.showAndWait();
+            }
+        }
+
+    }
+
+    public void listenChanges() {
+
+        isChanged = false;
+
+        Map<Node, String> changedAreas = new HashMap<>();
+        //changedAreas.put(projectNameTextArea, projectNameTextArea.getText());
+        changedAreas.put(companyNameTextArea, companyNameTextArea.getText());
+        changedAreas.put(managerTextArea, managerTextArea.getText());
+        changedAreas.put(descriptionTextArea, descriptionTextArea.getText());
+        changedAreas.put(commentTextArea, commentTextArea.getText());
+        changedAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
+        changedAreas.put(POnumberTextField, POnumberTextField.getText());
+        changedAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
+
+        Iterator<Map.Entry<Node, String>> iter = textAreas.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry<Node, String> entry = iter.next();
+            Node node = entry.getKey();
+            String text = entry.getValue();
+            String newText = changedAreas.get(node);
+
+            if (text == null && newText == null) {
+                continue;
+            }
+            else if (text == null && newText != null) {
+                if (newText.isEmpty()) {
+                    isChanged = false;
+                }
+                else {
+                    isChanged = true;
+                    break;
+                }
+            }
+            else if (text != null && newText == null) {
+                if (text.isEmpty()) {
+                    isChanged = false;
+                }
+                else {
+                    isChanged = true;
+                    break;
+                }
+            }
+            else if (!text.equals(newText)) {
+                isChanged = true;
+                break;
+            }
+        }
+
+        initSaveButtons();
+    }
+
+
+    public void initSaveButtons() {
+        if (!isChanged) {
+            revertButton.setDisable(true);
+            saveButton.setDisable(true);
+            saveAndCloseButton.setDisable(true);
+        }
+        else {
+            revertButton.setDisable(false);
+            saveButton.setDisable(false);
+            saveAndCloseButton.setDisable(false);
+        }
+    }
+
+    public void handleRevertButton() {
+
+        //projectNameTextArea.setText(textAreas.get(projectNameTextArea));
+        companyNameTextArea.setText(textAreas.get(companyNameTextArea));
+        managerTextArea.setText(textAreas.get(managerTextArea));
+        descriptionTextArea.setText(textAreas.get(descriptionTextArea));
+
+        if (textAreas.get(commentTextArea) == null) {
+            commentTextArea.setText("");
+        }
+        else {
+            commentTextArea.setText(textAreas.get(commentTextArea));
+        }
+
+        if (textAreas.get(linkedProjectsTextField) == null) {
+            linkedProjectsTextField.setText("");
+        }
+        else {
+            linkedProjectsTextField.setText(textAreas.get(linkedProjectsTextField));
+        }
+
+        if (textAreas.get(POnumberTextField) == null) {
+            POnumberTextField.setText("");
+        }
+        else {
+            POnumberTextField.setText(textAreas.get(POnumberTextField));
+        }
+
+        if (textAreas.get(pathToFolderTextField) == null) {
+            pathToFolderTextField.setText("");
+        }
+        else {
+            pathToFolderTextField.setText(textAreas.get(pathToFolderTextField));
+        }
+        isChanged = false;
+        initSaveButtons();
+    }
+
+
+    public void handleSaveButton() {
+        textAreas.put(descriptionTextArea, descriptionTextArea.getText());
+        myProject.setDescription(descriptionTextArea.getText());
+        textAreas.put(companyNameTextArea, companyNameTextArea.getText());
+        myProject.setCompany(companyNameTextArea.getText());
+        textAreas.put(managerTextArea, managerTextArea.getText());
+        myProject.setManager(managerTextArea.getText());
+        textAreas.put(commentTextArea, commentTextArea.getText());
+        myProject.setComment(commentTextArea.getText());
+        textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
+        myProject.setLinkedProjects(linkedProjectsTextField.getText());
+        textAreas.put(POnumberTextField, POnumberTextField.getText());
+        myProject.setPONumber(POnumberTextField.getText());
+        textAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
+        myProject.setFolderPath(pathToFolderTextField.getText());
+
+        isChanged = false;
+        initSaveButtons();
+        AllData.tableProjectsManagerController.initialize();
+    }
+
+    public void handleSaveAndCloseButton() {
+        handleSaveButton();
+        myStage.close();
+    }
+
+    public void handleCloseButton() {
+
+    }
+
 
     class EditCell extends TableCell<WorkDay, String> {
         private TextField textField;

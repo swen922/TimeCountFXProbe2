@@ -465,7 +465,7 @@ public class TableProjectsManagerController {
         columnManager.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
-                return param.getValue().getValue().initiatorProperty();
+                return param.getValue().getValue().managerProperty();
             }
         });
 
@@ -576,7 +576,7 @@ public class TableProjectsManagerController {
         else if (project.getCompany().toLowerCase().contains(input)) {
             return true;
         }
-        else if (project.getInitiator().toLowerCase().contains(input)) {
+        else if (project.getManager().toLowerCase().contains(input)) {
             return true;
         }
         else if (project.getDescription().toLowerCase().contains(input)) {
@@ -933,7 +933,7 @@ public class TableProjectsManagerController {
                     String s = entry.getKey() + "\t"
                             + entry.getValue().getWorkSumDouble() + "\t"
                             + entry.getValue().getCompany() + "\t"
-                            + entry.getValue().getInitiator() + "\t"
+                            + entry.getValue().getManager() + "\t"
                             + POnumber + "\t"
                             + entry.getValue().getDescription() + "\n";
                     writer.write(s);

@@ -12,6 +12,7 @@ public class Manager implements User {
     private Role role = Role.MANAGER;
     private String fullName;
     private String email;
+    private double workHourValue = 0.0;
 
     public Manager(String nameLogin, String password) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
@@ -63,22 +64,29 @@ public class Manager implements User {
         this.email = newEmail;
     }
 
+    @XmlElement(name = "managerworkhourvalue")
+    public double getWorkHourValue() {
+        return workHourValue;
+    }
+
+    public void setWorkHourValue(double workHourValue) {
+        this.workHourValue = workHourValue;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Manager manager = (Manager) o;
-        return getIDNumber() == manager.getIDNumber() &&
-                Objects.equals(getNameLogin(), manager.getNameLogin()) &&
-                getRole() == manager.getRole() &&
-                Objects.equals(getFullName(), manager.getFullName()) &&
-                Objects.equals(getEmail(), manager.getEmail());
+        return IDNumber == manager.IDNumber &&
+                Objects.equals(nameLogin, manager.nameLogin) &&
+                role == manager.role;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getIDNumber(), getNameLogin(), getRole(), getFullName(), getEmail());
+        return Objects.hash(IDNumber, nameLogin, role);
     }
 
     @Override
@@ -88,6 +96,8 @@ public class Manager implements User {
                 ", nameLogin='" + nameLogin + '\'' +
                 ", role=" + role +
                 ", fullName='" + fullName + '\'' +
-                '}' + "\n";
+                ", email='" + email + '\'' +
+                ", workHourValue=" + workHourValue +
+                '}';
     }
 }

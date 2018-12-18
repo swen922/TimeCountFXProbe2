@@ -650,7 +650,7 @@ public class AllData {
         for (Project p : coll) {
             p.setIdNumberProperty(p.getIdNumber());
             p.setCompanyProperty(p.getCompany());
-            p.setInitiatorProperty(p.getInitiator());
+            p.setManagerProperty(p.getManager());
             p.setDescriptionProperty(p.getDescription());
             p.setWorkSumProperty(String.valueOf(p.getWorkSumDouble()));
         }
@@ -708,13 +708,17 @@ public class AllData {
     }
 
     public static String formatHours(String input) {
-        if (input.endsWith("11") || input.endsWith("12") || input.endsWith("13") || input.endsWith("14")) {
-            return "часов";
-        }
+
         if (input.endsWith(".0")) {
+            input = input.replaceAll("\\.0", "");
+        }
+
+        if (input.endsWith("0") || input.endsWith("11") || input.endsWith("12") || input.endsWith("13") || input.endsWith("14")) {
             return "часов";
         }
-        if (input.endsWith(".1") || input.endsWith(".2") || input.endsWith(".3") || input.endsWith(".4")) {
+
+        if (input.endsWith(".1") || input.endsWith(".2") || input.endsWith(".3") || input.endsWith(".4") || input.endsWith(".5")
+                || input.endsWith(".6") || input.endsWith(".7") || input.endsWith(".8") || input.endsWith(".9")) {
             return "часа";
         }
         if (input.endsWith("1")) {
@@ -723,10 +727,8 @@ public class AllData {
         else if (input.endsWith("2") || input.endsWith("3") || input.endsWith("4")) {
             return "часа";
         }
-        else if (!input.contains(",") && !input.contains(".")) {
-            return "часов";
-        }
-        return "часа";
+
+        return "часов";
     }
 
     public static String formatStringInput(String oldText, String input) {

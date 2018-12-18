@@ -19,15 +19,15 @@ public class Project {
     private IntegerProperty idNumberProperty;
     private String company;
     private StringProperty companyProperty;
-    private String initiator;
-    private StringProperty initiatorProperty;
+    private String manager;
+    private StringProperty managerProperty;
     private String description;
     private StringProperty descriptionProperty;
     private String dateCreationString;
     private volatile boolean isArchive = false;
     private String comment;
     private String folderPath;
-    private Set<Integer> linkedProjects = new TreeSet<>();
+    private String linkedProjects;
     private String PONumber;
     private StringProperty PONumberProperty;
     private volatile int workSum = 0;
@@ -36,14 +36,14 @@ public class Project {
     private List<WorkTime> work = new ArrayList<>();
 
 
-    public Project(String comp, String initiator, String description) {
+    public Project(String comp, String manager, String description) {
         this.idNumber = AllData.incrementIdNumberAndGet();
         //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);
-        this.initiator = initiator;
-        this.initiatorProperty = new SimpleStringProperty(initiator);
+        this.manager = manager;
+        this.managerProperty = new SimpleStringProperty(manager);
         this.description = description;
         this.descriptionProperty = new SimpleStringProperty(description);
         this.dateCreationString = AllData.formatDate(LocalDate.now());
@@ -51,14 +51,14 @@ public class Project {
         //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
-    public Project(String comp, String initiator, String description, LocalDate newDate) {
+    public Project(String comp, String manager, String description, LocalDate newDate) {
         this.idNumber = AllData.incrementIdNumberAndGet();
         //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);
-        this.initiator = initiator;
-        this.initiatorProperty = new SimpleStringProperty(initiator);
+        this.manager = manager;
+        this.managerProperty = new SimpleStringProperty(manager);
         this.description = description;
         this.descriptionProperty = new SimpleStringProperty(description);
         this.dateCreationString = AllData.formatDate(newDate);
@@ -68,12 +68,11 @@ public class Project {
 
     public Project() {
         this.idNumber = 0;
-        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = "";
         this.companyProperty = new SimpleStringProperty("");
-        this.initiator = "";
-        this.initiatorProperty = new SimpleStringProperty("");
+        this.manager = "";
+        this.managerProperty = new SimpleStringProperty("");
         this.description = "";
         this.descriptionProperty = new SimpleStringProperty("");
         this.dateCreationString = AllData.formatDate(LocalDate.now());
@@ -130,29 +129,31 @@ public class Project {
         this.companyProperty.set(newCompanyProperty);
     }
 
-    @XmlElement(name = "initby")
-    public String getInitiator() {
-        return initiator;
+
+    @XmlElement(name = "manager")
+    public String getManager() {
+        return manager;
     }
 
-    public synchronized void setInitiator(String newInitiator) {
-        this.initiator = newInitiator;
-        this.initiatorProperty.set(newInitiator);
-    }
-
-    @XmlTransient
-    public String getInitiatorProperty() {
-        return initiatorProperty.get();
+    public synchronized void setManager(String manager) {
+        this.manager = manager;
+        this.managerProperty.set(manager);
     }
 
     @XmlTransient
-    public StringProperty initiatorProperty() {
-        return initiatorProperty;
+    public String getManagerProperty() {
+        return managerProperty.get();
     }
 
-    public synchronized void setInitiatorProperty(String newInitiatorProperty) {
-        this.initiatorProperty.set(newInitiatorProperty);
+    @XmlTransient
+    public StringProperty managerProperty() {
+        return managerProperty;
     }
+
+    public synchronized void setManagerProperty(String manager) {
+        this.managerProperty.set(manager);
+    }
+
 
     @XmlElement(name = "descr")
     public String getDescription() {
@@ -218,16 +219,12 @@ public class Project {
     }
 
     @XmlElement(name = "linkedprojects")
-    public Set<Integer> getLinkedProjects() {
-        return this.linkedProjects;
+    public String getLinkedProjects() {
+        return linkedProjects;
     }
 
-    public synchronized void setLinkedProject(Set<Integer> newLinkedProjects) {
-        this.linkedProjects = newLinkedProjects;
-    }
-
-    public synchronized void addLinkedProjects(Integer... args) {
-        this.linkedProjects.addAll(Arrays.asList(args));
+    public synchronized void setLinkedProjects(String linkedProjects) {
+        this.linkedProjects = linkedProjects;
     }
 
     @XmlElement(name = "ponumber")
@@ -671,7 +668,7 @@ public class Project {
         //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.companyProperty = new SimpleStringProperty(company);
-        this.initiatorProperty = new SimpleStringProperty(initiator);
+        this.managerProperty = new SimpleStringProperty(manager);
         this.descriptionProperty = new SimpleStringProperty(description);
         this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
         //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
@@ -683,29 +680,12 @@ public class Project {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return idNumber == project.idNumber &&
-                isArchive == project.isArchive &&
-                workSum == project.workSum &&
-                Objects.equals(idNumberProperty, project.idNumberProperty) &&
-                Objects.equals(company, project.company) &&
-                Objects.equals(companyProperty, project.companyProperty) &&
-                Objects.equals(initiator, project.initiator) &&
-                Objects.equals(initiatorProperty, project.initiatorProperty) &&
-                Objects.equals(description, project.description) &&
-                Objects.equals(descriptionProperty, project.descriptionProperty) &&
-                Objects.equals(dateCreationString, project.dateCreationString) &&
-                Objects.equals(comment, project.comment) &&
-                Objects.equals(linkedProjects, project.linkedProjects) &&
-                Objects.equals(PONumber, project.PONumber) &&
-                Objects.equals(PONumberProperty, project.PONumberProperty) &&
-                Objects.equals(workSumProperty, project.workSumProperty) &&
-                Objects.equals(work, project.work);
+        return idNumber == project.idNumber;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(idNumber, idNumberProperty, company, companyProperty, initiator, initiatorProperty, description, descriptionProperty, dateCreationString, isArchive, comment, linkedProjects, PONumber, PONumberProperty, workSum, workSumProperty, work);
+        return Objects.hash(idNumber);
     }
 
     @Override
@@ -713,7 +693,7 @@ public class Project {
         return "Project{" +
                 "idNumber=" + idNumber +
                 ", company='" + company + '\'' +
-                ", initiator='" + initiator + '\'' +
+                ", initiator='" + manager + '\'' +
                 ", description='" + description + '\'' +
                 ", dateCreationString='" + dateCreationString + '\'' +
                 ", isArchive=" + isArchive +

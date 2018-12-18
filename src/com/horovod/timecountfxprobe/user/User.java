@@ -11,4 +11,6 @@ public interface User {
     void setFullName(String newFullName);
     String getEmail();
     void setEmail(String newEmail);
+    double getWorkHourValue();
+    void setWorkHourValue(double workHourValue);
 }

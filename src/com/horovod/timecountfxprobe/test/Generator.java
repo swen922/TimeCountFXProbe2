@@ -117,15 +117,37 @@ public class Generator {
 
 
     public static void generateUsers() {
-        for (int i = 1; i <= 7; i++) {
+        /*for (int i = 1; i <= 5; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
             AllUsers.getOneUser("des"+i).setFullName("Good Designer" + i);
-        }
+        }*/
+        AllUsers.createUser("des1", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des1").setFullName("Семенова Прасковья");
+        AllUsers.createUser("des2", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des2").setFullName("Анисимов Сергей");
+        AllUsers.createUser("des3", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des3").setFullName("Шахматов Сергей");
+        AllUsers.createUser("des4", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des4").setFullName("Ремесленный Олег");
+        AllUsers.createUser("des5", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des5").setFullName("Малиновская Мария");
+        AllUsers.createUser("des6", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des6").setFullName("Балясников Артем");
+        AllUsers.createUser("des7", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des7").setFullName("Коршунов Игорь");
 
-        for (int i = 1; i <= 2; i++) {
+
+        /*for (int i = 1; i <= 2; i++) {
             AllUsers.createUser("man" + i, "pass", Role.MANAGER);
             AllUsers.getOneUser("man"+i).setFullName("Good Manager" + i);
-        }
+        }*/
+        AllUsers.createUser("man1", "pass", Role.MANAGER);
+        AllUsers.getOneUser("man1").setFullName("Анисимова Инесса");
+        AllUsers.createUser("man2", "pass", Role.MANAGER);
+        AllUsers.getOneUser("man2").setFullName("Анисимов Сергей");
+
+
+
 
         AllUsers.addLoggedUserByIDnumber(2);
         AllUsers.addLoggedUserByIDnumber(3);

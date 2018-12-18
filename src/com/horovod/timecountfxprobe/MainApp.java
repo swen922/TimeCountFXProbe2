@@ -28,6 +28,7 @@ public class MainApp extends Application {
     private TableProjectsDesignerController tableProjectsDesignerController;
     private StatisticWindowController statisticWindowController;
 
+    /** TODO Во все методы show... в блок catch вставить показ Alert'а "Не удалось загрузить..." */
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -276,10 +277,12 @@ public class MainApp extends Application {
         }
     }
 
+    public void showSaveProjectChangesDialog() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MainApp.class.getResource("view/SaveProjectChangeDialog.fxml"));
+        AnchorPane savePane = (AnchorPane) loader.load();
 
-
-
-
-
+        Stage saveStage = new Stage();
+    }
 
 }

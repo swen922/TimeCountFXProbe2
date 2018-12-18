@@ -237,7 +237,7 @@ public class TableProjectsDesignerController {
         columnManager.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
-                return param.getValue().getValue().initiatorProperty();
+                return param.getValue().getValue().managerProperty();
             }
         });
 
@@ -359,7 +359,7 @@ public class TableProjectsDesignerController {
         else if (project.getCompany().toLowerCase().contains(input)) {
             return true;
         }
-        else if (project.getInitiator().toLowerCase().contains(input)) {
+        else if (project.getManager().toLowerCase().contains(input)) {
             return true;
         }
         else if (project.getDescription().toLowerCase().contains(input)) {
