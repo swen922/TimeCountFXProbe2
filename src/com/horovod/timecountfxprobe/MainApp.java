@@ -114,8 +114,9 @@ public class MainApp extends Application {
         }
     }
 
-    public void showEditProjectWindow(int projectIDnumber) {
+    public synchronized void showEditProjectWindow(int projectIDnumber) {
         try {
+            AllData.IDnumberForEditProject = projectIDnumber;
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/EditProjectWindow.fxml"));
             AnchorPane editWindow = (AnchorPane) loader.load();
@@ -158,6 +159,31 @@ public class MainApp extends Application {
             controller.setEditProjectWindowController(editProjectWindowController);
 
             addWorkStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showSaveProjectChangesDialog(Stage editProjectStage, EditProjectWindowController editProjectWindowController, int projectIDnumber) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/SaveProjectChangesDialog.fxml"));
+            AnchorPane savePane = (AnchorPane) loader.load();
+
+            Stage saveStage = new Stage();
+            saveStage.setTitle("Пааагодь!");
+            saveStage.initOwner(editProjectStage);
+            saveStage.initModality(Modality.WINDOW_MODAL);
+
+            Scene scene = new Scene(savePane);
+            saveStage.setScene(scene);
+            SaveProjectChangesDialogController controller = loader.getController();
+            controller.setMyStage(saveStage);
+            controller.setEditProjectStage(editProjectStage);
+            controller.setEditProjectWindowController(editProjectWindowController);
+            controller.setProjectIDnumber(projectIDnumber);
+
+            saveStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -277,12 +303,6 @@ public class MainApp extends Application {
         }
     }
 
-    public void showSaveProjectChangesDialog() {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MainApp.class.getResource("view/SaveProjectChangeDialog.fxml"));
-        AnchorPane savePane = (AnchorPane) loader.load();
 
-        Stage saveStage = new Stage();
-    }
 
 }

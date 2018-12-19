@@ -54,7 +54,6 @@ public class EditProjectWindowController {
     private List<Integer> des = new ArrayList<>();
 
     private boolean isChanged = false;
-    private List<Node> changedFields = new ArrayList<>();
     private Map<Node, String> textAreas = new HashMap<>();
 
 
@@ -72,6 +71,7 @@ public class EditProjectWindowController {
 
     @FXML
     private CheckBox archiveCheckBox;
+
 
 
     @FXML
@@ -94,6 +94,7 @@ public class EditProjectWindowController {
 
     @FXML
     private TextField pathToFolderTextField;
+
 
 
     @FXML
@@ -126,7 +127,6 @@ public class EditProjectWindowController {
     @FXML
     private Button saveAndCloseButton;
 
-
     @FXML
     private TableView<WorkDay> workTimeTableView;
 
@@ -157,11 +157,12 @@ public class EditProjectWindowController {
         this.myStage = myStage;
     }
 
+
     @FXML
     private void initialize() {
 
         if (myProject == null) {
-            myProject = AllData.getAnyProject(AllData.tableProjectsManagerController.getIDnumberForEditProject());
+            myProject = AllData.getAnyProject(AllData.IDnumberForEditProject);
         }
 
         // id-номер проекта
@@ -377,7 +378,7 @@ public class EditProjectWindowController {
         String startPath = "/Volumes/design/";
         String path;
         if (myProject.getFolderPath() != null) {
-            path = myProject.getFolderPath();
+            path = "/Volumes/" + myProject.getFolderPath();
 
             try {
                 Desktop.getDesktop().browseFileDirectory(new File(path));
@@ -522,6 +523,29 @@ public class EditProjectWindowController {
 
             try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 
+
+
+                StringBuilder sb = new StringBuilder("Проект id-").append(myProject.getIdNumber()).append("\n\n");
+
+                String[] descr = myProject.getDescription().split(" - ");
+
+                sb.append("Описание: ");
+
+                for (String s : descr) {
+                    sb.append(s).append("\n");
+                }
+
+                //sb.append("Описание: ").append(myProject.getDescription()).append("\n");
+
+                sb.append("\nСтатус: ").append(myProject.isArchive() ? "Архивный\n" : "Активный\n");
+                sb.append("Компания: ").append(myProject.getCompany()).append("\n");
+                sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
+                sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
+                sb.append("Связанные проекты: ").append(myProject.getLinkedProjects() == null ? "нет" : myProject.getLinkedProjects().isEmpty() ? "нет" : myProject.getLinkedProjects()).append("\n");
+                sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
+
+                writer.write(sb.toString());
+
                 writer.write("Дата" + "\t");
 
                 // Заголовок таблицы
@@ -629,8 +653,26 @@ public class EditProjectWindowController {
 
             try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 
+                StringBuilder sb = new StringBuilder("Проект id-").append(myProject.getIdNumber()).append("\n\n");
+
+                String[] descr = myProject.getDescription().split(" - ");
+
+                sb.append("Описание: ");
+
+                for (String s : descr) {
+                    sb.append(s).append("\n");
+                }
+
+                sb.append("\nСтатус: ").append(myProject.isArchive() ? "Архивный\n" : "Активный\n");
+                sb.append("Компания: ").append(myProject.getCompany()).append("\n");
+                sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
+                sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
+                sb.append("Связанные проекты: ").append(myProject.getLinkedProjects() == null ? "нет" : myProject.getLinkedProjects().isEmpty() ? "нет" : myProject.getLinkedProjects()).append("\n");
+                sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
+
+                writer.write(sb.toString());
+
                 writer.write("Рабочее время по проекту id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()) + "\n");
-                writer.write("\n");
                 writer.write("\n");
 
                 for (WorkDay wd : workDaysList) {
@@ -796,10 +838,20 @@ public class EditProjectWindowController {
     public void handleSaveAndCloseButton() {
         handleSaveButton();
         myStage.close();
+        AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+        AllData.openEditProjectStages.remove(myProject.getIdNumber());
     }
 
     public void handleCloseButton() {
 
+        if (!isChanged) {
+            myStage.close();
+            AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+        }
+        else {
+            mainApp.showSaveProjectChangesDialog(myStage, this, myProject.getIdNumber());
+        }
     }
 
 

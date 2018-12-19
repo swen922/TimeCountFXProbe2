@@ -48,7 +48,6 @@ public class TableProjectsManagerController {
 
     private MainApp mainApp;
     private Stage stage;
-    private int IDnumberForEditProject;
 
     private ObservableList<Map.Entry<Integer, Project>> showProjects;
     private FilteredList<Map.Entry<Integer, Project>> filterData;
@@ -108,13 +107,16 @@ public class TableProjectsManagerController {
     private Label aboutProgramLabel;
 
     @FXML
+    private Button exportButton;
+
+    @FXML
+    private ChoiceBox<String> exportChoiceBox;
+
+    @FXML
     private ChoiceBox<String> usersLoggedChoiceBox;
 
     @FXML
     private Label statusLabel;
-
-    @FXML
-    private Button exportToCSVButton;
 
 
 
@@ -175,13 +177,6 @@ public class TableProjectsManagerController {
         return filterField;
     }
 
-    public int getIDnumberForEditProject() {
-        return IDnumberForEditProject;
-    }
-
-    public void setIDnumberForEditProject(int IDnumberForEditProject) {
-        this.IDnumberForEditProject = IDnumberForEditProject;
-    }
 
     class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
         private final Button openFolderButton = new Button("Туда");
@@ -254,8 +249,6 @@ public class TableProjectsManagerController {
                 manageButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-
-                        setIDnumberForEditProject(entry.getKey());
 
                         if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
                             mainApp.showEditProjectWindow(entry.getKey());
@@ -903,6 +896,8 @@ public class TableProjectsManagerController {
     }
 
 
+
+
     public void writeCSV() {
 
         FileChooser chooser = new FileChooser();
@@ -946,6 +941,60 @@ public class TableProjectsManagerController {
                 ex.printStackTrace();
             }
         }
+    }
+
+    public void writeText() {
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+        chooser.getExtensionFilters().add(extFilter);
+
+        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+        chooser.setInitialDirectory(new File(path));
+
+        StringBuilder fileName = new StringBuilder("Рабочее время за ");
+        if (fromDatePicker.getValue().equals(tillDatePicker.getValue())) {
+            fileName.append(AllData.formatDate(fromDatePicker.getValue()));
+        }
+        else {
+            fileName.append("период c ").append(AllData.formatDate(fromDatePicker.getValue())).append(" по ").
+                    append(AllData.formatDate(tillDatePicker.getValue()));
+        }
+
+        chooser.setInitialFileName(fileName.toString());
+
+        File file = chooser.showSaveDialog(stage);
+
+        if (file != null) {
+            if (!file.getPath().endsWith(".txt")) {
+                file = new File(file.getPath() + ".txt");
+            }
+        }
+
+        if (file != null) {
+            try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                StringBuilder sb = new StringBuilder(fileName).append("\n\n");
+                int counter = 0;
+
+                for (Map.Entry<Integer, Project> entry : sortedList) {
+                    sb.append("Проект id-").append(entry.getKey()).append("\n");
+                    for (WorkTime wt : entry.getValue().getWork()) {
+                        sb.append(AllUsers.getOneUser(wt.getDesignerID()).getFullName());
+                        sb.append(" = ").append(wt.getTimeDouble()).append("\n");
+                        counter += wt.getTime();
+                    }
+                    sb.append("\n\n");
+                }
+                sb.append("\n\n");
+                sb.append("Итого за указанный период = ").append(counter);
+
+            }
+
+
+
+        }
+
     }
 
 

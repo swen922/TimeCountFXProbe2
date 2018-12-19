@@ -19,6 +19,12 @@ public class TestBackgroundUpdate01 {
                 if (AllData.getTableProjectsDesignerController() != null) {
                     AllData.getTableProjectsDesignerController().initialize();
                 }
+                if (AllData.tableProjectsManagerController != null) {
+                    AllData.tableProjectsManagerController.initialize();
+                }
+                if (AllData.editProjectWindowControllers.get(12) != null) {
+                    AllData.editProjectWindowControllers.get(12).initializeTable();
+                }
 
             }
         };
@@ -39,6 +45,12 @@ public class TestBackgroundUpdate01 {
 
                 if (AllData.getTableProjectsDesignerController() != null) {
                     AllData.getTableProjectsDesignerController().initialize();
+                }
+                if (AllData.tableProjectsManagerController != null) {
+                    AllData.tableProjectsManagerController.initialize();
+                }
+                if (AllData.editProjectWindowControllers.get(12) != null) {
+                    AllData.editProjectWindowControllers.get(12).initializeTable();
                 }
             }
         };

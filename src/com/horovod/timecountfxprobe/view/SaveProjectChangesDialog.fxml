@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="120.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.AddWorkDayDialogController">
+<AnchorPane prefHeight="120.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.SaveProjectChangesDialogController">
     <children>
         <Label alignment="CENTER" contentDisplay="CENTER" layoutX="101.0" layoutY="36.0" text="В текст полей внесены изменения." textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
             <font>
@@ -20,9 +20,9 @@
       </Label>
         <HBox alignment="CENTER" layoutX="183.0" layoutY="101.0" prefHeight="40.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="70.0">
             <children>
-                <Button mnemonicParsing="false" onAction="#handleCancelButton" text="Вернуться обратно" />
-            <Button mnemonicParsing="false" onAction="#handleCancelButton" text="Не сохранять" />
-                <Button mnemonicParsing="false" onAction="#handleOKButton" text="Сохранить" />
+                <Button fx:id="returnButton" mnemonicParsing="false" onAction="#handleReturnButton" text="Вернуться обратно" />
+            <Button fx:id="dontSaveButton" mnemonicParsing="false" onAction="#handleDontSaveButton" text="Не сохранять" />
+                <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveButton" text="Сохранить" />
             </children>
         </HBox>
     </children>

@@ -72,8 +72,8 @@ public class AllData {
 
     public static TableProjectsManagerController tableProjectsManagerController;
     public static Map<Integer, Stage> openEditProjectStages = new HashMap<>();
-    //public static EditProjectWindowController editProjectWindowController;
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new HashMap();
+    public static volatile int IDnumberForEditProject;
 
 
 

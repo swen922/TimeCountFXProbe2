@@ -118,7 +118,7 @@
                   <Button fx:id="revertButton" mnemonicParsing="false" onAction="#handleRevertButton" text="Вернуть как было" />
                   <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveButton" text="Сохранить " />
                   <Button fx:id="saveAndCloseButton" mnemonicParsing="false" onAction="#handleSaveAndCloseButton" text="Сохранить и закрыть" />
-                  <Button fx:id="closeButton" mnemonicParsing="false" text="Закрыть" />
+                  <Button fx:id="closeButton" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" />
                </children>
             </HBox>
          </children>
