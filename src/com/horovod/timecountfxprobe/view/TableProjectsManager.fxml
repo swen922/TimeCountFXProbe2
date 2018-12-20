@@ -231,8 +231,8 @@
       </TableView>
       <HBox prefHeight="25.0" prefWidth="350.0" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
          <children>
-            <Button fx:id="exportButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" minWidth="70.0" mnemonicParsing="false" text="Экспорт" textAlignment="CENTER" />
-            <ChoiceBox prefWidth="250.0" />
+            <Button fx:id="exportButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" minWidth="70.0" mnemonicParsing="false" onAction="#handleExportButton" text="Экспорт" textAlignment="CENTER" />
+            <ChoiceBox fx:id="exportChoiceBox" prefWidth="250.0" />
          </children>
       </HBox>
       <AnchorPane layoutX="63.0" layoutY="682.0" prefHeight="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="350.0">

@@ -3,6 +3,7 @@ package com.horovod.timecountfxprobe.view;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
+import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
@@ -178,198 +179,6 @@ public class TableProjectsManagerController {
     }
 
 
-    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
-        private final Button openFolderButton = new Button("Туда");
-        private final Button manageButton = new Button("Инфо");
-        private final CheckBox archiveCheckBox = new CheckBox("Архивный");
-        private final Button deleteButton = new Button("X");
-
-        String startPath = "/Volumes/design/";
-
-        @Override
-        protected void updateItem(Boolean item, boolean empty) {
-            if (empty) {
-                setGraphic(null);
-            }
-            else {
-
-                Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
-
-                if (entry.getValue().isArchive()) {
-                    archiveCheckBox.setSelected(true);
-                    setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                }
-                else {
-                    archiveCheckBox.setSelected(false);
-                    setStyle(null);
-                }
-
-
-                openFolderButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-
-                        String path;
-                        if (entry.getValue().getFolderPath() != null) {
-                            path = entry.getValue().getFolderPath();
-
-                            try {
-                                Desktop.getDesktop().browseFileDirectory(new File(path));
-                            } catch (Exception e) {
-                                String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
-                                path = startPath + entry.getValue().getCompany() + "/" + projectName;
-                                try {
-                                    Desktop.getDesktop().browseFileDirectory(new File(path));
-                                } catch (Exception e1) {
-                                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                                    alert.setTitle("Не удалось открыть папку");
-                                    alert.setHeaderText("Не удалось открыть папку");
-                                    alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + entry.getKey());
-                                    alert.showAndWait();
-                                }
-                            }
-
-                        }
-                        else {
-                            String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
-                            path = startPath + entry.getValue().getCompany() + "/" + projectName;
-                            try {
-                                Desktop.getDesktop().browseFileDirectory(new File(path));
-                            } catch (Exception e1) {
-                                Alert alert = new Alert(Alert.AlertType.WARNING);
-                                alert.setTitle("Не удалось открыть папку");
-                                alert.setHeaderText("Не удалось открыть папку");
-                                alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + entry.getKey());
-                                alert.showAndWait();
-                            }
-                        }
-                    }
-                });
-
-                manageButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-
-                        if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
-                            mainApp.showEditProjectWindow(entry.getKey());
-
-                        }
-                        else {
-                            AllData.openEditProjectStages.get(entry.getKey()).close();
-                            AllData.openEditProjectStages.get(entry.getKey()).show();
-                        }
-                    }
-                });
-
-
-                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-
-                        if (archiveCheckBox.isSelected()) {
-                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                            alert.setTitle("Подтверждение перевода в архив");
-                            alert.setHeaderText("Перевести проект id-" + entry.getKey() + " в архив?");
-
-                            Optional<ButtonType> option = alert.showAndWait();
-
-                            if (option.get() == ButtonType.OK) {
-                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
-                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                            }
-                            else {
-                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
-                                setStyle(null);
-                            }
-                        }
-                        else {
-                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                            alert.setTitle("Подтверждение вывода из архива");
-                            alert.setHeaderText("Вывести проект id-" + entry.getKey() + " из архива?");
-
-                            Optional<ButtonType> option = alert.showAndWait();
-
-                            if (option.get() == ButtonType.OK) {
-                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
-                                setStyle(null);
-                            }
-                            else if (option.get() == ButtonType.CANCEL) {
-                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
-                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                            }
-                        }
-                        handleFilters();
-                        initialize();
-                    }
-                });
-
-                deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setTitle("Подтверждение удаления");
-                        alert.setHeaderText("Удалить проект id-" + entry.getKey() + "?");
-                        alert.setContentText("Проект и все рабочее время по нему\nбудут удалены из системы.\nЭто действие нельзя отменить.");
-
-                        Optional<ButtonType> option = alert.showAndWait();
-
-                        if (option.get() == ButtonType.OK) {
-                            AllData.deleteProject(entry.getKey());
-                            handleFilters();
-                            initialize();
-                        }
-                    }
-                });
-
-                HBox hbox = new HBox();
-                hbox.getChildren().addAll(openFolderButton, manageButton, archiveCheckBox, deleteButton);
-                hbox.setAlignment(Pos.CENTER);
-                hbox.setSpacing(15);
-                setGraphic(hbox);
-            }
-        }
-
-
-        {
-
-            openFolderButton.setMinHeight(20);
-            openFolderButton.setMaxHeight(20);
-            openFolderButton.setStyle("-fx-font-size:10");
-
-            manageButton.setMinHeight(20);
-            manageButton.setMaxHeight(20);
-            manageButton.setStyle("-fx-font-size:10");
-
-            archiveCheckBox.setStyle("-fx-font-size:10");
-
-            deleteButton.setMinHeight(20);
-            deleteButton.setMaxHeight(20);
-            deleteButton.setStyle("-fx-font-size:10");
-        }
-
-    }
-
-
-    /*class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
-
-        @Override
-        protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
-            if (item == null) {
-                //setStyle("-fx-background-color: transparent;");
-                setStyle(null);
-                return;
-            }
-            if (item.getValue().isArchive()) {
-                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-            }
-            else {
-                //setStyle("-fx-background-color: transparent;");
-                setStyle(null);
-            }
-        }
-    }*/
-
-
     @FXML
     public void initialize() {
 
@@ -501,7 +310,11 @@ public class TableProjectsManagerController {
 
         initializeChart();
         initLoggedUsersChoiceBox();
+        initExportChoiceBox();
+
     }
+
+
 
     public void sortTableProjects() {
 
@@ -895,10 +708,26 @@ public class TableProjectsManagerController {
                 };*/
     }
 
+    public void initExportChoiceBox() {
+        if (exportChoiceBox.getItems().isEmpty()) {
+            exportChoiceBox.getItems().add("Время в TXT");
+            exportChoiceBox.getItems().add("Таблицу в CSV");
+            exportChoiceBox.setValue("Время в TXT");
+        }
+    }
 
 
+    public void handleExportButton() {
+        if (exportChoiceBox.getValue().equals("Время в TXT")) {
+            writeText();
+        }
+        else {
+            writeCSV();
+        }
+    }
 
-    public void writeCSV() {
+
+    private void writeCSV() {
 
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
@@ -906,8 +735,23 @@ public class TableProjectsManagerController {
 
         String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
         chooser.setInitialDirectory(new File(path));
-        String fileName = "Все проекты " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
-        chooser.setInitialFileName(fileName);
+
+
+        StringBuilder fileName = new StringBuilder("Рабочее время за ");
+
+        if (fromDatePicker.getValue() == null || tillDatePicker.getValue() == null) {
+            fileName.append("весь период");
+        }
+        else if (fromDatePicker.getValue().equals(tillDatePicker.getValue())) {
+            fileName.append(AllData.formatDate(fromDatePicker.getValue()));
+        }
+        else {
+            fileName.append("период c ").append(AllData.formatDate(fromDatePicker.getValue())).append(" по ").
+                    append(AllData.formatDate(tillDatePicker.getValue()));
+        }
+
+
+        chooser.setInitialFileName(fileName.toString());
 
         File file = chooser.showSaveDialog(stage);
 
@@ -934,7 +778,7 @@ public class TableProjectsManagerController {
                     writer.write(s);
                     counter += entry.getValue().getWorkSum();
                 }
-                writer.write("Итого:" + "\t" + AllData.intToDouble(counter) + "\n");
+                writer.write("\nИтого:" + "\t" + AllData.intToDouble(counter) + "\n");
                 writer.flush();
             }
             catch (Exception ex) {
@@ -943,7 +787,7 @@ public class TableProjectsManagerController {
         }
     }
 
-    public void writeText() {
+    private void writeText() {
 
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
@@ -952,8 +796,14 @@ public class TableProjectsManagerController {
         String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
         chooser.setInitialDirectory(new File(path));
 
+
+
         StringBuilder fileName = new StringBuilder("Рабочее время за ");
-        if (fromDatePicker.getValue().equals(tillDatePicker.getValue())) {
+
+        if (fromDatePicker.getValue() == null || tillDatePicker.getValue() == null) {
+            fileName.append("весь период");
+        }
+        else if (fromDatePicker.getValue().equals(tillDatePicker.getValue())) {
             fileName.append(AllData.formatDate(fromDatePicker.getValue()));
         }
         else {
@@ -974,25 +824,54 @@ public class TableProjectsManagerController {
         if (file != null) {
             try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 
-                StringBuilder sb = new StringBuilder(fileName).append("\n\n");
+                StringBuilder sb = new StringBuilder(fileName).append("\n\n\n");
                 int counter = 0;
 
                 for (Map.Entry<Integer, Project> entry : sortedList) {
-                    sb.append("Проект id-").append(entry.getKey()).append("\n");
-                    for (WorkTime wt : entry.getValue().getWork()) {
-                        sb.append(AllUsers.getOneUser(wt.getDesignerID()).getFullName());
-                        sb.append(" = ").append(wt.getTimeDouble()).append("\n");
-                        counter += wt.getTime();
+                    if (entry.getValue().containsWorkTime()) {
+                        sb.append(entry.getValue().getDescription().split(" - ")[0].trim());
+                        sb.append(" id-").append(entry.getKey()).append("\n\n");
+
+                        List<WorkTime> listWorks;
+
+                        if (fromDatePicker.getValue() == null || tillDatePicker.getValue() == null) {
+                            listWorks = entry.getValue().getWork();
+                        }
+                        else if (fromDatePicker.getValue().equals(tillDatePicker.getValue())) {
+                            listWorks = entry.getValue().getWorkTimeForDate(fromDatePicker.getValue());
+                        }
+                        else {
+                            listWorks = entry.getValue().getWorkTimeForPeriod(fromDatePicker.getValue(), tillDatePicker.getValue());
+                        }
+
+                        List<WorkDay> workDays = AllData.convertWorkTimesToWorkDays(listWorks);
+
+                        for (WorkDay wd : workDays) {
+
+                            sb.append(wd.getDateString()).append("\n");
+
+                            for (Map.Entry<Integer, Double> e : wd.getWorkTimeMap().entrySet()) {
+                                sb.append(AllUsers.getOneUser(e.getKey()).getFullName()).append(" = ");
+                                sb.append(AllData.formatWorkTime(e.getValue())).append(" ");
+                                sb.append(AllData.formatHours(String.valueOf(e.getValue()))).append("\n");
+                                counter += AllData.doubleToInt(e.getValue());
+                            }
+                            sb.append("\n");
+                        }
+                        sb.append("\n\n");
                     }
-                    sb.append("\n\n");
                 }
-                sb.append("\n\n");
-                sb.append("Итого за указанный период = ").append(counter);
+                sb.append("\n");
+                sb.append("Итого за указанный период = ").append(AllData.formatWorkTime(AllData.intToDouble(counter)));
+                sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(counter)))).append("\n\n");
 
+                writer.write(sb.toString());
+                writer.flush();
+                System.out.println(sb.toString());
             }
-
-
-
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
     }
@@ -1029,5 +908,197 @@ public class TableProjectsManagerController {
 
         //AllData.addWorkTime(12, LocalDate.now(),5, 20);
     }
+
+
+    class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
+        private final Button openFolderButton = new Button("Туда");
+        private final Button manageButton = new Button("Инфо");
+        private final CheckBox archiveCheckBox = new CheckBox("Архивный");
+        private final Button deleteButton = new Button("X");
+
+        String startPath = "/Volumes/design/";
+
+        @Override
+        protected void updateItem(Boolean item, boolean empty) {
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+
+                Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
+
+                if (entry.getValue().isArchive()) {
+                    archiveCheckBox.setSelected(true);
+                    setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                }
+                else {
+                    archiveCheckBox.setSelected(false);
+                    setStyle(null);
+                }
+
+
+                openFolderButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        String path;
+                        if (entry.getValue().getFolderPath() != null) {
+                            path = entry.getValue().getFolderPath();
+
+                            try {
+                                Desktop.getDesktop().browseFileDirectory(new File(path));
+                            } catch (Exception e) {
+                                String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
+                                path = startPath + entry.getValue().getCompany() + "/" + projectName;
+                                try {
+                                    Desktop.getDesktop().browseFileDirectory(new File(path));
+                                } catch (Exception e1) {
+                                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                                    alert.setTitle("Не удалось открыть папку");
+                                    alert.setHeaderText("Не удалось открыть папку");
+                                    alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + entry.getKey());
+                                    alert.showAndWait();
+                                }
+                            }
+
+                        }
+                        else {
+                            String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
+                            path = startPath + entry.getValue().getCompany() + "/" + projectName;
+                            try {
+                                Desktop.getDesktop().browseFileDirectory(new File(path));
+                            } catch (Exception e1) {
+                                Alert alert = new Alert(Alert.AlertType.WARNING);
+                                alert.setTitle("Не удалось открыть папку");
+                                alert.setHeaderText("Не удалось открыть папку");
+                                alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + entry.getKey());
+                                alert.showAndWait();
+                            }
+                        }
+                    }
+                });
+
+                manageButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
+                            mainApp.showEditProjectWindow(entry.getKey());
+
+                        }
+                        else {
+                            AllData.openEditProjectStages.get(entry.getKey()).close();
+                            AllData.openEditProjectStages.get(entry.getKey()).show();
+                        }
+                    }
+                });
+
+
+                archiveCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        if (archiveCheckBox.isSelected()) {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Подтверждение перевода в архив");
+                            alert.setHeaderText("Перевести проект id-" + entry.getKey() + " в архив?");
+
+                            Optional<ButtonType> option = alert.showAndWait();
+
+                            if (option.get() == ButtonType.OK) {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
+                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                            }
+                            else {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
+                                setStyle(null);
+                            }
+                        }
+                        else {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Подтверждение вывода из архива");
+                            alert.setHeaderText("Вывести проект id-" + entry.getKey() + " из архива?");
+
+                            Optional<ButtonType> option = alert.showAndWait();
+
+                            if (option.get() == ButtonType.OK) {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
+                                setStyle(null);
+                            }
+                            else if (option.get() == ButtonType.CANCEL) {
+                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
+                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                            }
+                        }
+                        handleFilters();
+                        initialize();
+                    }
+                });
+
+                deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setTitle("Подтверждение удаления");
+                        alert.setHeaderText("Удалить проект id-" + entry.getKey() + "?");
+                        alert.setContentText("Проект и все рабочее время по нему\nбудут удалены из системы.\nЭто действие нельзя отменить.");
+
+                        Optional<ButtonType> option = alert.showAndWait();
+
+                        if (option.get() == ButtonType.OK) {
+                            AllData.deleteProject(entry.getKey());
+                            handleFilters();
+                            initialize();
+                        }
+                    }
+                });
+
+                HBox hbox = new HBox();
+                hbox.getChildren().addAll(openFolderButton, manageButton, archiveCheckBox, deleteButton);
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(15);
+                setGraphic(hbox);
+            }
+        }
+
+
+        {
+
+            openFolderButton.setMinHeight(20);
+            openFolderButton.setMaxHeight(20);
+            openFolderButton.setStyle("-fx-font-size:10");
+
+            manageButton.setMinHeight(20);
+            manageButton.setMaxHeight(20);
+            manageButton.setStyle("-fx-font-size:10");
+
+            archiveCheckBox.setStyle("-fx-font-size:10");
+
+            deleteButton.setMinHeight(20);
+            deleteButton.setMaxHeight(20);
+            deleteButton.setStyle("-fx-font-size:10");
+        }
+
+    }
+
+
+    /*class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
+
+        @Override
+        protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
+            if (item == null) {
+                //setStyle("-fx-background-color: transparent;");
+                setStyle(null);
+                return;
+            }
+            if (item.getValue().isArchive()) {
+                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+            }
+            else {
+                //setStyle("-fx-background-color: transparent;");
+                setStyle(null);
+            }
+        }
+    }*/
 
 }

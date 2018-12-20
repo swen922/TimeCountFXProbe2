@@ -751,6 +751,31 @@ public class AllData {
         return oldText;
     }
 
+    public static List<WorkDay> convertWorkTimesToWorkDays(List<WorkTime> workTimeList) {
+        List<WorkDay> result = new ArrayList<>();
+        if (workTimeList == null || workTimeList.isEmpty()) {
+            return result;
+        }
+
+        Map<LocalDate, WorkDay> sortedMap = new TreeMap<>(Collections.reverseOrder());
+        for (WorkTime wt : workTimeList) {
+            if (sortedMap.containsKey(wt.getDate())) {
+                WorkDay workDay = sortedMap.get(wt.getDate());
+                workDay.addWorkTime(wt.getDesignerID(), wt.getTimeDouble());
+                sortedMap.put(wt.getDate(), workDay);
+            }
+            else {
+                WorkDay workDay = new WorkDay(wt.getDate());
+                workDay.addWorkTime(wt.getDesignerID(), wt.getTimeDouble());
+                sortedMap.put(wt.getDate(), workDay);
+            }
+        }
+        if (!sortedMap.isEmpty()) {
+            result.addAll(sortedMap.values());
+        }
+        return result;
+    }
+
 
 
     /** Форматировщик даты.
