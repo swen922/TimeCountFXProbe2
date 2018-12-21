@@ -751,6 +751,21 @@ public class AllData {
         return oldText;
     }
 
+    public static String formatStringInputInteger(String oldText, String input) {
+
+        Integer newInt = null;
+        try {
+            newInt = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return oldText;
+        }
+        if (newInt != null) {
+            return String.valueOf(newInt);
+        }
+
+        return oldText;
+    }
+
     public static List<WorkDay> convertWorkTimesToWorkDays(List<WorkTime> workTimeList) {
         List<WorkDay> result = new ArrayList<>();
         if (workTimeList == null || workTimeList.isEmpty()) {

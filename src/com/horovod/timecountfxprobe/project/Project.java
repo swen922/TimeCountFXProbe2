@@ -32,7 +32,8 @@ public class Project {
     private StringProperty PONumberProperty;
     private volatile int workSum = 0;
     private volatile StringProperty workSumProperty;
-    //private DoubleProperty workSumProperty;
+    private int budget = 0;
+    private StringProperty budgetProperty;
     private List<WorkTime> work = new ArrayList<>();
 
 
@@ -87,7 +88,6 @@ public class Project {
 
     public synchronized void setIdNumber(int newIdNumber) {
         this.idNumber = newIdNumber;
-        //this.idNumberProperty.set(String.valueOf(idNumber));
         this.idNumberProperty.set(newIdNumber);
     }
 
@@ -261,7 +261,7 @@ public class Project {
 
     protected synchronized void setWorkSumDouble(double newWorkSumDouble) {
         if (newWorkSumDouble <= 0) {
-            setWorkSum(0);
+            this.workSum = 0;
         }
         else {
             this.workSum = AllData.doubleToInt(newWorkSumDouble);
@@ -280,8 +280,29 @@ public class Project {
 
     public synchronized void setWorkSumProperty(String workSumProperty) {
         this.workSumProperty.set(workSumProperty);
-        //this.workSumProperty = new SimpleStringProperty(workSumProperty);
     }
+
+
+
+    @XmlElement(name = "projectbudget")
+    public int getBudget() {
+        return budget;
+    }
+
+    public synchronized void setBudget(int budget) {
+        this.budget = budget;
+        if (this.budgetProperty == null) {
+            this.budgetProperty = new SimpleStringProperty();
+        }
+        this.budgetProperty.set(String.valueOf(budget));
+    }
+
+    public StringProperty budgetProperty() {
+        return budgetProperty;
+    }
+
+
+
 
     @XmlElement(name = "listworks")
     public List<WorkTime> getWork() {

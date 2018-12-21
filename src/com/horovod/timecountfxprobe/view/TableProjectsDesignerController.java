@@ -216,7 +216,26 @@ public class TableProjectsDesignerController {
             }
         });
 
+        columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
+                double newTimeDouble = Double.parseDouble(event.getNewValue());
+
+                Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
+                AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
+
+                // код для мгновенного обновления страниц у менеджера
+                if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
+                    AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                }
+
+                filterField.setText("-");
+                filterField.clear();
+            }
+        });
+
         columnTime.setStyle("-fx-alignment: CENTER;");
+
 
         columnCompany.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
@@ -267,23 +286,7 @@ public class TableProjectsDesignerController {
         filterDataWrapper.setPredicate(filterPredicate);
 
 
-        columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
-            @Override
-            public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
-                double newTimeDouble = Double.parseDouble(event.getNewValue());
 
-                Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
-                AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
-
-                // код для мгновенного обновления страниц у менеджера
-                if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
-                    AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
-                }
-
-                filterField.setText("-");
-                filterField.clear();
-            }
-        });
 
         SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
             @Override

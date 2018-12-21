@@ -12,6 +12,8 @@ import com.horovod.timecountfxprobe.user.User;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,6 +29,8 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -140,6 +144,9 @@ public class TableProjectsManagerController {
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnManager;
+
+    @FXML
+    private TableColumn<Map.Entry<Integer, Project>, String> columnBudget;
 
     @FXML
     private TableColumn<Map.Entry<Integer, Project>, String> columnPOnumber;
@@ -280,12 +287,72 @@ public class TableProjectsManagerController {
 
         columnManager.setStyle("-fx-alignment: CENTER;");
 
+
+
+        columnBudget.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
+                return param.getValue().getValue().budgetProperty();
+            }
+        });
+
+        Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsManagerController.EditingCell();
+
+        columnBudget.setCellFactory(cellFactory);
+
+        columnBudget.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
+
+                Integer budget = null;
+                try {
+                    budget = Integer.parseInt(event.getNewValue());
+                } catch (NumberFormatException e) {
+                    return;
+                }
+                Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
+                project.setBudget(budget);
+
+                // код для мгновенного обновления страниц у менеджера
+                if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
+                    AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                }
+
+                filterField.setText("-");
+                filterField.clear();
+            }
+        });
+
+        columnBudget.setStyle("-fx-alignment: CENTER;");
+
+
+
         columnPOnumber.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
                 return param.getValue().getValue().PONumberProperty();
             }
         });
+
+        Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactoryString =
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsManagerController.EditingCellString();
+
+        columnPOnumber.setCellFactory(cellFactoryString);
+
+        columnPOnumber.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
+                Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
+                project.setPONumber(event.getNewValue());
+            }
+        });
+
+        columnPOnumber.setStyle("-fx-alignment: CENTER;");
+
+
+
+
 
         columnDescription.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
@@ -787,6 +854,8 @@ public class TableProjectsManagerController {
         }
     }
 
+
+
     private void writeText() {
 
         FileChooser chooser = new FileChooser();
@@ -811,6 +880,10 @@ public class TableProjectsManagerController {
                     append(AllData.formatDate(tillDatePicker.getValue()));
         }
 
+        if (filterField.getText() != null && !filterField.getText().isEmpty()) {
+            fileName.append(" согласно выборке");
+        }
+
         chooser.setInitialFileName(fileName.toString());
 
         File file = chooser.showSaveDialog(stage);
@@ -831,6 +904,7 @@ public class TableProjectsManagerController {
                     if (entry.getValue().containsWorkTime()) {
                         sb.append(entry.getValue().getDescription().split(" - ")[0].trim());
                         sb.append(" id-").append(entry.getKey()).append("\n\n");
+                        int projectCounter = 0;
 
                         List<WorkTime> listWorks;
 
@@ -848,6 +922,7 @@ public class TableProjectsManagerController {
 
                         for (WorkDay wd : workDays) {
 
+                            int workdayCounter = 0;
                             sb.append(wd.getDateString()).append("\n");
 
                             for (Map.Entry<Integer, Double> e : wd.getWorkTimeMap().entrySet()) {
@@ -855,19 +930,30 @@ public class TableProjectsManagerController {
                                 sb.append(AllData.formatWorkTime(e.getValue())).append(" ");
                                 sb.append(AllData.formatHours(String.valueOf(e.getValue()))).append("\n");
                                 counter += AllData.doubleToInt(e.getValue());
+                                projectCounter += AllData.doubleToInt(e.getValue());
+                                workdayCounter += AllData.doubleToInt(e.getValue());
                             }
-                            sb.append("\n");
+
+                            if (wd.getWorkTimeMap().entrySet().size() > 1) {
+                                sb.append("Итого за ").append(wd.getDateString()).append(" = ");
+                                sb.append(AllData.formatWorkTime(AllData.intToDouble(workdayCounter))).append(" ");
+                                sb.append(AllData.formatHours(String.valueOf(AllData.intToDouble(workdayCounter)))).append("\n");
+                            }
+
                         }
+                        sb.append("\n");
+                        sb.append("Итого в данном проекте = ").append(AllData.formatWorkTime(AllData.intToDouble(projectCounter)));
+                        sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(projectCounter)))).append("\n\n");
                         sb.append("\n\n");
                     }
                 }
                 sb.append("\n");
-                sb.append("Итого за указанный период = ").append(AllData.formatWorkTime(AllData.intToDouble(counter)));
+                sb.append("Итого в данной выборке = ").append(AllData.formatWorkTime(AllData.intToDouble(counter)));
                 sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(counter)))).append("\n\n");
+                sb.append("файл сохранен ").append(AllData.formatDate(LocalDate.now())).append("\n\n");
 
                 writer.write(sb.toString());
                 writer.flush();
-                System.out.println(sb.toString());
             }
             catch (Exception ex) {
                 ex.printStackTrace();
@@ -1100,5 +1186,187 @@ public class TableProjectsManagerController {
             }
         }
     }*/
+
+    class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
+
+        private TextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+
+            super.updateItem(item, empty);
+            if (empty) {
+
+                setText(null);
+                setGraphic(null);
+            }
+            else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            String oldText = getString();
+            textField = new TextField(oldText);
+            textField.setAlignment(Pos.CENTER);
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    KeyCode keyCode = event.getCode();
+                    if (keyCode == KeyCode.ENTER) {
+                        commitEdit(AllData.formatStringInputInteger(oldText, textField.getText()));
+                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
+                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        //initialize();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue) {
+                        commitEdit(AllData.formatStringInputInteger(oldText, textField.getText()));
+                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
+                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        //initialize();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            TableProjectsManagerController.EditingCell.this.textField.selectAll();
+
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    } // Конец класса EditingCell
+
+
+
+    class EditingCellString extends TableCell<Map.Entry<Integer, Project>, String> {
+
+        private TextField textField;
+
+        public EditingCellString() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+
+            super.updateItem(item, empty);
+            if (empty) {
+
+                setText(null);
+                setGraphic(null);
+            }
+            else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            String oldText = getString();
+            textField = new TextField(oldText);
+            textField.setAlignment(Pos.CENTER);
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    KeyCode keyCode = event.getCode();
+                    if (keyCode == KeyCode.ENTER) {
+                        commitEdit(textField.getText());
+                        TableProjectsManagerController.EditingCellString.this.getTableView().requestFocus();
+                        TableProjectsManagerController.EditingCellString.this.getTableView().getSelectionModel().selectAll();
+                        //initialize();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue) {
+                        commitEdit(textField.getText());
+                        TableProjectsManagerController.EditingCellString.this.getTableView().requestFocus();
+                        TableProjectsManagerController.EditingCellString.this.getTableView().getSelectionModel().selectAll();
+                        //initialize();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            TableProjectsManagerController.EditingCellString.this.textField.selectAll();
+
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    } // Конец класса EditingCellString
 
 }

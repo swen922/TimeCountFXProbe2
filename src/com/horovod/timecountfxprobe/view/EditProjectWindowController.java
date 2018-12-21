@@ -31,6 +31,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import java.awt.*;
@@ -88,6 +89,9 @@ public class EditProjectWindowController {
 
     @FXML
     private TextField linkedProjectsTextField;
+
+    @FXML
+    private TextField budgetTextField;
 
     @FXML
     private TextField POnumberTextField;
@@ -182,23 +186,30 @@ public class EditProjectWindowController {
 
         companyNameTextArea.setText(myProject.getCompany());
         textAreas.put(companyNameTextArea, companyNameTextArea.getText());
+
         managerTextArea.setText(myProject.getManager());
         textAreas.put(managerTextArea, managerTextArea.getText());
 
-        if (myProject.getComment() != null && !myProject.getComment().isEmpty()) {
-            commentTextArea.setText(myProject.getComment());
-        }
+        commentTextArea.setText(myProject.getComment());
         textAreas.put(commentTextArea, commentTextArea.getText());
 
-        if (myProject.getLinkedProjects() != null && !myProject.getLinkedProjects().isEmpty()) {
-            linkedProjectsTextField.setText(myProject.getLinkedProjects());
-        }
+        linkedProjectsTextField.setText(myProject.getLinkedProjects());
         textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
+
+        if (myProject.getBudget() == 0) {
+            budgetTextField.setText("");
+        }
+        else {
+            budgetTextField.setText(String.valueOf(myProject.getBudget()));
+        }
+        textAreas.put(budgetTextField, budgetTextField.getText());
 
         POnumberTextField.setText(myProject.getPONumber());
         textAreas.put(POnumberTextField, POnumberTextField.getText());
+
         pathToFolderTextField.setText(myProject.getFolderPath());
         textAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
+
         workSum.textProperty().bind(myProject.workSumProperty());
         // Эта строчка перенесена в initializeTable()
         //hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
@@ -426,6 +437,7 @@ public class EditProjectWindowController {
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
             descriptionTextArea.setEditable(false);
+            budgetTextField.setEditable(false);
             POnumberTextField.setEditable(false);
             pathToFolderTextField.setEditable(false);
             //workTimeTableView.setEditable(false);
@@ -438,6 +450,7 @@ public class EditProjectWindowController {
             companyNameTextArea.setEditable(true);
             managerTextArea.setEditable(true);
             descriptionTextArea.setEditable(true);
+            budgetTextField.setEditable(true);
             POnumberTextField.setEditable(true);
             pathToFolderTextField.setEditable(true);
             //workTimeTableView.setEditable(true);
@@ -710,17 +723,41 @@ public class EditProjectWindowController {
 
     }
 
+    private void listenBudgetTextField() {
+        String input = budgetTextField.getText();
+        if (input != null && !input.isEmpty()) {
+            Integer budg = null;
+            try {
+                budg = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                budgetTextField.setText("");
+            }
+        }
+    }
+
     public void listenChanges() {
+
+        if (myStage != null) {
+            myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    handleCloseButton();
+                    event.consume();
+                }
+            });
+        }
 
         isChanged = false;
 
+        listenBudgetTextField();
+
         Map<Node, String> changedAreas = new HashMap<>();
-        //changedAreas.put(projectNameTextArea, projectNameTextArea.getText());
         changedAreas.put(companyNameTextArea, companyNameTextArea.getText());
         changedAreas.put(managerTextArea, managerTextArea.getText());
         changedAreas.put(descriptionTextArea, descriptionTextArea.getText());
         changedAreas.put(commentTextArea, commentTextArea.getText());
         changedAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
+        changedAreas.put(budgetTextField, budgetTextField.getText());
         changedAreas.put(POnumberTextField, POnumberTextField.getText());
         changedAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
 
@@ -796,6 +833,13 @@ public class EditProjectWindowController {
             linkedProjectsTextField.setText(textAreas.get(linkedProjectsTextField));
         }
 
+        if (textAreas.get(budgetTextField) == null) {
+            budgetTextField.setText("");
+        }
+        else {
+            budgetTextField.setText(textAreas.get(budgetTextField));
+        }
+
         if (textAreas.get(POnumberTextField) == null) {
             POnumberTextField.setText("");
         }
@@ -825,6 +869,12 @@ public class EditProjectWindowController {
         myProject.setComment(commentTextArea.getText());
         textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
         myProject.setLinkedProjects(linkedProjectsTextField.getText());
+
+        textAreas.put(budgetTextField, budgetTextField.getText());
+        if (budgetTextField.getText() != null && !budgetTextField.getText().isEmpty()) {
+            myProject.setBudget(Integer.parseInt(budgetTextField.getText()));
+        }
+
         textAreas.put(POnumberTextField, POnumberTextField.getText());
         myProject.setPONumber(POnumberTextField.getText());
         textAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
