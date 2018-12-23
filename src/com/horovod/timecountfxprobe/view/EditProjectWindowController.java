@@ -555,6 +555,8 @@ public class EditProjectWindowController {
                 sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
                 sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
                 sb.append("Связанные проекты: ").append(myProject.getLinkedProjects() == null ? "нет" : myProject.getLinkedProjects().isEmpty() ? "нет" : myProject.getLinkedProjects()).append("\n");
+                String sum = myProject.getBudget() == 0 ? "нет" : (myProject.getBudget() + " руб.");
+                sb.append("Сумма по смете: ").append(sum).append("\n");
                 sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
 
                 writer.write(sb.toString());
@@ -681,36 +683,46 @@ public class EditProjectWindowController {
                 sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
                 sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
                 sb.append("Связанные проекты: ").append(myProject.getLinkedProjects() == null ? "нет" : myProject.getLinkedProjects().isEmpty() ? "нет" : myProject.getLinkedProjects()).append("\n");
+                String sum = myProject.getBudget() == 0 ? "нет" : (myProject.getBudget() + " руб.");
+                sb.append("Сумма по смете: ").append(sum).append("\n");
                 sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
 
-                writer.write(sb.toString());
-
-                writer.write("Рабочее время по проекту id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()) + "\n");
-                writer.write("\n");
+                sb.append("Рабочее время по проекту id-").append(myProject.getIdNumber()).append(" на ").append(AllData.formatDate(LocalDate.now())).append("\n\n");
 
                 for (WorkDay wd : workDaysList) {
-                    writer.write(wd.getDateString() + ":\n");
+                    sb.append(wd.getDateString()).append("\n");
+                    int workdayCounter = 0;
 
                     for (int i = 0; i < des.size(); i++) {
                         if (wd.containsWorkTimeForDesigner(des.get(i))) {
+
                             Designer designer = (Designer) AllUsers.getOneUser(des.get(i));
                             String desName = designer.getNameLogin();
                             if (designer.getFullName() != null && !designer.getFullName().isEmpty()) {
                                 desName = designer.getFullName();
                             }
-                            writer.write(desName + " = " + AllData.formatWorkTime(wd.getWorkTimeForDesigner(des.get(i))) + " " +
-                                    AllData.formatHours(String.valueOf(wd.getWorkTimeForDesigner(des.get(i)))) + "\n");
+                            sb.append(desName).append(" = ").append(AllData.formatWorkTime(wd.getWorkTimeForDesigner(des.get(i)))).append(" ");
+                            sb.append(AllData.formatHours(String.valueOf(wd.getWorkTimeForDesigner(des.get(i))))).append("\n");
+                            workdayCounter += AllData.doubleToInt(wd.getWorkTimeForDesigner(des.get(i)));
                         }
-                    }
-                    writer.write("\n");
 
+                    }
+
+                    if (wd.getWorkTimeMap().size() > 1) {
+                        sb.append("Итого за ").append(wd.getDateString()).append(" = ");
+                        sb.append(AllData.formatWorkTime(AllData.intToDouble(workdayCounter))).append(" ");
+                        sb.append(AllData.formatHours(String.valueOf(AllData.intToDouble(workdayCounter)))).append("\n");
+                    }
+                    sb.append("\n");
 
                 }
 
-                writer.write(designersWorkSums.getText().replaceAll("Итого:   ", "Итого:\n").replaceAll(";   ", "\n"));
-                writer.write("\n");
-                writer.write("Итого в проекте: " + AllData.formatWorkTime(myProject.getWorkSumDouble()) + " " +
-                        AllData.formatHours(String.valueOf(myProject.getWorkSumDouble())) + "\n");
+                sb.append(designersWorkSums.getText().replaceAll("Итого:   ", "Итого:\n").replaceAll(";   ", "\n"));
+                sb.append("\n");
+                sb.append("Итого в проекте: ").append(AllData.formatWorkTime(myProject.getWorkSumDouble())).append(" ");
+                sb.append(AllData.formatHours(String.valueOf(myProject.getWorkSumDouble()))).append("\n");
+
+                writer.write(sb.toString());
                 writer.flush();
             }
             catch (Exception ex) {
@@ -900,7 +912,39 @@ public class EditProjectWindowController {
             AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
         }
         else {
-            mainApp.showSaveProjectChangesDialog(myStage, this, myProject.getIdNumber());
+            //mainApp.showSaveProjectChangesDialog(myStage, this, myProject.getIdNumber());
+            handleAlerts();
+        }
+    }
+
+    private void handleAlerts() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтверждение закрытия");
+        alert.setHeaderText("В текст полей проекта id-" + myProject.getIdNumber() + " были внесены изменения.\nСохранить их или проигнорировать?");
+
+        ButtonType returnButton = new ButtonType("Вернуться обратно");
+        ButtonType dontSaveButton = new ButtonType("Не сохранять");
+        ButtonType saveButton = new ButtonType("Сохранить");
+
+        // Remove default ButtonTypes
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().addAll(returnButton, dontSaveButton, saveButton);
+
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.get() == returnButton) {
+            alert.close();
+        }
+        else if (option.get() == dontSaveButton) {
+            handleRevertButton();
+            AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+            AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            alert.close();
+            myStage.close();
+        }
+        else {
+            alert.close();
+            handleSaveAndCloseButton();
         }
     }
 

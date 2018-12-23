@@ -37,6 +37,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
 import java.io.BufferedWriter;
@@ -52,7 +53,7 @@ import java.awt.Desktop;
 public class TableProjectsManagerController {
 
     private MainApp mainApp;
-    private Stage stage;
+    private Stage myStage;
 
     private ObservableList<Map.Entry<Integer, Project>> showProjects;
     private FilteredList<Map.Entry<Integer, Project>> filterData;
@@ -174,11 +175,11 @@ public class TableProjectsManagerController {
     }
 
     public Stage getStage() {
-        return stage;
+        return myStage;
     }
 
     public void setStage(Stage newStage) {
-        this.stage = newStage;
+        this.myStage = newStage;
     }
 
     public TextField getFilterField() {
@@ -379,6 +380,35 @@ public class TableProjectsManagerController {
         initLoggedUsersChoiceBox();
         initExportChoiceBox();
 
+    }
+
+    /** TODO добавить сюда закрытие окон со свойствами персонала, если там можно внести изменения */
+
+    private synchronized void initClosing() {
+
+        if (myStage != null) {
+
+            myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+
+                    AllData.rebuildEditProjectsControllers();
+
+                    for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
+                        ec.handleCloseButton();
+                    }
+
+                    if (!AllData.editProjectWindowControllers.isEmpty()) {
+                        event.consume();
+                    }
+                    else {
+                        Platform.exit();
+                        System.exit(0);
+                    }
+
+                }
+            });
+        }
     }
 
 
@@ -820,7 +850,7 @@ public class TableProjectsManagerController {
 
         chooser.setInitialFileName(fileName.toString());
 
-        File file = chooser.showSaveDialog(stage);
+        File file = chooser.showSaveDialog(myStage);
 
         if (file != null) {
             if (!file.getPath().endsWith(".csv")) {
@@ -886,7 +916,7 @@ public class TableProjectsManagerController {
 
         chooser.setInitialFileName(fileName.toString());
 
-        File file = chooser.showSaveDialog(stage);
+        File file = chooser.showSaveDialog(myStage);
 
         if (file != null) {
             if (!file.getPath().endsWith(".txt")) {
@@ -926,15 +956,19 @@ public class TableProjectsManagerController {
                             sb.append(wd.getDateString()).append("\n");
 
                             for (Map.Entry<Integer, Double> e : wd.getWorkTimeMap().entrySet()) {
-                                sb.append(AllUsers.getOneUser(e.getKey()).getFullName()).append(" = ");
+
+                                String name = AllUsers.getOneUser(e.getKey()).getNameLogin();
+                                if (AllUsers.getOneUser(e.getKey()).getFullName() != null && !AllUsers.getOneUser(e.getKey()).getFullName().isEmpty()) {
+                                    name = AllUsers.getOneUser(e.getKey()).getFullName();
+                                }
+                                sb.append(name).append(" = ");
                                 sb.append(AllData.formatWorkTime(e.getValue())).append(" ");
                                 sb.append(AllData.formatHours(String.valueOf(e.getValue()))).append("\n");
                                 counter += AllData.doubleToInt(e.getValue());
                                 projectCounter += AllData.doubleToInt(e.getValue());
                                 workdayCounter += AllData.doubleToInt(e.getValue());
                             }
-
-                            if (wd.getWorkTimeMap().entrySet().size() > 1) {
+                            if (wd.getWorkTimeMap().size() > 1) {
                                 sb.append("Итого за ").append(wd.getDateString()).append(" = ");
                                 sb.append(AllData.formatWorkTime(AllData.intToDouble(workdayCounter))).append(" ");
                                 sb.append(AllData.formatHours(String.valueOf(AllData.intToDouble(workdayCounter)))).append("\n");
@@ -1067,6 +1101,8 @@ public class TableProjectsManagerController {
                 manageButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
+
+                        initClosing();
 
                         if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
                             mainApp.showEditProjectWindow(entry.getKey());

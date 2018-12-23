@@ -4,7 +4,6 @@ import com.horovod.timecountfxprobe.view.EditProjectWindowController;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
-import com.horovod.timecountfxprobe.view.EditProjectWindowController;
 import com.horovod.timecountfxprobe.view.StatisticWindowController;
 import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
 import com.horovod.timecountfxprobe.view.TableProjectsManagerController;
@@ -13,7 +12,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -26,6 +24,7 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AllData {
@@ -72,7 +71,7 @@ public class AllData {
 
     public static TableProjectsManagerController tableProjectsManagerController;
     public static Map<Integer, Stage> openEditProjectStages = new HashMap<>();
-    public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new HashMap();
+    public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();
     public static volatile int IDnumberForEditProject;
 
 
@@ -657,7 +656,7 @@ public class AllData {
     }
 
 
-    public static void deleteZeroTime() {
+    public static synchronized void deleteZeroTime() {
         for (Project p : activeProjects.values()) {
             Iterator<WorkTime> iter = p.getWork().iterator();
             while (iter.hasNext()) {
@@ -669,11 +668,20 @@ public class AllData {
         }
     }
 
-    public static void deleteZeroTime(int projectIDnumber) {
+    public static synchronized void deleteZeroTime(int projectIDnumber) {
         Iterator<WorkTime> iter = AllData.getAnyProject(projectIDnumber).getWork().iterator();
         while (iter.hasNext()) {
             WorkTime wt = iter.next();
             if (wt.getTime() == 0) {
+                iter.remove();
+            }
+        }
+    }
+
+    public static void rebuildEditProjectsControllers() {
+        Iterator<Map.Entry<Integer, EditProjectWindowController>> iter = editProjectWindowControllers.entrySet().iterator();
+        while (iter.hasNext()) {
+            if (iter.next().getValue() == null) {
                 iter.remove();
             }
         }
@@ -753,14 +761,37 @@ public class AllData {
 
     public static String formatStringInputInteger(String oldText, String input) {
 
+        String corrected = input.replaceAll(",", "");
+        corrected = corrected.replaceAll("\\.", "");
+        corrected = corrected.replaceAll(" ", "");
+        corrected = corrected.replaceAll("-", "");
+
         Integer newInt = null;
         try {
-            newInt = Integer.parseInt(input);
+            newInt = Integer.parseInt(corrected);
         } catch (NumberFormatException e) {
             return oldText;
         }
         if (newInt != null) {
-            return String.valueOf(newInt);
+
+            List<Character> listChars = new ArrayList<>();
+            char[] inp = String.valueOf(newInt).toCharArray();
+
+            for (char c : inp) {
+                listChars.add(c);
+            }
+
+            for (int i = (listChars.size() - 1); i > 0; i -= 3) {
+                if (i != listChars.size() -1) {
+                    listChars.add('.');
+                }
+            }
+            char[] res = new char[listChars.size()];
+            for (int j = 0; j < listChars.size(); j++) {
+                res[j] = listChars.get(j);
+            }
+            String result = String.valueOf(res);
+            return result;
         }
 
         return oldText;
