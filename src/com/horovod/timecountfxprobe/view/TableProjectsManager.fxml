@@ -98,18 +98,19 @@
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Button fx:id="newProjectButton" mnemonicParsing="false" prefHeight="60.0" prefWidth="100.0" text="Новый" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
+                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <tooltip>
+                        <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
+                     </tooltip>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font size="11.0" />
-                     </font></Button>
+                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="35.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
                </children>
                <padding>
-                  <Insets top="15.0" />
+                  <Insets top="12.0" />
                </padding>
             </VBox>
             <LineChart fx:id="decadeLineChart" accessibleHelp="График рабочего времени за 3 недели" focusTraversable="true" horizontalZeroLineVisible="false" legendSide="RIGHT" legendVisible="false" maxHeight="200.0" minHeight="150.0" prefHeight="150.0" prefWidth="362.0" titleSide="RIGHT" verticalZeroLineVisible="false">
@@ -167,9 +168,14 @@
                   <Insets top="5.0" />
                </padding>
             </VBox>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0">
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0" spacing="10.0">
                <children>
-                  <Button fx:id="buttonReload" maxWidth="100.0" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#handleReloadButton" text="Обновить данные" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="newProjectButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Новый" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="buttonReload" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
                      <VBox.margin>
                         <Insets bottom="5.0" />
                      </VBox.margin>
@@ -180,20 +186,9 @@
                         <Tooltip text="Нажми, чтобы заново считать все данные и отсортировать таблицу" />
                      </tooltip>
                   </Button>
-                  <Button fx:id="buttonStatistic" minHeight="40.0" minWidth="100.0" mnemonicParsing="false" onAction="#handleStatisticButton" text="Статистика" textAlignment="CENTER">
-                     <VBox.margin>
-                        <Insets bottom="5.0" top="5.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                     <tooltip>
-                        <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
-                     </tooltip>
-                  </Button>
                   <Label fx:id="aboutProgramLabel" onMouseClicked="#handleAbout" text="О программе" textFill="#f3622d" underline="true">
                      <VBox.margin>
-                        <Insets top="10.0" />
+                        <Insets />
                      </VBox.margin>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -207,7 +202,7 @@
                   <Insets />
                </HBox.margin>
                <padding>
-                  <Insets top="15.0" />
+                  <Insets top="12.0" />
                </padding>
             </VBox>
          </children>

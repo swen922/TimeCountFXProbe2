@@ -200,7 +200,7 @@ public class EditProjectWindowController {
             budgetTextField.setText("");
         }
         else {
-            budgetTextField.setText(String.valueOf(myProject.getBudget()));
+            budgetTextField.setText(AllData.formatInputInteger(myProject.getBudget()));
         }
         textAreas.put(budgetTextField, budgetTextField.getText());
 
@@ -735,18 +735,6 @@ public class EditProjectWindowController {
 
     }
 
-    private void listenBudgetTextField() {
-        String input = budgetTextField.getText();
-        if (input != null && !input.isEmpty()) {
-            Integer budg = null;
-            try {
-                budg = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                budgetTextField.setText("");
-            }
-        }
-    }
-
     public void listenChanges() {
 
         if (myStage != null) {
@@ -761,7 +749,18 @@ public class EditProjectWindowController {
 
         isChanged = false;
 
-        listenBudgetTextField();
+        budgetTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode keyCode = event.getCode();
+                if (keyCode == KeyCode.ENTER) {
+                    String input = AllData.formatStringInputInteger(textAreas.get(budgetTextField), budgetTextField.getText());
+                    budgetTextField.setText(input);
+                }
+            }
+        });
+
+        //listenBudgetTextField();
 
         Map<Node, String> changedAreas = new HashMap<>();
         changedAreas.put(companyNameTextArea, companyNameTextArea.getText());
@@ -882,10 +881,12 @@ public class EditProjectWindowController {
         textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
         myProject.setLinkedProjects(linkedProjectsTextField.getText());
 
-        textAreas.put(budgetTextField, budgetTextField.getText());
         if (budgetTextField.getText() != null && !budgetTextField.getText().isEmpty()) {
-            myProject.setBudget(Integer.parseInt(budgetTextField.getText()));
+            myProject.setBudget(AllData.parseWorkTime(myProject.getBudget(), budgetTextField.getText()));
         }
+        budgetTextField.setText(AllData.formatInputInteger(myProject.getBudget()));
+        textAreas.put(budgetTextField, budgetTextField.getText());
+
 
         textAreas.put(POnumberTextField, POnumberTextField.getText());
         myProject.setPONumber(POnumberTextField.getText());

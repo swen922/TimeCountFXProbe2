@@ -10,9 +10,7 @@ import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -84,6 +82,9 @@ public class TableProjectsManagerController {
 
     @FXML
     private Button clearDatePicker;
+
+    @FXML
+    private Button calculateSumButton;
 
     @FXML
     private Button newProjectButton;
@@ -293,7 +294,19 @@ public class TableProjectsManagerController {
         columnBudget.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, String> param) {
-                return param.getValue().getValue().budgetProperty();
+                String budgetString = null;
+                if (param.getValue().getValue().budgetProperty() == null || param.getValue().getValue().budgetProperty().get().isEmpty()) {
+                    budgetString = "0";
+                }
+                else {
+                    budgetString = param.getValue().getValue().budgetProperty().get();
+                }
+                String budget = AllData.formatStringInputInteger("0", budgetString);
+                if (budget.equals("0")) {
+                    return new SimpleStringProperty("");
+                }
+                return new SimpleStringProperty(budget);
+                //return param.getValue().getValue().budgetProperty();
             }
         });
 
@@ -306,14 +319,24 @@ public class TableProjectsManagerController {
             @Override
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
 
-                Integer budget = null;
+                int oldValue = 0;
+                if (event.getOldValue() == null || event.getOldValue().isEmpty()) {
+                }
+                else {
+                    oldValue = AllData.parseWorkTime(0, event.getOldValue());
+                }
+                int budget = AllData.parseWorkTime(oldValue, event.getNewValue());
+                Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
+                project.setBudget(budget);
+
+                /*Integer budget = null;
                 try {
                     budget = Integer.parseInt(event.getNewValue());
                 } catch (NumberFormatException e) {
                     return;
                 }
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
-                project.setBudget(budget);
+                project.setBudget(budget);*/
 
                 // код для мгновенного обновления страниц у менеджера
                 if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
@@ -645,6 +668,7 @@ public class TableProjectsManagerController {
                 return true;
             }
         });
+        initialize();
     }
 
 
@@ -750,6 +774,41 @@ public class TableProjectsManagerController {
         fromDatePicker.setValue(null);
         tillDatePicker.setValue(null);
         handleFilters();
+    }
+
+    public void handleSumButton() {
+        int counter = 0;
+        int notBudgeted = 0;
+        for (Map.Entry<Integer, Project> entry : sortedList) {
+            counter += entry.getValue().getBudget();
+            if (entry.getValue().getBudget() == 0) {
+                notBudgeted++;
+            }
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Сумма по указанным проектам");
+        StringBuilder sb = new StringBuilder("Сумма по приведенным в таблице проектам = ");
+        sb.append(AllData.formatInputInteger(counter)).append(" руб.");
+        alert.setHeaderText(sb.toString());
+        if (notBudgeted != 0) {
+            StringBuilder sb0 = new StringBuilder();
+            if (notBudgeted == sortedList.size()) {
+                sb0.append("Примечание: в данной выборке\n");
+                sb0.append("отсутствует внесенная сметная стоимость у всех проектов.\n");
+                sb0.append("Это значит, что подсчитать сумму невозможно");
+            }
+            else {
+                double size = (double) sortedList.size();
+                double percent = size / 100;
+                double notBudgPercent = notBudgeted / percent;
+                int notB = (int) notBudgPercent;
+                sb0.append("Примечание: в данной выборке\n");
+                sb0.append("отсутствует внесенная сметная стоимость у ").append(notB).append("% проектов.\n");
+                sb0.append("Это значит, что подсчитанная сумма неточна");
+            }
+            alert.setContentText(sb0.toString());
+        }
+        alert.showAndWait();
     }
 
     public void handleReloadButton() {
@@ -897,7 +956,7 @@ public class TableProjectsManagerController {
 
 
 
-        StringBuilder fileName = new StringBuilder("Рабочее время за ");
+        StringBuilder fileName = new StringBuilder("Время за ");
 
         if (fromDatePicker.getValue() == null || tillDatePicker.getValue() == null) {
             fileName.append("весь период");
@@ -913,6 +972,8 @@ public class TableProjectsManagerController {
         if (filterField.getText() != null && !filterField.getText().isEmpty()) {
             fileName.append(" согласно выборке");
         }
+
+        fileName.append(" по состоянию на ").append(AllData.formatDate(LocalDate.now()));
 
         chooser.setInitialFileName(fileName.toString());
 
@@ -1049,10 +1110,12 @@ public class TableProjectsManagerController {
 
                 if (entry.getValue().isArchive()) {
                     archiveCheckBox.setSelected(true);
+                    openFolderButton.setDisable(true);
                     setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                 }
                 else {
                     archiveCheckBox.setSelected(false);
+                    openFolderButton.setDisable(false);
                     setStyle(null);
                 }
 

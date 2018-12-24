@@ -751,15 +751,15 @@ public class AllData {
         } catch (NumberFormatException e) {
             return oldText;
         }
-        if (newTimeDouble != null) {
-            newText = String.valueOf(AllData.formatDouble(newTimeDouble));
-            return newText;
-        }
-
-        return oldText;
+        newText = String.valueOf(AllData.formatDouble(newTimeDouble));
+        return newText;
     }
 
     public static String formatStringInputInteger(String oldText, String input) {
+
+        if (input.equals("0")) {
+            return "0";
+        }
 
         String corrected = input.replaceAll(",", "");
         corrected = corrected.replaceAll("\\.", "");
@@ -772,29 +772,75 @@ public class AllData {
         } catch (NumberFormatException e) {
             return oldText;
         }
-        if (newInt != null) {
+        List<Character> listChars = new ArrayList<>();
+        char[] inp = String.valueOf(newInt).toCharArray();
 
-            List<Character> listChars = new ArrayList<>();
-            char[] inp = String.valueOf(newInt).toCharArray();
-
-            for (char c : inp) {
-                listChars.add(c);
-            }
-
-            for (int i = (listChars.size() - 1); i > 0; i -= 3) {
-                if (i != listChars.size() -1) {
-                    listChars.add('.');
-                }
-            }
-            char[] res = new char[listChars.size()];
-            for (int j = 0; j < listChars.size(); j++) {
-                res[j] = listChars.get(j);
-            }
-            String result = String.valueOf(res);
-            return result;
+        for (char c : inp) {
+            listChars.add(c);
         }
 
-        return oldText;
+        for (int i = listChars.size(); i > 0; i -= 3) {
+            if (i != listChars.size()) {
+                listChars.add(i, '.');
+            }
+        }
+        char[] res = new char[listChars.size()];
+        for (int j = 0; j < listChars.size(); j++) {
+            res[j] = listChars.get(j);
+        }
+        return String.valueOf(res);
+    }
+
+    public static String formatInputInteger(int input) {
+
+        String inputString = String.valueOf(input);
+        inputString = inputString.replaceAll(",", "");
+        inputString = inputString.replaceAll("\\.", "");
+        inputString = inputString.replaceAll(" ", "");
+        inputString = inputString.replaceAll("-", "");
+
+        Integer newInt = null;
+        try {
+            newInt = Integer.parseInt(inputString);
+        } catch (NumberFormatException e) {
+            return inputString;
+        }
+        List<Character> listChars = new ArrayList<>();
+        char[] inp = String.valueOf(newInt).toCharArray();
+
+        for (char c : inp) {
+            listChars.add(c);
+        }
+
+        for (int i = listChars.size(); i > 0; i -= 3) {
+            if (i != listChars.size()) {
+                listChars.add(i, '.');
+            }
+        }
+        char[] res = new char[listChars.size()];
+        for (int j = 0; j < listChars.size(); j++) {
+            res[j] = listChars.get(j);
+        }
+        return String.valueOf(res);
+    }
+
+    public static Integer parseWorkTime(Integer oldValue, String input) {
+
+        String corrected = input.replaceAll(",", "");
+        corrected = corrected.replaceAll("\\.", "");
+        corrected = corrected.replaceAll(" ", "");
+        corrected = corrected.replaceAll("-", "");
+        if (corrected.equals("0")) {
+            return 0;
+        }
+
+        Integer newValue = null;
+        try {
+            newValue = Integer.parseInt(corrected);
+        } catch (NumberFormatException e) {
+            return oldValue;
+        }
+        return newValue;
     }
 
     public static List<WorkDay> convertWorkTimesToWorkDays(List<WorkTime> workTimeList) {
