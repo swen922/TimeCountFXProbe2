@@ -189,6 +189,29 @@ public class MainApp extends Application {
         }
     }
 
+    public void showStaffWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/StaffWindow.fxml"));
+            AnchorPane staffWin = (AnchorPane) loader.load();
+
+            Stage staffStage = new Stage();
+            staffStage.setTitle("Информация о пользователях");
+            staffStage.initModality(Modality.NONE);
+            staffStage.initOwner(primaryStage);
+
+            Scene scene = new Scene(staffWin);
+            staffStage.setScene(scene);
+            StaffWindowController controller = loader.getController();
+            controller.setMyStage(staffStage);
+            controller.setMainApp(this);
+
+            staffStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void showLoginWindow() {
         try {
             FXMLLoader loaderLoginWindow = new FXMLLoader();
@@ -203,8 +226,8 @@ public class MainApp extends Application {
             logWinStage.setScene(scene);
             LoginWindowController loginWindowController = loaderLoginWindow.getController();
             loginWindowController.setMainApp(this);
-
             loginWindowController.setStage(logWinStage);
+
             logWinStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();

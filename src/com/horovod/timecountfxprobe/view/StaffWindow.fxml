@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -16,51 +14,44 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StaffWindowController">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="80.0" prefWidth="400.0" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+      <VBox alignment="TOP_CENTER" layoutX="10.0" layoutY="10.0" prefHeight="40.0" prefWidth="400.0" spacing="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
-            <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="20.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" spacing="20.0">
                <children>
-                  <ChoiceBox prefWidth="300.0" />
-                  <CheckBox lineSpacing="10.0" mnemonicParsing="false" text="Показывать только дизайнеров">
-                     <padding>
-                        <Insets bottom="5.0" />
-                     </padding>
-                     <tooltip>
-                        <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
-                     </tooltip>
-                  </CheckBox>
-                  <CheckBox lineSpacing="10.0" mnemonicParsing="false" text="Показывать уволенных">
-                     <padding>
-                        <Insets bottom="5.0" />
-                     </padding>
-                     <tooltip>
-                        <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
-                     </tooltip>
-                  </CheckBox>
+                  <ChoiceBox fx:id="usersChoiceBox" prefWidth="250.0" />
+                  <ChoiceBox fx:id="yearsChoiceBox" prefWidth="250.0" />
+                  <ChoiceBox fx:id="monthChoiceBox" prefWidth="250.0" />
                </children>
             </HBox>
-            <HBox alignment="CENTER_LEFT" minWidth="430.0" prefHeight="40.0" spacing="10.0">
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox alignment="CENTER_LEFT" minWidth="430.0" prefHeight="40.0" spacing="20.0">
                <children>
-                  <Label text="За период:">
-                     <HBox.margin>
-                        <Insets right="2.0" />
-                     </HBox.margin>
-                  </Label>
-                  <DatePicker fx:id="fromDatePicker" prefWidth="200.0" promptText="c">
+                  <CheckBox fx:id="designersOnlyCheckBox" lineSpacing="10.0" mnemonicParsing="false" text="Показывать только дизайнеров">
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
                      <tooltip>
-                        <Tooltip text="Выбери начальную дату периода" />
+                        <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
                      </tooltip>
-                  </DatePicker>
-                  <DatePicker fx:id="tillDatePicker" prefWidth="200.0" promptText="по">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </CheckBox>
+                  <CheckBox fx:id="includeRetiredsCheckBox" lineSpacing="10.0" mnemonicParsing="false" text="Показывать уволенных">
+                     <padding>
+                        <Insets bottom="5.0" />
+                     </padding>
                      <tooltip>
-                        <Tooltip text="Выбери конечную дату периода" />
+                        <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
                      </tooltip>
-                  </DatePicker>
-                  <Button fx:id="clearDatePicker" mnemonicParsing="false" text="X">
-                     <tooltip>
-                        <Tooltip text="Очистить период" />
-                     </tooltip>
-                  </Button>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </CheckBox>
                </children>
                <VBox.margin>
                   <Insets bottom="3.0" top="1.0" />
@@ -68,8 +59,7 @@
             </HBox>
          </children>
       </VBox>
-      <Separator AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0" />
-      <AnchorPane layoutX="373.0" layoutY="104.0" prefHeight="500.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="100.0">
+      <AnchorPane layoutX="373.0" layoutY="104.0" prefHeight="500.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="85.0">
          <children>
             <TableView layoutX="88.0" layoutY="43.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <columnResizePolicy>

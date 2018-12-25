@@ -16,12 +16,16 @@ public class Designer implements User {
     /**
      * TODO в графон в создании юзера вставить проверку nameLogin на уникальность,
      * чтобы не было дублей логина в системе
+     * TODO убрать проверки на null в отношении fullName – теперь сделал так,
+     * что в конструкторе назначается nameLogin,
+     * а затем в процессе создания юзера добавляется реальный fullName
      * */
 
 
     public Designer(String nameLogin, String password) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
+        this.fullName = nameLogin;
     }
 
     @XmlElement(name = "designeridnumber")
@@ -107,13 +111,6 @@ public class Designer implements User {
 
     @Override
     public String toString() {
-        return "Designer{" +
-                "IDNumber=" + IDNumber +
-                ", nameLogin='" + nameLogin + '\'' +
-                ", role=" + role +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", workHourValue=" + workHourValue +
-                '}';
+        return this.fullName;
     }
 }

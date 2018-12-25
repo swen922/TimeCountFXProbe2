@@ -17,6 +17,7 @@ public class Manager implements User {
     public Manager(String nameLogin, String password) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
+        this.fullName = nameLogin;
     }
 
     @XmlElement(name = "manageridnumber")
@@ -91,13 +92,6 @@ public class Manager implements User {
 
     @Override
     public String toString() {
-        return "Manager{" +
-                "IDNumber=" + IDNumber +
-                ", nameLogin='" + nameLogin + '\'' +
-                ", role=" + role +
-                ", fullName='" + fullName + '\'' +
-                ", email='" + email + '\'' +
-                ", workHourValue=" + workHourValue +
-                '}';
+        return this.fullName;
     }
 }

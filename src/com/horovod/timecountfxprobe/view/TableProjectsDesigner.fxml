@@ -36,6 +36,9 @@
                            <tooltip>
                               <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
                            </tooltip>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </CheckBox>
                      </children>
                   </HBox>

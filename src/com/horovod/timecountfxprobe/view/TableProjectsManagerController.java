@@ -84,6 +84,9 @@ public class TableProjectsManagerController {
     private Button clearDatePicker;
 
     @FXML
+    private Button usersButton;
+
+    @FXML
     private Button calculateSumButton;
 
     @FXML
@@ -774,6 +777,10 @@ public class TableProjectsManagerController {
         fromDatePicker.setValue(null);
         tillDatePicker.setValue(null);
         handleFilters();
+    }
+
+    public void handlleUsersButton() {
+        mainApp.showStaffWindow();
     }
 
     public void handleSumButton() {

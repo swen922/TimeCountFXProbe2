@@ -36,6 +36,9 @@
                            <tooltip>
                               <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
                            </tooltip>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </CheckBox>
                      </children>
                   </HBox>
@@ -106,7 +109,7 @@
                         <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
                      </tooltip>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handlleUsersButton" prefHeight="35.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
                   <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="35.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
                </children>
                <padding>

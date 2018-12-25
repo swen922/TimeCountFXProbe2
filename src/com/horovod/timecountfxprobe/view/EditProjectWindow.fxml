@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
@@ -25,7 +26,10 @@
                   </Label>
                </children>
             </AnchorPane>
-            <CheckBox fx:id="archiveCheckBox" layoutX="696.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleArchiveCheckBox" text="Архивный" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
+            <CheckBox fx:id="archiveCheckBox" layoutX="696.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleArchiveCheckBox" text="Архивный" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></CheckBox>
             <TextArea fx:id="descriptionTextArea" editable="false" layoutX="207.0" layoutY="-75.0" onKeyTyped="#listenChanges" prefHeight="40.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="5.0" />
             <Button fx:id="openFolderButton" alignment="CENTER" contentDisplay="CENTER" layoutX="562.0" layoutY="15.0" mnemonicParsing="false" onAction="#initOpenFolderButton" prefHeight="40.0" prefWidth="70.0" text="Открыть папку" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="5.0">
                <font>

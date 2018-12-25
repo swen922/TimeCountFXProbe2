@@ -13,4 +13,6 @@ public interface User {
     void setEmail(String newEmail);
     double getWorkHourValue();
     void setWorkHourValue(double workHourValue);
+
+
 }
