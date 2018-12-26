@@ -12,6 +12,8 @@ import com.sun.jdi.IntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -34,6 +36,8 @@ public class StaffWindowController {
     private ObservableList<Integer> yearsValues;
     private ObservableList<Month> monthsValues;
     private ObservableList<UserBase> userBaseList;
+
+    private String allWorkers = "Все работники";
 
 
     public void setMyStage(Stage myStage) {
@@ -61,10 +65,22 @@ public class StaffWindowController {
     private CheckBox includeRetiredsCheckBox;
 
     @FXML
-    private TableView<UserBase> tableDesigners;
+    private RadioButton daysRadioButton;
 
     @FXML
-    private TableColumn<UserBase, String> designersColumn;
+    private RadioButton monthsRadioButton;
+
+    @FXML
+    private RadioButton timeRadioButton;
+
+    @FXML
+    private RadioButton moneyRadioButton;
+
+    @FXML
+    private TableView<UserBase> tableDesigners;
+
+    /*@FXML
+    private TableColumn<UserBase, String> designersColumn;*/
 
 
 
@@ -78,11 +94,21 @@ public class StaffWindowController {
 
         // Этот пункт надо отрабатывать только один раз, при запуске программы,
         // поэтому во время работы initialize() запускать нельзя
+        // вместо него – initializeStaff()
         designersOnlyCheckBox.setSelected(true);
 
         initUsersChoiceBox();
         initYearChoiceBox();
         initMonthChoiceBox();
+
+        ToggleGroup daysMonthsGroup = new ToggleGroup();
+        daysRadioButton.setToggleGroup(daysMonthsGroup);
+        monthsRadioButton.setToggleGroup(daysMonthsGroup);
+        daysRadioButton.setSelected(true);
+        ToggleGroup timeMoneyGroup = new ToggleGroup();
+        timeRadioButton.setToggleGroup(timeMoneyGroup);
+        moneyRadioButton.setToggleGroup(timeMoneyGroup);
+        timeRadioButton.setSelected(true);
 
 
     }
@@ -91,6 +117,7 @@ public class StaffWindowController {
     /** Этот метод – чтобы запускать его вместо initialize() во время работы системы
      * не затрагивая полей, которые не надо трогать */
     public void initializeStaff() {
+
 
     }
 
@@ -141,11 +168,22 @@ public class StaffWindowController {
         });
 
         usersChoiceBox.setItems(listUsers);
-        usersChoiceBox.getItems().add(0, "Все работники");
+        usersChoiceBox.getItems().add(0, allWorkers);
         if (usersChoiceBox.getValue() == null) {
-            usersChoiceBox.setValue("Все работники");
+            usersChoiceBox.setValue(allWorkers);
         }
+
+        usersChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                initializeTable();
+            }
+        });
     }
+
+
+
+
 
 
     public void initYearChoiceBox() {
@@ -193,19 +231,27 @@ public class StaffWindowController {
 
 
 
-    public void initializeTable(FillChartMode mode, LocalDate date) {
+
+
+    public void initializeTable() {
+        if (daysRadioButton.isSelected() && timeRadioButton.isSelected()) {
+            initializeTableTimeDaily();
+        }
+    }
+
+
+    public void initializeTableTimeDaily() {
+        if (userBaseList == null) {
+            userBaseList = FXCollections.observableArrayList();
+        }
+        userBaseList.clear();
 
 
 
     }
 
 
-    public void initializeTableDaily() {
-
-    }
-
-
-    public void initializeTableMonthly() {
+    public void initializeTableTimeMonthly() {
         if (userBaseList == null) {
             userBaseList = FXCollections.observableArrayList();
         }
@@ -249,19 +295,21 @@ public class StaffWindowController {
         private LocalDate fromDate;
         private LocalDate tillDate;
         private Map<LocalDate, Double> workSumMap = new HashMap<>();
+        private double userWorkSum = 0;
 
         public UserBase(int ID, LocalDate fromDate, LocalDate tillDate) {
             this.userID = ID;
             this.fromDate = fromDate;
             this.tillDate = tillDate;
+            fillWorkSumForPeriod(fromDate, tillDate);
         }
 
-        public int getDesignerID() {
-            return this.userID;
+        public int getUserID() {
+            return userID;
         }
 
-        public synchronized void setDesignerID(int ID) {
-            this.userID = ID;
+        public void setUserID(int userID) {
+            this.userID = userID;
         }
 
         public LocalDate getFromDate() {
@@ -288,9 +336,23 @@ public class StaffWindowController {
             this.workSumMap = workSumMap;
         }
 
+        public double getUserWorkSum() {
+            return userWorkSum;
+        }
 
+        public void setUserWorkSum(double userWorkSum) {
+            this.userWorkSum = userWorkSum;
+        }
 
-        public void addWorkTime(LocalDate day, double workSum) {
+        private void fillWorkSumForPeriod(LocalDate fromDate, LocalDate tillDate) {
+            for (Project project : AllData.getAllProjectsForDesignerAndPeriodWorking(this.userID, fromDate, tillDate)) {
+                for (WorkTime wt : project.getWorkTimeForDesignerAndPeriod(this.userID, fromDate, tillDate)) {
+                    workSumMap.put(wt.getDate(), wt.getTimeDouble());
+                }
+            }
+        }
+
+        public void addWorkSum(LocalDate day, double workSum) {
             if (day.compareTo(fromDate) >= 0 && day.compareTo(tillDate) <= 0) {
                 if (workSumMap.containsKey(day)) {
                     double current = workSumMap.get(day);
@@ -302,14 +364,27 @@ public class StaffWindowController {
             }
         }
 
-        public double getWorkSumForDay(LocalDate date) {
+        private double getWorkSumForDay(LocalDate date) {
             if (workSumMap.get(date) == null) {
                 return 0;
             }
             return workSumMap.get(date);
         }
 
-    } // конец класса DesignerBase
+        public double getWorkSumForMonth(int year, Month month) {
+            double result = 0;
+            int monthNumber = month.getValue();
+            LocalDate date = LocalDate.of(year, monthNumber, 1);
+            Year y = Year.from(date);
+            for (int i = 1; i <= month.length(y.isLeap()); i++) {
+                LocalDate d = LocalDate.of(year, monthNumber, i);
+                result += getWorkSumForDay(date);
+            }
+            return result;
+        }
+
+
+    } // конец класса UserBase
 
 
 

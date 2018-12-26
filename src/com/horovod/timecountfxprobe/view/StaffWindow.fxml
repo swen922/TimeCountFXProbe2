@@ -4,8 +4,8 @@
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -52,6 +52,20 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </CheckBox>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <RadioButton fx:id="daysRadioButton" mnemonicParsing="false" text="По дням" />
+                  <RadioButton fx:id="monthsRadioButton" mnemonicParsing="false" text="По месяцам" />
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <RadioButton fx:id="timeRadioButton" mnemonicParsing="false" text="Время">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </RadioButton>
+                  <RadioButton fx:id="moneyRadioButton" mnemonicParsing="false" text="Деньги">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </RadioButton>
                </children>
                <VBox.margin>
                   <Insets bottom="3.0" top="1.0" />
@@ -61,13 +75,10 @@
       </VBox>
       <AnchorPane layoutX="373.0" layoutY="104.0" prefHeight="500.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="85.0">
          <children>
-            <TableView layoutX="88.0" layoutY="43.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TableView fx:id="tableDesigners" layoutX="88.0" layoutY="43.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <columnResizePolicy>
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
-               <columns>
-                  <TableColumn prefWidth="75.0" text="Column X" />
-               </columns>
             </TableView>
          </children>
       </AnchorPane>
