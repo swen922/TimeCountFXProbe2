@@ -39,7 +39,6 @@ import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
 
-    private MainApp mainApp;
     private Stage stage;
     private StatisticWindowController statisticWindowController;
 
@@ -137,14 +136,6 @@ public class TableProjectsDesignerController {
     @FXML
     private Button testDeleteButton;*/
 
-
-    public MainApp getMainApp() {
-        return mainApp;
-    }
-
-    public void setMainApp(MainApp newMainApp) {
-        this.mainApp = newMainApp;
-    }
 
     public Stage getStage() {
         return stage;
@@ -396,7 +387,7 @@ public class TableProjectsDesignerController {
                     if (selectUser.equalsIgnoreCase(toLoginWindow)) {
 
                         AllData.getRootLayout().setCenter(null);
-                        mainApp.showLoginWindow();
+                        AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
                         User user = AllUsers.getOneUserForFullName(selectUser);
@@ -406,10 +397,10 @@ public class TableProjectsDesignerController {
                             AllData.getRootLayout().setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             initialize();
-                            mainApp.showTableProjectsDesigner();
+                            AllData.mainApp.showTableProjectsDesigner();
                             if (AllData.getStatStage() != null) {
                                 if (AllData.getStatStage().isShowing()) {
-                                    mainApp.showStatisticWindow();
+                                    AllData.mainApp.showStatisticWindow();
                                 }
                             }
 
@@ -419,12 +410,12 @@ public class TableProjectsDesignerController {
                             AllData.getRootLayout().setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             initialize();
-                            mainApp.showTableProjectsManager();
+                            AllData.mainApp.showTableProjectsManager();
 
                             // Переписать для окна статистики менеджера
                             if (AllData.getStatStage() != null) {
                                 if (AllData.getStatStage().isShowing()) {
-                                    mainApp.showStatisticWindow();
+                                    AllData.mainApp.showStatisticWindow();
                                 }
                             }
                         }
@@ -662,11 +653,11 @@ public class TableProjectsDesignerController {
     }
 
     public void handleStatisticButton() {
-        mainApp.showStatisticWindow();
+        AllData.mainApp.showStatisticWindow();
     }
 
     public void handleAbout() {
-        this.mainApp.showAboutWindow();
+        AllData.mainApp.showAboutWindow();
     }
 
     public void updateStatus(String message) {

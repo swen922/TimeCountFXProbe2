@@ -54,6 +54,7 @@ public class MainApp extends Application {
                 showTableProjectsManager();
             }
         }
+        AllData.mainApp = this;
 
     }
 
@@ -70,7 +71,6 @@ public class MainApp extends Application {
             primaryStage.setTitle("Заголовок окна");
 
             RootLayoutController controller = loader.getController();
-            controller.setMainApp(this);
             AllData.setRootLayout(rootLayout);
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,7 +91,6 @@ public class MainApp extends Application {
 
             tableProjectsDesignerController = loader.getController();
             AllData.setTableProjectsDesignerController(tableProjectsDesignerController);
-            tableProjectsDesignerController.setMainApp(this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,7 +106,6 @@ public class MainApp extends Application {
             rootLayout.setCenter(tableManager);
 
             AllData.tableProjectsManagerController = (TableProjectsManagerController) loader.getController();
-            AllData.tableProjectsManagerController.setMainApp(this);
             AllData.tableProjectsManagerController.setStage(primaryStage);
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,7 +125,6 @@ public class MainApp extends Application {
             editProjectStage.setScene(scene);
 
             EditProjectWindowController controller = (EditProjectWindowController) loader.getController();
-            controller.setMainApp(this);
             controller.setMyStage(editProjectStage);
 
             AllData.editProjectWindowControllers.put(projectIDnumber, controller);
@@ -198,7 +195,8 @@ public class MainApp extends Application {
             Stage staffStage = new Stage();
             staffStage.setTitle("Информация о пользователях");
             staffStage.initModality(Modality.NONE);
-            staffStage.initOwner(primaryStage);
+            //staffStage.initOwner(primaryStage);
+            AllData.staffStage = staffStage;
 
             Scene scene = new Scene(staffWin);
             staffStage.setScene(scene);
@@ -225,7 +223,6 @@ public class MainApp extends Application {
             Scene scene = new Scene(loginWindow);
             logWinStage.setScene(scene);
             LoginWindowController loginWindowController = loaderLoginWindow.getController();
-            loginWindowController.setMainApp(this);
             loginWindowController.setStage(logWinStage);
 
             logWinStage.showAndWait();
@@ -272,7 +269,6 @@ public class MainApp extends Application {
                 statStage.show();
 
                 statisticWindowController = loader.getController();
-                statisticWindowController.setMainApp(this);
                 statisticWindowController.setStage(statStage);
                 AllData.setStatisticWindowController(statisticWindowController);
                 AllData.setStatStage(statStage);

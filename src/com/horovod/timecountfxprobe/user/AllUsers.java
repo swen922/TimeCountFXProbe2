@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -82,6 +83,7 @@ public class AllUsers {
         AllUsers.usersLogged = newUsersLogged;
     }
 
+
     public static synchronized void addLoggedUserByIDnumber(int newLoggedUser) {
         if (!usersLogged.contains(AllUsers.getOneUser(newLoggedUser).getFullName())) {
             AllUsers.usersLogged.add(AllUsers.getOneUser(newLoggedUser).getFullName());
@@ -149,6 +151,32 @@ public class AllUsers {
             return deletedUsers.get(deletedUser);
         }
         return null;
+    }
+
+
+    public static Map<Integer, User> getDesigners() {
+        Map<Integer, User> result = new HashMap<>();
+        for (User u : users.values()) {
+            if (u.getRole().equals(Role.DESIGNER)) {
+                result.put(u.getIDNumber(), u);
+            }
+        }
+        return result;
+    }
+
+    public static Map<Integer, User> getDesignersPlusDeleted() {
+        Map<Integer, User> result = new HashMap<>();
+        for (User u : users.values()) {
+            if (u.getRole().equals(Role.DESIGNER)) {
+                result.put(u.getIDNumber(), u);
+            }
+        }
+        for (User us : deletedUsers.values()) {
+            if (us.getRole().equals(Role.DESIGNER)) {
+                result.put(us.getIDNumber(), us);
+            }
+        }
+        return result;
     }
 
 

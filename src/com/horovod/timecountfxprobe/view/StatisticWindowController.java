@@ -25,7 +25,6 @@ import java.util.*;
 
 public class StatisticWindowController {
 
-    private MainApp mainApp;
     private Stage stage;
 
     private ObservableList<String> datesForBarChart;
@@ -87,14 +86,6 @@ public class StatisticWindowController {
     private CategoryAxis xAxis;
 
 
-
-    public MainApp getMainApp() {
-        return mainApp;
-    }
-
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
-    }
 
     public Stage getStage() {
         return stage;

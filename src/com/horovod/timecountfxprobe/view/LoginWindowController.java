@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.MainApp;
+import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -15,16 +16,8 @@ import javafx.stage.Stage;
 
 public class LoginWindowController {
 
-    private MainApp mainApp;
     private Stage stage;
 
-    public MainApp getMainApp() {
-        return mainApp;
-    }
-
-    public void setMainApp(MainApp newMainApp) {
-        this.mainApp = newMainApp;
-    }
 
     public Stage getStage() {
         return stage;
@@ -111,13 +104,13 @@ public class LoginWindowController {
                     this.stage.close();
                     /** TODO убрать эту строчку в рабочем варианте */
                     //Generator.generateProjects();
-                    this.mainApp.showTableProjectsDesigner();
+                    AllData.mainApp.showTableProjectsDesigner();
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
                     // TODO аписать класс таблицы для менеджера
                     //this.mainApp.showTableProjectsDesigner();
-                    this.mainApp.showTableProjectsManager();
+                    AllData.mainApp.showTableProjectsManager();
                 }
 
                 break;
@@ -128,7 +121,7 @@ public class LoginWindowController {
     public void handleCancel() {
         //this.mainApp.closeApp();
         this.stage.close();
-        mainApp.showTableProjectsDesigner();
+        AllData.mainApp.showTableProjectsDesigner();
         //AllData.getRootLayout().setCenter(AllData.getTableDesigner());
         //AllData.getTableProjectsDesignerController().initLoggedUsersChoiceBox();
     }

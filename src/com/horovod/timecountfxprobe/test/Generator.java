@@ -202,12 +202,12 @@ public class Generator {
 
         int minusDays = 0;
 
-        for (int j = 0; j <= 100; j++) {
+        for (int j = 0; j <= 400; j++) {
             int projectID = (int) (Math.random() * 10 + 1);
-            if (j % 2 == 0) {
+            if (j % 4 == 0) {
                 minusDays++;
             }
-            int ID = (int) (Math.random() * 6 + 1);
+            int ID = (int) (Math.random() * 7 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
@@ -215,11 +215,14 @@ public class Generator {
 
         for (int j = 0; j <= 20; j++) {
             int projectID = (int) (Math.random() * 9 + 1);
-            int ID = (int) (Math.random() * 6 + 1);
+            int ID = (int) (Math.random() * 7 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(projectID, LocalDate.now(), ID, newtime);
         }
+
+        AllData.addWorkTime(2, LocalDate.now(), 3, 15.5);
+
 
         String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
         String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";

@@ -50,7 +50,6 @@ import java.awt.Desktop;
 
 public class TableProjectsManagerController {
 
-    private MainApp mainApp;
     private Stage myStage;
 
     private ObservableList<Map.Entry<Integer, Project>> showProjects;
@@ -170,13 +169,6 @@ public class TableProjectsManagerController {
 
 
 
-    public MainApp getMainApp() {
-        return mainApp;
-    }
-
-    public void setMainApp(MainApp newMainApp) {
-        this.mainApp = newMainApp;
-    }
 
     public Stage getStage() {
         return myStage;
@@ -424,6 +416,10 @@ public class TableProjectsManagerController {
                         ec.handleCloseButton();
                     }
 
+                    if (AllData.staffStage != null) {
+                        AllData.staffStage.close();
+                    }
+
                     if (!AllData.editProjectWindowControllers.isEmpty()) {
                         event.consume();
                     }
@@ -543,7 +539,7 @@ public class TableProjectsManagerController {
                     if (selectUser.equalsIgnoreCase(toLoginWindow)) {
 
                         AllData.getRootLayout().setCenter(null);
-                        mainApp.showLoginWindow();
+                        AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
                         User user = AllUsers.getOneUserForFullName(selectUser);
@@ -553,10 +549,10 @@ public class TableProjectsManagerController {
                             AllData.getRootLayout().setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             //initialize();
-                            mainApp.showTableProjectsDesigner();
+                            AllData.mainApp.showTableProjectsDesigner();
                             if (AllData.getStatStage() != null) {
                                 if (AllData.getStatStage().isShowing()) {
-                                    mainApp.showStatisticWindow();
+                                    AllData.mainApp.showStatisticWindow();
                                 }
                             }
                         }
@@ -564,7 +560,7 @@ public class TableProjectsManagerController {
                             AllData.getRootLayout().setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             //initialize();
-                            mainApp.showTableProjectsManager();
+                            AllData.mainApp.showTableProjectsManager();
 
                             /** TODO Переписать для окна статистики менеджера */
                             if (AllData.getStatStage() != null) {
@@ -780,7 +776,8 @@ public class TableProjectsManagerController {
     }
 
     public void handlleUsersButton() {
-        mainApp.showStaffWindow();
+        initClosing();
+        AllData.mainApp.showStaffWindow();
     }
 
     public void handleSumButton() {
@@ -823,11 +820,11 @@ public class TableProjectsManagerController {
     }
 
     public void handleStatisticButton() {
-        mainApp.showStatisticWindow();
+        AllData.mainApp.showStatisticWindow();
     }
 
     public void handleAbout() {
-        this.mainApp.showAboutWindow();
+        AllData.mainApp.showAboutWindow();
     }
 
     public void updateStatus(String message) {
@@ -1175,7 +1172,7 @@ public class TableProjectsManagerController {
                         initClosing();
 
                         if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
-                            mainApp.showEditProjectWindow(entry.getKey());
+                            AllData.mainApp.showEditProjectWindow(entry.getKey());
 
                         }
                         else {

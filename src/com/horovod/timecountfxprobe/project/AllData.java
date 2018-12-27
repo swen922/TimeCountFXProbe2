@@ -1,5 +1,6 @@
 package com.horovod.timecountfxprobe.project;
 
+import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.view.EditProjectWindowController;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -68,7 +69,9 @@ public class AllData {
     private static StatisticWindowController statisticWindowController;
     private static BorderPane rootLayout;
     private static Stage statStage;
+    public static Stage staffStage;
 
+    public static MainApp mainApp;
     public static TableProjectsManagerController tableProjectsManagerController;
     public static Map<Integer, Stage> openEditProjectStages = new HashMap<>();
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();

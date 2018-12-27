@@ -45,7 +45,6 @@ import java.util.List;
 
 public class EditProjectWindowController {
 
-    private MainApp mainApp;
     private Project myProject;
     private Stage myStage;
 
@@ -135,15 +134,6 @@ public class EditProjectWindowController {
     private TableView<WorkDay> workTimeTableView;
 
 
-
-
-    public MainApp getMainApp() {
-        return mainApp;
-    }
-
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
-    }
 
     public Project getMyProject() {
         return myProject;
@@ -491,7 +481,7 @@ public class EditProjectWindowController {
     }
 
     public void handleAddWorkDayButton() {
-        mainApp.showAddWorkDayDialog(myProject.getIdNumber(), myStage, this);
+        AllData.mainApp.showAddWorkDayDialog(myProject.getIdNumber(), myStage, this);
     }
 
     private void initSelectFormatChoiceBox() {
