@@ -99,9 +99,9 @@
                   <Insets />
                </HBox.margin>
             </VBox>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="35.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
+                  <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -109,8 +109,9 @@
                         <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
                      </tooltip>
                   </Button>
-                  <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handlleUsersButton" prefHeight="35.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
-                  <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="35.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handlleUsersButton" prefHeight="30.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="30.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
+                  <Button mnemonicParsing="false" onAction="#handleSumButton" prefHeight="30.0" prefWidth="100.0" text="Расчет з/п" textAlignment="CENTER" wrapText="true" />
                </children>
                <padding>
                   <Insets top="12.0" />

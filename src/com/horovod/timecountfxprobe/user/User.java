@@ -14,5 +14,4 @@ public interface User {
     double getWorkHourValue();
     void setWorkHourValue(double workHourValue);
 
-
 }

@@ -1,13 +1,10 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.MainApp;
-import com.horovod.timecountfxprobe.view.EditProjectWindowController;
+import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
-import com.horovod.timecountfxprobe.view.StatisticWindowController;
-import com.horovod.timecountfxprobe.view.TableProjectsDesignerController;
-import com.horovod.timecountfxprobe.view.TableProjectsManagerController;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -69,13 +66,14 @@ public class AllData {
     private static StatisticWindowController statisticWindowController;
     private static BorderPane rootLayout;
     private static Stage statStage;
-    public static Stage staffStage;
 
     public static MainApp mainApp;
     public static TableProjectsManagerController tableProjectsManagerController;
     public static Map<Integer, Stage> openEditProjectStages = new HashMap<>();
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();
     public static volatile int IDnumberForEditProject;
+    public static StaffWindowController staffWindowController;
+    public static Map<Integer, Stage> openEditUserStages = new HashMap<>();
 
 
 
@@ -711,6 +709,12 @@ public class AllData {
         return result.doubleValue();
     }
 
+    public static double formatDoubleHourPay(double argDouble) {
+        BigDecimal result = new BigDecimal(Double.toString(argDouble));
+        result = result.setScale(3, RoundingMode.HALF_UP);
+        return result.doubleValue();
+    }
+
     public static String formatWorkTime(Double timeDouble) {
         String result = String.valueOf(timeDouble);
         result = result.replaceAll("\\.", ",");
@@ -754,8 +758,22 @@ public class AllData {
         } catch (NumberFormatException e) {
             return oldText;
         }
-        newText = String.valueOf(AllData.formatDouble(newTimeDouble));
-        return newText;
+        return String.valueOf(AllData.formatDouble(newTimeDouble));
+    }
+
+    public static String formatStringInputHourPay(String oldText, String input) {
+        String newText = input.replaceAll(" ", ".");
+        newText = newText.replaceAll("-", ".");
+        newText = newText.replaceAll(",", ".");
+        newText = newText.replaceAll("=", ".");
+
+        Double newTimeDouble = null;
+        try {
+            newTimeDouble = Double.parseDouble(newText);
+        } catch (NumberFormatException e) {
+            return oldText;
+        }
+        return String.valueOf(AllData.formatDoubleHourPay(newTimeDouble));
     }
 
     public static String formatStringInputInteger(String oldText, String input) {

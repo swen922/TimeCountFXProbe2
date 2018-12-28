@@ -58,9 +58,6 @@ public class StaffWindowController {
 
 
     @FXML
-    private ChoiceBox<String> usersChoiceBox;
-
-    @FXML
     private ChoiceBox<Month> monthChoiceBox;
 
     @FXML
@@ -87,8 +84,6 @@ public class StaffWindowController {
     @FXML
     private TableView<UserBase> tableUsers;
 
-    /*@FXML
-    private TableColumn<UserBase, String> designersColumn;*/
 
 
 
@@ -105,7 +100,6 @@ public class StaffWindowController {
         // вместо него – initializeStaff()
         designersOnlyCheckBox.setSelected(true);
 
-        initUsersChoiceBox();
         initYearChoiceBox();
         initMonthChoiceBox();
 
@@ -129,70 +123,6 @@ public class StaffWindowController {
 
 
     }
-
-    private void initUsersChoiceBox() {
-        if (listUsers == null) {
-            listUsers = FXCollections.observableArrayList();
-        }
-        listUsers.clear();
-
-        if (designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                if (u.getRole().equals(Role.DESIGNER)) {
-                    listUsers.add(u.getFullName());
-                }
-            }
-        }
-        else if (designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                if (u.getRole().equals(Role.DESIGNER)) {
-                    listUsers.add(u.getFullName());
-                }
-            }
-            for (User u : AllUsers.getDeletedUsers().values()) {
-                if (u.getRole().equals(Role.DESIGNER)) {
-                    listUsers.add(u.getFullName());
-                }
-            }
-        }
-        else if (!designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                listUsers.add(u.getFullName());
-            }
-        }
-        else if (!designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                listUsers.add(u.getFullName());
-            }
-            for (User u : AllUsers.getDeletedUsers().values()) {
-                listUsers.add(u.getFullName());
-            }
-        }
-
-        listUsers.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        usersChoiceBox.setItems(listUsers);
-        usersChoiceBox.getItems().add(0, allWorkers);
-        if (usersChoiceBox.getValue() == null) {
-            usersChoiceBox.setValue(allWorkers);
-        }
-
-        usersChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                initializeTable();
-            }
-        });
-    }
-
-
-
-
 
 
     public void initYearChoiceBox() {
@@ -237,8 +167,6 @@ public class StaffWindowController {
         monthChoiceBox.setItems(monthsValues);
         monthChoiceBox.setValue(LocalDate.now().getMonth());
     }
-
-
 
 
 
@@ -311,31 +239,44 @@ public class StaffWindowController {
 
 
         for (int i = 1; i <= monthLemgth; i++) {
-            TableColumn<UserBase, String> columnTime = new TableColumn<>(String.valueOf(i));
-            final int j = i;
-            columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
-                @Override
-                public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                    double time = param.getValue().getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j));
-                    return new SimpleStringProperty(AllData.formatWorkTime(time));
+
+            boolean dayIsWorking = false;
+            for (User usr : getUsers().values()) {
+                LocalDate workDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), i);
+                List<Project> projectsForDate = AllData.getAllProjectsForDesignerAndDate(usr.getIDNumber(), workDate);
+                if (!projectsForDate.isEmpty()) {
+                    dayIsWorking = true;
+                    break;
                 }
-            });
-            columnTime.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
-                @Override
-                public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
-                    /*TableCell<UserBase, String> result = getTableCell(usersColumn, TextAlignment.CENTER);
-                    UserBase ub = param.getTableView().getSelectionModel().getSelectedItem();
-                    UserBase ub = param.getTableView().getItems().get(getIndex());
-                    double dayTime = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j));
-                    if (dayTime < 6) {
-                        result.setStyle("-fx-background-color: #f2d8c9;");
+            }
+
+            if (dayIsWorking) {
+                TableColumn<UserBase, String> columnTime = new TableColumn<>(String.valueOf(i));
+                final int j = i;
+                columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
+                    @Override
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                        double time = param.getValue().getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j));
+                        return new SimpleStringProperty(AllData.formatWorkTime(time));
                     }
-                    return result;*/
-                    return new TimeCell(j);
-                }
-            });
-            //columnTime.setStyle("-fx-alignment: CENTER;");
-            columns.add(columnTime);
+                });
+                columnTime.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
+                    @Override
+                    public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
+                        return new TimeCell(j);
+                    }
+                });
+
+                columnTime.setEditable(true);
+                columnTime.setSortable(true);
+                columnTime.setResizable(true);
+
+                columnTime.setMinWidth(25);
+                //columnTime.setPrefWidth(30);
+                columnTime.setMaxWidth(50);
+
+                columns.add(columnTime);
+            }
         }
 
         TableColumn<UserBase, String> workSumColumn = new TableColumn<>("Всего");
@@ -346,22 +287,65 @@ public class StaffWindowController {
                 return new SimpleStringProperty(AllData.formatWorkTime(time));
             }
         });
-        workSumColumn.setStyle("-fx-alignment: CENTER; -fx-background-color: #fffbdc;");
-        //workSumColumn.setStyle("-fx-background-color: linear(#fffbdc 100%);");
+        //workSumColumn.setStyle("-fx-alignment: CENTER; -fx-background-color: #fffbdc;");
+
+        workSumColumn.setEditable(true);
+        workSumColumn.setSortable(true);
+        workSumColumn.setResizable(true);
+
+        workSumColumn.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
+            @Override
+            public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
+                return new SumCell();
+            }
+        });
         columns.add(1, workSumColumn);
 
 
-        for (TableColumn<UserBase, String> tc : columns) {
-            tc.setMinWidth(25);
-            tc.setPrefWidth(30);
-            tc.setMaxWidth(35);
-        }
-        usersColumn.setMaxWidth(100);
-        usersColumn.setPrefWidth(80);
-        usersColumn.setMinWidth(50);
+        TableColumn<UserBase, String> hourPayColumn = new TableColumn<>("З/п в час");
+        hourPayColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                return new SimpleStringProperty(AllData.formatWorkTime(AllUsers.getOneUser(param.getValue().userID).getWorkHourValue()));
+            }
+        });
+
+        hourPayColumn.setEditable(true);
+        hourPayColumn.setSortable(true);
+        hourPayColumn.setResizable(true);
+
+        Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>> cellFactory =
+                (TableColumn<UserBase, String> p) -> new EditingCellHourPay<>();
+        hourPayColumn.setCellFactory(cellFactory);
+
+        hourPayColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<UserBase, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<UserBase, String> event) {
+                UserBase ub = (UserBase) event.getTableView().getItems().get(event.getTablePosition().getRow());
+                AllUsers.getOneUser(ub.getUserID()).setWorkHourValue(Double.parseDouble(event.getNewValue()));
+            }
+        });
+
+        hourPayColumn.setStyle("-fx-alignment: CENTER;");
+        columns.add(0, hourPayColumn);
+
+
+        TableColumn<UserBase, String> actionColumn = new TableColumn<>("Инфо");
+
+
+
+
+        usersColumn.setMinWidth(90);
+        //usersColumn.setPrefWidth(120);
+        usersColumn.setMaxWidth(120);
+
         workSumColumn.setMinWidth(40);
-        workSumColumn.setPrefWidth(45);
+        //workSumColumn.setPrefWidth(45);
         workSumColumn.setMaxWidth(50);
+
+        hourPayColumn.setMinWidth(60);
+        //hourPayColumn.setPrefWidth(50);
+        hourPayColumn.setMaxWidth(80);
 
 
 
@@ -429,7 +413,7 @@ public class StaffWindowController {
         text.setTextAlignment(textAlignment);
         text.setLineSpacing(1.0);
         cell.setGraphic(text);
-        cell.setPadding(new Insets(8, 5, 6, 5));
+        cell.setPadding(new Insets(8, 5, 6, 10));
         cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
         text.wrappingWidthProperty().bind(column.widthProperty());
         text.textProperty().bind(cell.itemProperty());
@@ -561,7 +545,7 @@ public class StaffWindowController {
             else {
                 UserBase ub = getTableView().getItems().get(getIndex());
                 double dayTime = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), day));
-                if (dayTime < 1) {
+                if (dayTime < 0.5) {
                     setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
                 }
                 else {
@@ -572,6 +556,161 @@ public class StaffWindowController {
         }
     }
 
+    class SumCell extends TableCell<UserBase, String> {
 
+        public SumCell() {
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            //super.updateItem(item, empty);
+
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+                UserBase ub = getTableView().getItems().get(getIndex());
+                double monthTime = ub.getWorkSumForMonth(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue());
+                setStyle("-fx-alignment: CENTER; -fx-background-color: #fffbdc;");
+                setGraphic(new Text(String.valueOf(monthTime)));
+                setEditable(true);
+            }
+        }
+    }
+
+
+    class UserCell extends TableCell<UserBase, Boolean> {
+
+        private final Button manageButton = new Button("Инфо");
+        private final CheckBox retiredCheckBox = new CheckBox("Уволенный");
+        private final Button deleteButton = new Button("X");
+
+        @Override
+        protected void updateItem(Boolean item, boolean empty) {
+            //super.updateItem(item, empty);
+
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+                UserBase ub = getTableView().getItems().get(getIndex());
+
+                if (AllUsers.isUserDeleted(ub.getUserID())) {
+                    retiredCheckBox.setSelected(true);
+                    setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                }
+                else {
+                    retiredCheckBox.setSelected(false);
+                    setStyle(null);
+                }
+
+
+                manageButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        //initClosing();
+
+                        if (!AllData.openEditUserStages.containsKey(ub.getUserID())) {
+                            //AllData.mainApp.
+                        }
+                        else {
+                            AllData.openEditUserStages.get(ub.getUserID()).close();
+                            AllData.openEditUserStages.get(ub.getUserID()).show();
+                        }
+                    }
+                });
+
+                retiredCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        if (retiredCheckBox.isSelected()) {
+
+                        }
+                        else {
+
+                        }
+                    }
+                });
+
+                deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                    }
+                });
+
+            }
+
+        }
+
+
+
+        {
+            manageButton.setMinHeight(20);
+            manageButton.setMaxHeight(20);
+            manageButton.setStyle("-fx-font-size:10");
+
+            retiredCheckBox.setStyle("-fx-font-size:10");
+
+            deleteButton.setMinHeight(20);
+            deleteButton.setMaxHeight(20);
+            deleteButton.setStyle("-fx-font-size:10");
+        }
+
+    } // конец класса UserCell
 
 }
+
+
+
+
+
+
+/*private void initUsersChoiceBox() {
+        if (listUsers == null) {
+            listUsers = FXCollections.observableArrayList();
+        }
+        listUsers.clear();
+
+        if (designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
+            for (User u : AllUsers.getUsers().values()) {
+                if (u.getRole().equals(Role.DESIGNER)) {
+                    listUsers.add(u.getFullName());
+                }
+            }
+        }
+        else if (designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
+            for (User u : AllUsers.getUsers().values()) {
+                if (u.getRole().equals(Role.DESIGNER)) {
+                    listUsers.add(u.getFullName());
+                }
+            }
+            for (User u : AllUsers.getDeletedUsers().values()) {
+                if (u.getRole().equals(Role.DESIGNER)) {
+                    listUsers.add(u.getFullName());
+                }
+            }
+        }
+        else if (!designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
+            for (User u : AllUsers.getUsers().values()) {
+                listUsers.add(u.getFullName());
+            }
+        }
+        else if (!designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
+            for (User u : AllUsers.getUsers().values()) {
+                listUsers.add(u.getFullName());
+            }
+            for (User u : AllUsers.getDeletedUsers().values()) {
+                listUsers.add(u.getFullName());
+            }
+        }
+
+        listUsers.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+    }*/

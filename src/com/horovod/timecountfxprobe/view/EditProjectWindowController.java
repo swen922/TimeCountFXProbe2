@@ -367,7 +367,7 @@ public class EditProjectWindowController {
                     }
                 }
                 double result = AllData.intToDouble(counterMap.get(i));
-                sb.append(AllUsers.getOneUser(i).getFullName()).append(" = ").append(result).append(" ").
+                sb.append(AllUsers.getOneUser(i).getFullName()).append(" = ").append(AllData.formatWorkTime(result)).append(" ").
                         append(AllData.formatHours(String.valueOf(result))).append(";   ");
             }
             designersWorkSums.setText(sb.toString());

@@ -191,7 +191,7 @@ public class TableProjectsDesignerController {
 
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsDesignerController.EditingCell();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell();
 
         columnTime.setCellFactory(cellFactory);
 
@@ -219,9 +219,10 @@ public class TableProjectsDesignerController {
                 if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
                     AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
                 }
+                initialize();
 
-                filterField.setText("-");
-                filterField.clear();
+                /*filterField.setText("-");
+                filterField.clear();*/
             }
         });
 
@@ -737,7 +738,7 @@ public class TableProjectsDesignerController {
 
 
 
-    class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
+    /*class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
 
         private TextField textField;
 
@@ -822,11 +823,9 @@ public class TableProjectsDesignerController {
 
         }
 
-
-
         private String getString() {
             return getItem() == null ? "" : getItem().toString();
         }
-    } // Конец класса EditingCell
+    } // Конец класса EditingCell*/
 
 }

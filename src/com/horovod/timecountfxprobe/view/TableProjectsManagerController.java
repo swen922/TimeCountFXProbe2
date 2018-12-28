@@ -306,7 +306,7 @@ public class TableProjectsManagerController {
         });
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new TableProjectsManagerController.EditingCell();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell();
 
         columnBudget.setCellFactory(cellFactory);
 
@@ -414,10 +414,6 @@ public class TableProjectsManagerController {
 
                     for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
                         ec.handleCloseButton();
-                    }
-
-                    if (AllData.staffStage != null) {
-                        AllData.staffStage.close();
                     }
 
                     if (!AllData.editProjectWindowControllers.isEmpty()) {
@@ -1289,96 +1285,6 @@ public class TableProjectsManagerController {
             }
         }
     }*/
-
-    class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
-
-        private TextField textField;
-
-        public EditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((String) getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        protected void updateItem(String item, boolean empty) {
-
-            super.updateItem(item, empty);
-            if (empty) {
-
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(null);
-                }
-                else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            String oldText = getString();
-            textField = new TextField(oldText);
-            textField.setAlignment(Pos.CENTER);
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent event) {
-                    KeyCode keyCode = event.getCode();
-                    if (keyCode == KeyCode.ENTER) {
-                        commitEdit(AllData.formatStringInputInteger(oldText, textField.getText()));
-                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
-                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        //initialize();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (!newValue) {
-                        commitEdit(AllData.formatStringInputInteger(oldText, textField.getText()));
-                        TableProjectsManagerController.EditingCell.this.getTableView().requestFocus();
-                        TableProjectsManagerController.EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        //initialize();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            TableProjectsManagerController.EditingCell.this.textField.selectAll();
-
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    } // Конец класса EditingCell
 
 
 

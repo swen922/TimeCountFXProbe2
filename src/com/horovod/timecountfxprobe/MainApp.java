@@ -196,7 +196,7 @@ public class MainApp extends Application {
             staffStage.setTitle("Информация о пользователях");
             staffStage.initModality(Modality.NONE);
             //staffStage.initOwner(primaryStage);
-            AllData.staffStage = staffStage;
+            //AllData.staffStage = staffStage;
 
             Scene scene = new Scene(staffWin);
             staffStage.setScene(scene);

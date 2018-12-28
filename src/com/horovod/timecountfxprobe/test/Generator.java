@@ -5,6 +5,7 @@ import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 public class Generator {
@@ -128,13 +129,24 @@ public class Generator {
         AllUsers.createUser("des3", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des3").setFullName("Шахматов Сергей");
         AllUsers.createUser("des4", "pass", Role.DESIGNER);
-        AllUsers.getOneUser("des4").setFullName("Ремесленный Олег");
+        AllUsers.getOneUser("des4").setFullName("Ремесленннннннный Олег Егорьевич");
         AllUsers.createUser("des5", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des5").setFullName("Малиновская Мария");
         AllUsers.createUser("des6", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des6").setFullName("Балясников Артем");
         AllUsers.createUser("des7", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des7").setFullName("Коршунов Игорь");
+
+        AllUsers.createUser("des8", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des8").setFullName("Восьмой Артем");
+        AllUsers.createUser("des9", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des9").setFullName("Девятый Валерий Павлович");
+        AllUsers.createUser("des10", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des10").setFullName("Десятый Кирилл Андреевич");
+        AllUsers.createUser("des11", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des11").setFullName("Одиннадцатый Павел");
+        AllUsers.createUser("des12", "pass", Role.DESIGNER);
+        AllUsers.getOneUser("des12").setFullName("Денадцатый Поль Элюар");
 
 
         /*for (int i = 1; i <= 2; i++) {
@@ -151,7 +163,7 @@ public class Generator {
 
         AllUsers.addLoggedUserByIDnumber(2);
         AllUsers.addLoggedUserByIDnumber(3);
-        AllUsers.addLoggedUserByIDnumber(8);
+        AllUsers.addLoggedUserByIDnumber(13);
     }
 
 
@@ -173,7 +185,11 @@ public class Generator {
             int ID = (int) (Math.random() * 6 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
-            AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
+            if (!LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
+                    !LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+                AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
+            }
+
         }
 
         for (int j = 0; j <= 50; j++) {
@@ -202,15 +218,19 @@ public class Generator {
 
         int minusDays = 0;
 
-        for (int j = 0; j <= 400; j++) {
+        for (int j = 0; j <= 800; j++) {
             int projectID = (int) (Math.random() * 10 + 1);
-            if (j % 4 == 0) {
+            if (j % 20 == 0) {
                 minusDays++;
             }
             int ID = (int) (Math.random() * 7 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
-            AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
+
+            if (!LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
+                    !LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+                AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
+            }
         }
 
         for (int j = 0; j <= 20; j++) {
@@ -221,7 +241,15 @@ public class Generator {
             AllData.addWorkTime(projectID, LocalDate.now(), ID, newtime);
         }
 
-        AllData.addWorkTime(2, LocalDate.now(), 3, 15.5);
+        for (int j = 0; j <= 10; j++) {
+            int projectID = (int) (Math.random() * 9 + 1);
+            int ID = (int) (Math.random() * 7 + 1);
+            int tmp = (int) ((Math.random() * 1000) / 30);
+            double newtime = AllData.intToDouble(tmp);
+            AllData.addWorkTime(projectID, LocalDate.now().plusDays(1), ID, newtime);
+        }
+
+        AllData.addWorkTime(2, LocalDate.now(), 3, 35.5);
 
 
         String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
