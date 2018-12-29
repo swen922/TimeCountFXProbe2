@@ -201,10 +201,35 @@ public class MainApp extends Application {
             Scene scene = new Scene(staffWin);
             staffStage.setScene(scene);
             StaffWindowController controller = loader.getController();
-            controller.setMyStage(staffStage);
-            controller.setMainApp(this);
+
+            AllData.staffWindowController = controller;
+            AllData.staffWindowStage = staffStage;
 
             staffStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showEditUserWindow(int userID) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/EditUserWindow.fxml"));
+            AnchorPane editUser = (AnchorPane) loader.load();
+
+            Stage editUserStage = new Stage();
+            editUserStage.setTitle("Работник id-" + userID + ", " + AllUsers.getOneUser(userID).getFullName());
+            editUserStage.initModality(Modality.NONE);
+            Scene scene = new Scene(editUser);
+            editUserStage.setScene(scene);
+            AllData.editUserStages.put(userID, editUserStage);
+
+            EditUserWindowController controller = loader.getController();
+            controller.setUserID(userID);
+            AllData.editUserWindowControllers.put(userID, controller);
+
+
+            editUserStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }

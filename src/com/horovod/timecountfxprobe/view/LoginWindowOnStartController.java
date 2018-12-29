@@ -111,14 +111,10 @@ public class LoginWindowOnStartController {
                 if (role.equals(Role.DESIGNER)) {
                     this.stage.close();
                     this.mainApp.showTableProjectsDesigner();
-                    /** TODO убрать эту строчку в рабочем варианте */
-                    //Generator.generateProjects2();
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
                     this.mainApp.showTableProjectsManager();
-                    /** TODO убрать эту строчку в рабочем варианте */
-                    //Generator.generateProjects2();
                 }
 
                 break;

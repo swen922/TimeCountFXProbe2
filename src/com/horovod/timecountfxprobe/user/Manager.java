@@ -6,13 +6,13 @@ import java.util.Objects;
 
 @XmlRootElement(name = "manager")
 public class Manager implements User {
-
     private int IDNumber;
     private String nameLogin;
     private Role role = Role.MANAGER;
     private String fullName;
     private String email;
     private double workHourValue = 0.0;
+    private boolean isRetired = false;
 
     public Manager(String nameLogin, String password) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
@@ -73,6 +73,16 @@ public class Manager implements User {
     public void setWorkHourValue(double workHourValue) {
         this.workHourValue = workHourValue;
     }
+
+    @XmlElement(name = "managerisretired")
+    public boolean isRetired() {
+        return isRetired;
+    }
+
+    public void setRetired(boolean retired) {
+        isRetired = retired;
+    }
+
 
     @Override
     public boolean equals(Object o) {

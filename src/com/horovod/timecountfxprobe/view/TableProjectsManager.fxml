@@ -109,7 +109,7 @@
                         <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
                      </tooltip>
                   </Button>
-                  <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handlleUsersButton" prefHeight="30.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
+                  <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handleUsersButton" prefHeight="30.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
                   <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="30.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
                   <Button mnemonicParsing="false" onAction="#handleSumButton" prefHeight="30.0" prefWidth="100.0" text="Расчет з/п" textAlignment="CENTER" wrapText="true" />
                </children>

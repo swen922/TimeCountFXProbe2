@@ -771,7 +771,7 @@ public class TableProjectsManagerController {
         handleFilters();
     }
 
-    public void handlleUsersButton() {
+    public void handleUsersButton() {
         initClosing();
         AllData.mainApp.showStaffWindow();
     }

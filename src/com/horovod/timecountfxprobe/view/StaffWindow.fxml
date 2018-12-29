@@ -60,9 +60,9 @@
                </children>
             </VBox>
             <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <VBox minWidth="280.0" spacing="5.0">
+            <VBox alignment="CENTER_LEFT" minWidth="280.0" spacing="15.0">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" spacing="20.0">
+                  <HBox spacing="20.0">
                      <children>
                         <RadioButton fx:id="daysRadioButton" mnemonicParsing="false" text="По дням" />
                         <RadioButton fx:id="monthsRadioButton" mnemonicParsing="false" text="По месяцам" />
@@ -71,7 +71,7 @@
                         <Insets />
                      </VBox.margin>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
+                  <HBox alignment="CENTER_LEFT" spacing="20.0">
                      <children>
                         <RadioButton fx:id="timeRadioButton" mnemonicParsing="false" text="Время (часы)">
                            <cursor>
@@ -98,7 +98,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
                      <children>
-                        <TextField alignment="CENTER" prefWidth="50.0" />
+                        <TextField fx:id="limitTimeTextField" alignment="CENTER" prefWidth="50.0" />
                         <Label text="Минимум часов">
                            <HBox.margin>
                               <Insets left="-14.0" />
@@ -108,7 +108,7 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
                      <children>
-                        <TextField alignment="CENTER" prefWidth="50.0" />
+                        <TextField fx:id="limitMoneyTextField" alignment="CENTER" prefWidth="50.0" />
                         <Label text="Минимум тыс. руб.">
                            <padding>
                               <Insets left="-14.0" />

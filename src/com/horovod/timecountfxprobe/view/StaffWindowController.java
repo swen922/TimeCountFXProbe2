@@ -9,6 +9,8 @@ import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import com.sun.jdi.IntegerValue;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
@@ -19,10 +21,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
@@ -36,7 +41,6 @@ import java.util.*;
 
 public class StaffWindowController {
 
-    private Stage myStage;
     private MainApp mainApp;
 
     private ObservableList<String> listUsers;
@@ -47,14 +51,6 @@ public class StaffWindowController {
 
     private String allWorkers = "Все работники";
 
-
-    public void setMyStage(Stage myStage) {
-        this.myStage = myStage;
-    }
-
-    public void setMainApp(MainApp mainApp) {
-        this.mainApp = mainApp;
-    }
 
 
     @FXML
@@ -80,6 +76,12 @@ public class StaffWindowController {
 
     @FXML
     private RadioButton moneyRadioButton;
+
+    @FXML
+    private TextField limitTimeTextField;
+
+    @FXML
+    private TextField limitMoneyTextField;
 
     @FXML
     private TableView<UserBase> tableUsers;
@@ -112,6 +114,12 @@ public class StaffWindowController {
         moneyRadioButton.setToggleGroup(timeMoneyGroup);
         timeRadioButton.setSelected(true);
 
+
+        initTimeLimitTextField();
+
+
+
+
         initializeTable();
 
     }
@@ -121,7 +129,46 @@ public class StaffWindowController {
      * не затрагивая полей, которые не надо трогать */
     public void initializeStaff() {
 
+        initTimeLimitTextField()
 
+    }
+
+    private void initTimeLimitTextField() {
+        limitTimeTextField.setText(AllData.formatWorkTime(AllData.getLimitTimeForStaffWindow()));
+        limitTimeTextField.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (timeRadioButton.isSelected() && daysRadioButton.isSelected()) {
+                    Double timelLimit = AllData.getDoubleFromText(AllData.getLimitTimeForStaffWindow(), limitTimeTextField.getText());
+                    AllData.setLimitTimeForStaffWindow(timelLimit);
+                    limitTimeTextField.setText(AllData.formatWorkTime(timelLimit));
+                    initializeTable();
+                }
+            }
+        });
+    }
+
+    private void initClosing() {
+
+        if (AllData.staffWindowStage != null) {
+
+            AllData.staffWindowStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+
+                    for (EditUserWindowController eu : AllData.editUserWindowControllers.values()) {
+                        eu.closing();
+                    }
+
+                    if (!AllData.editUserStages.isEmpty()) {
+                        event.consume();
+                    }
+                    else {
+                        AllData.staffWindowStage.close();
+                    }
+                }
+            });
+        }
     }
 
 
@@ -180,17 +227,16 @@ public class StaffWindowController {
         Map<Integer, User> result = new HashMap<>();
 
         if (designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
-            result.putAll(AllUsers.getDesigners());
+            result.putAll(AllUsers.getActiveDesigners());
         }
         else if (designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
             result.putAll(AllUsers.getDesignersPlusDeleted());
         }
         else if (!designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
-            result.putAll(AllUsers.getUsers());
+            result.putAll(AllUsers.getActiveUsers());
         }
         else if (!designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
             result.putAll(AllUsers.getUsers());
-            result.putAll(AllUsers.getDeletedUsers());
         }
         return result;
     }
@@ -330,26 +376,39 @@ public class StaffWindowController {
         columns.add(0, hourPayColumn);
 
 
-        TableColumn<UserBase, String> actionColumn = new TableColumn<>("Инфо");
+        TableColumn<UserBase, Boolean> actionColumn = new TableColumn<>("Инфо");
+        actionColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, Boolean>, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<UserBase, Boolean> param) {
+                boolean result = param.getValue().isRetired();
+                return new SimpleBooleanProperty(result);
+            }
+        });
 
-
+        actionColumn.setCellFactory(new Callback<TableColumn<UserBase, Boolean>, TableCell<UserBase, Boolean>>() {
+            @Override
+            public TableCell<UserBase, Boolean> call(TableColumn<UserBase, Boolean> param) {
+                return new UserCell();
+            }
+        });
+        actionColumn.setStyle("-fx-alignment: CENTER;");
 
 
         usersColumn.setMinWidth(90);
-        //usersColumn.setPrefWidth(120);
         usersColumn.setMaxWidth(120);
 
         workSumColumn.setMinWidth(40);
-        //workSumColumn.setPrefWidth(45);
         workSumColumn.setMaxWidth(50);
 
-        hourPayColumn.setMinWidth(60);
-        //hourPayColumn.setPrefWidth(50);
-        hourPayColumn.setMaxWidth(80);
+        hourPayColumn.setMinWidth(40);
+        hourPayColumn.setMaxWidth(60);
 
+        actionColumn.setMinWidth(120);
+        actionColumn.setMaxWidth(150);
 
 
         tableUsers.getColumns().setAll(columns);
+        tableUsers.getColumns().add(0, actionColumn);
 
         SortedList<UserBase> sortedList = new SortedList<>(userBaseList, new Comparator<UserBase>() {
             @Override
@@ -429,6 +488,7 @@ public class StaffWindowController {
         private LocalDate tillDate;
         private Map<LocalDate, Double> workSumMap = new HashMap<>();
         private double userWorkSum = 0;
+        private boolean isRetired = false;
 
         public UserBase(int ID, LocalDate fromDate, LocalDate tillDate) {
             this.userID = ID;
@@ -475,6 +535,14 @@ public class StaffWindowController {
 
         public void setUserWorkSum(double userWorkSum) {
             this.userWorkSum = userWorkSum;
+        }
+
+        public boolean isRetired() {
+            return isRetired;
+        }
+
+        public void setRetired(boolean retired) {
+            isRetired = retired;
         }
 
         private void fillWorkSumForPeriod(LocalDate fromDate, LocalDate tillDate) {
@@ -531,6 +599,10 @@ public class StaffWindowController {
     class TimeCell extends TableCell<UserBase, String> {
         private Integer day;
 
+        /*public TimeCell(Integer day) {
+            this.day = day;
+        }*/
+
         public TimeCell(Integer day) {
             this.day = day;
         }
@@ -545,7 +617,7 @@ public class StaffWindowController {
             else {
                 UserBase ub = getTableView().getItems().get(getIndex());
                 double dayTime = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), day));
-                if (dayTime < 0.5) {
+                if (dayTime < AllData.getLimitTimeForStaffWindow()) {
                     setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
                 }
                 else {
@@ -582,8 +654,7 @@ public class StaffWindowController {
     class UserCell extends TableCell<UserBase, Boolean> {
 
         private final Button manageButton = new Button("Инфо");
-        private final CheckBox retiredCheckBox = new CheckBox("Уволенный");
-        private final Button deleteButton = new Button("X");
+        private final CheckBox retiredCheckBox = new CheckBox("Уволен");
 
         @Override
         protected void updateItem(Boolean item, boolean empty) {
@@ -609,14 +680,15 @@ public class StaffWindowController {
                     @Override
                     public void handle(ActionEvent event) {
 
-                        //initClosing();
+                        AllData.rebuildEditUsersControllers();
+                        initClosing();
 
-                        if (!AllData.openEditUserStages.containsKey(ub.getUserID())) {
-                            //AllData.mainApp.
+                        if (!AllData.editUserStages.containsKey(ub.getUserID())) {
+                            AllData.mainApp.showEditUserWindow(ub.getUserID());
                         }
                         else {
-                            AllData.openEditUserStages.get(ub.getUserID()).close();
-                            AllData.openEditUserStages.get(ub.getUserID()).show();
+                            AllData.editUserStages.get(ub.getUserID()).close();
+                            AllData.editUserStages.get(ub.getUserID()).show();
                         }
                     }
                 });
@@ -626,25 +698,65 @@ public class StaffWindowController {
                     public void handle(ActionEvent event) {
 
                         if (retiredCheckBox.isSelected()) {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Подтверждение увольнения");
+                            alert.setHeaderText("Уволить работника\n" + AllUsers.getOneUser(ub.getUserID()).getFullName() + "?");
+
+                            Optional<ButtonType> option = alert.showAndWait();
+
+                            if (option.get() == ButtonType.OK) {
+                                boolean retired = AllUsers.deleteUser(ub.getUserID());
+                                if (retired) {
+                                    retiredCheckBox.setSelected(true);
+                                    setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                                }
+                                else {
+                                    Alert notRetired = new Alert(Alert.AlertType.WARNING);
+                                    notRetired.setTitle("Ошибка в программе");
+                                    notRetired.setHeaderText("Не удалось уволить работника " + AllUsers.getOneUser(ub.getUserID()).getFullName() + ".\nОбратитесь за помощью к Анисимову");
+                                }
+                            }
+                            else {
+                                retiredCheckBox.setSelected(false);
+                                setStyle(null);
+                            }
 
                         }
                         else {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setTitle("Подтверждение возвращения");
+                            alert.setHeaderText("Принять работника\n" + AllUsers.getOneUser(ub.getUserID()).getFullName() + "\nснова на работу?");
+
+                            Optional<ButtonType> option = alert.showAndWait();
+
+                            if (option.get() == ButtonType.OK) {
+                                boolean returned = AllUsers.resurrectUser(ub.getUserID());
+                                if (returned) {
+                                    retiredCheckBox.setSelected(false);
+                                    setStyle(null);
+                                }
+                                else {
+                                    Alert notReturned = new Alert(Alert.AlertType.WARNING);
+                                    notReturned.setTitle("Ошибка в программе");
+                                    notReturned.setHeaderText("Не удалось вернуть работника " + AllUsers.getOneUser(ub.getUserID()).getFullName() + ".\nОбратитесь за помощью к Анисимову");
+                                }
+                            }
+                            else {
+                                retiredCheckBox.setSelected(true);
+                                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                            }
 
                         }
                     }
                 });
 
-                deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-
-                    }
-                });
-
+                HBox hbox = new HBox();
+                hbox.getChildren().addAll(manageButton, retiredCheckBox);
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(10);
+                setGraphic(hbox);
             }
-
         }
-
 
 
         {
@@ -653,10 +765,6 @@ public class StaffWindowController {
             manageButton.setStyle("-fx-font-size:10");
 
             retiredCheckBox.setStyle("-fx-font-size:10");
-
-            deleteButton.setMinHeight(20);
-            deleteButton.setMaxHeight(20);
-            deleteButton.setStyle("-fx-font-size:10");
         }
 
     } // конец класса UserCell

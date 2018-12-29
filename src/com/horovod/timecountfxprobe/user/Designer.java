@@ -12,6 +12,7 @@ public class Designer implements User {
     private String fullName;
     private String email;
     private double workHourValue = 0.0;
+    private boolean isRetired = false;
 
     /**
      * TODO в графон в создании юзера вставить проверку nameLogin на уникальность,
@@ -89,6 +90,14 @@ public class Designer implements User {
         this.workHourValue = workHourValue;
     }
 
+    @XmlElement(name = "designerisretired")
+    public boolean isRetired() {
+        return isRetired;
+    }
+
+    public void setRetired(boolean retired) {
+        isRetired = retired;
+    }
 
     /** TODO В методах equals и hashcode использовать ТОЛЬКО неизменяемые
      * или редкоизменяемые поля, т.к. иначе сломается после смены мейла или стоимости часа */

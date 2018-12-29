@@ -182,7 +182,7 @@ public class Generator {
             if (j % 50 == 0) {
                 minusDays++;
             }
-            int ID = (int) (Math.random() * 6 + 1);
+            int ID = (int) (Math.random() * 11 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             if (!LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
@@ -194,7 +194,7 @@ public class Generator {
 
         for (int j = 0; j <= 50; j++) {
             int projectID = (int) (Math.random() * 99 + 1);
-            int ID = (int) (Math.random() * 6 + 1);
+            int ID = (int) (Math.random() * 11 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(projectID, LocalDate.now(), ID, newtime);
@@ -218,12 +218,12 @@ public class Generator {
 
         int minusDays = 0;
 
-        for (int j = 0; j <= 800; j++) {
+        for (int j = 0; j <= 2000; j++) {
             int projectID = (int) (Math.random() * 10 + 1);
-            if (j % 20 == 0) {
+            if (j % 25 == 0) {
                 minusDays++;
             }
-            int ID = (int) (Math.random() * 7 + 1);
+            int ID = (int) (Math.random() * 12 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
 
@@ -233,21 +233,33 @@ public class Generator {
             }
         }
 
-        for (int j = 0; j <= 20; j++) {
+        for (int j = 0; j <= 50; j++) {
             int projectID = (int) (Math.random() * 9 + 1);
-            int ID = (int) (Math.random() * 7 + 1);
+            int ID = (int) (Math.random() * 12 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(projectID, LocalDate.now(), ID, newtime);
         }
 
-        for (int j = 0; j <= 10; j++) {
+        for (int j = 0; j <= 20; j++) {
             int projectID = (int) (Math.random() * 9 + 1);
-            int ID = (int) (Math.random() * 7 + 1);
+            int ID = (int) (Math.random() * 12 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(projectID, LocalDate.now().plusDays(1), ID, newtime);
         }
+
+        for (int j = 0; j <= 20; j++) {
+            int projectID = (int) (Math.random() * 9 + 1);
+            int ID = (int) (Math.random() * 12 + 1);
+            int tmp = (int) ((Math.random() * 1000) / 30);
+            double newtime = AllData.intToDouble(tmp);
+            AllData.addWorkTime(projectID, LocalDate.now().plusDays(2), ID, newtime);
+        }
+
+
+
+
 
         AllData.addWorkTime(2, LocalDate.now(), 3, 35.5);
 

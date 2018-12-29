@@ -15,10 +15,6 @@ public class AllUsers {
 
     private static Map<Integer, User> users = new ConcurrentHashMap<>();
 
-    // Заводим отдельный список для удаленных пользователей,
-    // чтобы иметь возможность использовать их в подборках статистики
-    private static Map<Integer, User> deletedUsers = new ConcurrentHashMap<>();
-
     private static Map<Integer, SecurePassword> usersPass = new ConcurrentHashMap<>();
 
     /** Это поле надо сохранять в XML, чтобы при загрузке утром сразу грузился нужный пользователь */
@@ -51,13 +47,6 @@ public class AllUsers {
         AllUsers.users = users;
     }
 
-    public static Map<Integer, User> getDeletedUsers() {
-        return deletedUsers;
-    }
-
-    public static synchronized void setDeletedUsers(Map<Integer, User> deletedUsers) {
-        AllUsers.deletedUsers = deletedUsers;
-    }
 
     public static Map<Integer, SecurePassword> getUsersPass() {
         return usersPass;
@@ -146,18 +135,21 @@ public class AllUsers {
         return null;
     }
 
-    public static User getOneDeletedUser(int deletedUser) {
-        if (deletedUsers.containsKey(deletedUser)) {
-            return deletedUsers.get(deletedUser);
+    public static Map<Integer, User> getActiveUsers() {
+        Map<Integer, User> result = new HashMap<>();
+        for (User u : users.values()) {
+            if (!u.isRetired()) {
+                result.put(u.getIDNumber(), u);
+            }
         }
-        return null;
+        return result;
     }
 
 
-    public static Map<Integer, User> getDesigners() {
+    public static Map<Integer, User> getActiveDesigners() {
         Map<Integer, User> result = new HashMap<>();
         for (User u : users.values()) {
-            if (u.getRole().equals(Role.DESIGNER)) {
+            if (u.getRole().equals(Role.DESIGNER) && !u.isRetired()) {
                 result.put(u.getIDNumber(), u);
             }
         }
@@ -169,11 +161,6 @@ public class AllUsers {
         for (User u : users.values()) {
             if (u.getRole().equals(Role.DESIGNER)) {
                 result.put(u.getIDNumber(), u);
-            }
-        }
-        for (User us : deletedUsers.values()) {
-            if (us.getRole().equals(Role.DESIGNER)) {
-                result.put(us.getIDNumber(), us);
             }
         }
         return result;
@@ -221,8 +208,7 @@ public class AllUsers {
 
     public static synchronized boolean deleteUser(int idUser) {
         if (isUserExist(idUser)) {
-            deletedUsers.put(idUser, users.get(idUser));
-            users.remove(idUser);
+            users.get(idUser).setRetired(true);
             return true;
         }
         return false;
@@ -230,8 +216,7 @@ public class AllUsers {
 
     public static synchronized boolean resurrectUser(int idUser) {
         if (isUserDeleted(idUser)) {
-            users.put(idUser, deletedUsers.get(idUser));
-            deletedUsers.remove(idUser);
+            users.get(idUser).setRetired(false);
             return true;
         }
         return false;
@@ -266,7 +251,7 @@ public class AllUsers {
     }
 
     public static boolean isUserDeleted(int idNumber) {
-        return deletedUsers.containsKey(idNumber);
+        return users.get(idNumber).isRetired();
     }
 
 

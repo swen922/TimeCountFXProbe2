@@ -38,7 +38,6 @@ public class AllData {
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile DoubleProperty workSumProjectsProperty = new SimpleDoubleProperty(AllData.intToDouble(workSumProjects.get()));
 
-
     private static DoubleProperty todayWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty weekWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty monthWorkSumProperty = new SimpleDoubleProperty(0);
@@ -69,14 +68,16 @@ public class AllData {
 
     public static MainApp mainApp;
     public static TableProjectsManagerController tableProjectsManagerController;
-    public static Map<Integer, Stage> openEditProjectStages = new HashMap<>();
+    public static Map<Integer, Stage> openEditProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();
     public static volatile int IDnumberForEditProject;
     public static StaffWindowController staffWindowController;
-    public static Map<Integer, Stage> openEditUserStages = new HashMap<>();
+    public static Stage staffWindowStage;
+    public static Map<Integer, EditUserWindowController> editUserWindowControllers = new ConcurrentHashMap<>();
+    public static Map<Integer, Stage> editUserStages = new ConcurrentHashMap<>();
 
-
-
+    private static volatile double limitTimeForStaffWindow = 6;
+    private static volatile double limitMoneyForStaffWindow = 6;
 
 
     /** Стандартные геттеры и сеттеры */
@@ -150,6 +151,24 @@ public class AllData {
         AllData.workSumProjects.set(counter);
         AllData.workSumProjectsProperty.set(AllData.intToDouble(counter));
     }
+
+
+    public static double getLimitTimeForStaffWindow() {
+        return limitTimeForStaffWindow;
+    }
+
+    public static void setLimitTimeForStaffWindow(double limitTimeForStaffWindow) {
+        AllData.limitTimeForStaffWindow = limitTimeForStaffWindow;
+    }
+
+    public static double getLimitMoneyForStaffWindow() {
+        return limitMoneyForStaffWindow;
+    }
+
+    public static void setLimitMoneyForStaffWindow(double limitMoneyForStaffWindow) {
+        AllData.limitMoneyForStaffWindow = limitMoneyForStaffWindow;
+    }
+
 
 
     public static double getTodayWorkSumProperty() {
@@ -688,6 +707,15 @@ public class AllData {
         }
     }
 
+    public static void rebuildEditUsersControllers() {
+        Iterator<Map.Entry<Integer, EditUserWindowController>> iter = editUserWindowControllers.entrySet().iterator();
+        while (iter.hasNext()) {
+            if (iter.next().getValue() == null) {
+                iter.remove();
+            }
+        }
+    }
+
 
 
     /** методы-утилиты */
@@ -760,6 +788,24 @@ public class AllData {
         }
         return String.valueOf(AllData.formatDouble(newTimeDouble));
     }
+
+    public static Double getDoubleFromText(double current, String input) {
+        String newText = input.replaceAll(" ", ".");
+        newText = newText.replaceAll("-", ".");
+        newText = newText.replaceAll(",", ".");
+        newText = newText.replaceAll("=", ".");
+
+        System.out.println(newText);
+
+        Double newTimeDouble = null;
+        try {
+            newTimeDouble = Double.parseDouble(newText);
+        } catch (NumberFormatException e) {
+            return current;
+        }
+        return AllData.formatDouble(newTimeDouble);
+    }
+
 
     public static String formatStringInputHourPay(String oldText, String input) {
         String newText = input.replaceAll(" ", ".");
