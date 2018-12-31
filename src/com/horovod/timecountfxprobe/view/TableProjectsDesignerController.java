@@ -465,7 +465,7 @@ public class TableProjectsDesignerController {
 
     private void fillDatesChart(LocalDate from, LocalDate till) {
 
-        List<Project> decadeProjects = AllData.getAllProjectsForPeriodWorking(from, till);
+        List<Project> decadeProjects = AllData.getAllProjectsForPeriod(from, till);
 
         TreeSet<String> setForSorting = new TreeSet<>();
         for (Project p : decadeProjects) {
@@ -484,7 +484,7 @@ public class TableProjectsDesignerController {
 
     private void fillXYChartSeries(LocalDate from, LocalDate till) {
 
-        List<Project> myProjects = AllData.getAllProjectsForDesignerAndPeriodWorking(AllUsers.getCurrentUser(), from, till);
+        List<Project> myProjects = AllData.getAllProjectsForDesignerAndPeriod(AllUsers.getCurrentUser(), from, till);
         Map<String, Integer> decadeWorkSums = new TreeMap<>();
 
         for (Project p : myProjects) {

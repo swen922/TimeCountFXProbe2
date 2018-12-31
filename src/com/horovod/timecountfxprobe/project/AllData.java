@@ -476,7 +476,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForPeriodWorking(LocalDate fromDate, LocalDate tillDate) {
+    public static List<Project> getActiveProjectsForPeriod(LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(fromDate, tillDate)) {
@@ -486,7 +486,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForDesignerAndPeriodWorking(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+    public static List<Project> getActiveProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
@@ -536,7 +536,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForPeriodWorking(LocalDate fromDate, LocalDate tillDate) {
+    public static List<Project> getAllProjectsForPeriod(LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(fromDate, tillDate)) {
@@ -546,7 +546,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDesignerAndPeriodWorking(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+    public static List<Project> getAllProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {

@@ -610,7 +610,7 @@ public class TableProjectsManagerController {
 
     private void fillDatesChart(LocalDate from, LocalDate till) {
 
-        List<Project> decadeProjects = AllData.getAllProjectsForPeriodWorking(from, till);
+        List<Project> decadeProjects = AllData.getAllProjectsForPeriod(from, till);
 
         TreeSet<String> setForSorting = new TreeSet<>();
         for (Project p : decadeProjects) {
@@ -629,7 +629,7 @@ public class TableProjectsManagerController {
 
     private void fillXYChartSeries(LocalDate from, LocalDate till) {
 
-        List<Project> myProjects = AllData.getAllProjectsForPeriodWorking(from, till);
+        List<Project> myProjects = AllData.getAllProjectsForPeriod(from, till);
         Map<String, Integer> decadeWorkSums = new TreeMap<>();
 
         for (Project p : myProjects) {
