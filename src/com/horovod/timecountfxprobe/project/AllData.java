@@ -556,10 +556,10 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDesignerAndMonth(int designerIDnumber, Year year, Month month) {
+    public static List<Project> getAllProjectsForDesignerAndMonth(int designerIDnumber, int year, int month) {
         List<Project> result = new ArrayList<>();
-        LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
-        LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
+        LocalDate fromDate = LocalDate.of(year, month, 1);
+        LocalDate tillDate = LocalDate.of(year, month, fromDate.getMonth().length(Year.from(fromDate).isLeap()));
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
                 result.add(p);

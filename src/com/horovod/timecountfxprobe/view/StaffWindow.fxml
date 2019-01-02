@@ -64,8 +64,14 @@
                <children>
                   <HBox spacing="20.0">
                      <children>
-                        <RadioButton fx:id="daysRadioButton" mnemonicParsing="false" text="По дням" />
-                        <RadioButton fx:id="monthsRadioButton" mnemonicParsing="false" text="По месяцам" />
+                        <RadioButton fx:id="daysRadioButton" mnemonicParsing="false" onAction="#handleDayMonthRadioButtons" text="По дням">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></RadioButton>
+                        <RadioButton fx:id="monthsRadioButton" mnemonicParsing="false" onAction="#handleDayMonthRadioButtons" text="По месяцам">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></RadioButton>
                      </children>
                      <VBox.margin>
                         <Insets />
@@ -73,12 +79,12 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" spacing="20.0">
                      <children>
-                        <RadioButton fx:id="timeRadioButton" mnemonicParsing="false" text="Время (часы)">
+                        <RadioButton fx:id="timeRadioButton" mnemonicParsing="false" onAction="#initializeTable" text="Время (часы)">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </RadioButton>
-                        <RadioButton fx:id="moneyRadioButton" mnemonicParsing="false" text="Деньги (тыс. руб.)">
+                        <RadioButton fx:id="moneyRadioButton" mnemonicParsing="false" onAction="#initializeTable" text="Деньги (тыс. руб.)">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -126,7 +132,7 @@
             </VBox>
             <VBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="10.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
+                  <Button mnemonicParsing="false" onAction="#initializeTable" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="12.0" />
                      </font>

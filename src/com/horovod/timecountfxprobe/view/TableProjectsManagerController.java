@@ -305,8 +305,9 @@ public class TableProjectsManagerController {
             }
         });
 
+        /** TODO Переписать чтобы возвращался другой класс. В этом неправильное форматирование числа*/
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell  ();
 
         columnBudget.setCellFactory(cellFactory);
 

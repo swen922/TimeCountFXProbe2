@@ -330,7 +330,7 @@ public class Project {
         while (iter.hasNext()) {
             WorkTime wt = iter.next();
             // Проверяем наличие такого дня + дизайнера
-            if ((AllData.parseDate(wt.getDateString()).equals(newDate)) && (wt.getDesignerID() == idUser)) {
+            if (wt.getDate().equals(newDate) && wt.getDesignerID() == idUser) {
                 // сначала правим суммарное рабочее время всего проекта
                 int diff = newTimeInt - wt.getTime();
                 int newWorkSumInt = getWorkSum() + diff;
