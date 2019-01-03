@@ -24,6 +24,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -47,7 +49,6 @@ public class StaffWindowController {
     private ObservableList<Integer> yearsValues;
     private ObservableList<Month> monthsValues;
     private ObservableList<UserBase> userBaseList;
-    private ObservableList<String> userNamesList;
     private ObservableList<TableColumn<?, String>> columns;
 
     private String allWorkers = "Все работники";
@@ -118,54 +119,23 @@ public class StaffWindowController {
 
         initTimeLimitTextField();
 
-
-
-
         initializeTable();
 
     }
 
 
-    /** Этот метод – чтобы запускать его вместо initialize() во время работы системы
-     * не затрагивая полей, которые не надо трогать */
-    /*public void updateTable() {
-        LocalDate fromDate = null;
-        LocalDate tillDate = null;
-
-        if (daysRadioButton.isSelected()) {
-            fromDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), 1);
-            Year y = Year.from(fromDate);
-            int monthLemgth = monthChoiceBox.getValue().length(y.isLeap());
-            tillDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), monthLemgth);
-        }
-        else {
-            fromDate = LocalDate.of(yearsChoiceBox.getValue(), 1, 1);
-            tillDate = LocalDate.of(yearsChoiceBox.getValue(), 12, 31);
-        }
-
-        userBaseList.clear();
-        for (User u : getUsers().values()) {
-            UserBase ub = new UserBase(u.getIDNumber(), fromDate, tillDate);
-            userBaseList.add(ub);
-        }
-
-        userBaseList.sort(new Comparator<UserBase>() {
-            @Override
-            public int compare(UserBase o1, UserBase o2) {
-                return AllUsers.getOneUser(o1.userID).getFullName().compareTo(AllUsers.getOneUser(o2.userID).getFullName());
-            }
-        });
-    }*/
 
     private void initTimeLimitTextField() {
         limitTimeTextField.setText(AllData.formatWorkTime(AllData.getLimitTimeForStaffWindow()));
-        limitTimeTextField.setOnAction(new EventHandler<ActionEvent>() {
+        limitTimeTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                if (timeRadioButton.isSelected() && daysRadioButton.isSelected()) {
-                    Double timelLimit = AllData.getDoubleFromText(AllData.getLimitTimeForStaffWindow(), limitTimeTextField.getText());
-                    AllData.setLimitTimeForStaffWindow(timelLimit);
-                    limitTimeTextField.setText(AllData.formatWorkTime(timelLimit));
+            public void handle(KeyEvent event) {
+                KeyCode keyCode = event.getCode();
+                if (keyCode == KeyCode.ENTER) {
+                    double limit = AllData.getDoubleFromText(AllData.getLimitTimeForStaffWindow(), limitTimeTextField.getText(), 1);
+                    AllData.setLimitTimeForStaffWindow(limit);
+                    String input = AllData.formatWorkTime(limit);
+                    limitTimeTextField.setText(input);
                     initializeTable();
                 }
             }
@@ -269,11 +239,6 @@ public class StaffWindowController {
         }
         userBaseList.clear();
 
-        if (userNamesList == null) {
-            userNamesList = FXCollections.observableArrayList();
-        }
-        userNamesList.clear();
-
         if (columns == null) {
             columns = FXCollections.observableArrayList();
         }
@@ -312,50 +277,34 @@ public class StaffWindowController {
 
     private void initializeTableBaseColumns() {
 
-        TableColumn usersColumn = new TableColumn<>("Работник");
+        TableColumn<UserBase, String> usersColumn = new TableColumn<>("Работник");
         usersColumn.setStyle("-fx-alignment: CENTER;");
 
-        usersColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
+        usersColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue call(TableColumn.CellDataFeatures param) {
-                if (param.getValue().getClass() == UserBase.class) {
-                    UserBase ub = (UserBase) param.getValue();
-                    String s2 = AllUsers.getOneUser(ub.getUserID()).getFullName();
-                    return new SimpleStringProperty(s2);
-                }
-                else if (param.getValue().getClass() == String.class) {
-                    String name = (String) param.getValue();
-                    return new SimpleStringProperty(name);
-
-                }
-                return new SimpleStringProperty("");
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                UserBase ub = param.getValue();
+                String name = AllUsers.getOneUser(ub.getUserID()).getFullName();
+                return new SimpleStringProperty(name);
             }
         });
 
-        usersColumn.setCellFactory(new Callback<TableColumn, TableCell>() {
+        usersColumn.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
             @Override
-            public TableCell call(TableColumn param) {
+            public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
                 return getTableCell(usersColumn, TextAlignment.LEFT);
             }
         });
 
 
-        TableColumn hourPayColumn = new TableColumn<>("З/п в час");
+        TableColumn<UserBase, String> hourPayColumn = new TableColumn<>("З/п в час");
 
-        hourPayColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
+        hourPayColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue call(TableColumn.CellDataFeatures param) {
-                if (param.getValue().getClass() == UserBase.class) {
-                    UserBase ub = (UserBase) param.getValue();
-                    String sum = String.valueOf(AllData.formatDoubleHourPay(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue()));
-                    return new SimpleStringProperty(sum);
-                }
-                else if (param.getValue().getClass() == String.class) {
-                    String name = (String) param.getValue();
-                    String sum = String.valueOf(AllData.formatDoubleHourPay(AllUsers.getOneUserForFullName(name).getWorkHourValue()));
-                    return new SimpleStringProperty(sum);
-                }
-                return new SimpleStringProperty("0");
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                UserBase ub = (UserBase) param.getValue();
+                double sum = AllData.formatDouble(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue(), 3);
+                return new SimpleStringProperty(AllData.formatWorkTime(sum));
             }
         });
 
@@ -363,28 +312,18 @@ public class StaffWindowController {
         hourPayColumn.setSortable(true);
         hourPayColumn.setResizable(true);
 
-
-
-        /*Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>> cellFactory =
-                (TableColumn<UserBase, String> p) -> new EditingCellHourPay<>();*/
-
-        Callback<TableColumn, TableCell> cellFactory =
-                (TableColumn p) -> new EditingCellHourPay();
+        Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>> cellFactory =
+                (TableColumn<UserBase, String> p) -> new EditingCellHourPay<>();
 
         hourPayColumn.setCellFactory(cellFactory);
 
-        hourPayColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent>() {
+        hourPayColumn.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<UserBase, String>>() {
             @Override
-            public void handle(TableColumn.CellEditEvent event) {
-
-                if (event.getTableView().getItems().get(event.getTablePosition().getRow()).getClass() == UserBase.class) {
-                    UserBase ub = (UserBase) event.getTableView().getItems().get(event.getTablePosition().getRow());
-                    AllUsers.getOneUser(ub.getUserID()).setWorkHourValue(AllData.formatDouble(Double.parseDouble((String)event.getNewValue())));
-                }
-                else if (event.getTableView().getItems().get(event.getTablePosition().getRow()).getClass() == String.class) {
-                    String name = (String) event.getTableView().getItems().get(event.getTablePosition().getRow());
-                    AllUsers.getOneUserForFullName(name).setWorkHourValue(AllData.formatDouble(Double.parseDouble((String)event.getNewValue())));
-                }
+            public void handle(TableColumn.CellEditEvent<UserBase, String> event) {
+                UserBase ub = event.getTableView().getItems().get(event.getTablePosition().getRow());
+                double hourPay = AllData.getDoubleFromText(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue(), event.getNewValue(), 3);
+                AllUsers.getOneUser(ub.getUserID()).setWorkHourValue(hourPay);
+                initializeTable();
             }
         });
 
@@ -392,29 +331,19 @@ public class StaffWindowController {
 
 
 
-        TableColumn actionColumn = new TableColumn<>("Инфо");
+        TableColumn<UserBase, Boolean> actionColumn = new TableColumn<>("Инфо");
 
-        actionColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
+        actionColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, Boolean>, ObservableValue<Boolean>>() {
             @Override
-            public ObservableValue call(TableColumn.CellDataFeatures param) {
-                int id = 0;
-                if (param.getValue().getClass() == UserBase.class) {
-                    UserBase ub = (UserBase) param.getValue();
-                    id = ub.getUserID();
-                }
-                else if (param.getValue().getClass() == String.class) {
-                    String name = (String) param.getValue();
-                    id = AllUsers.getOneUserForFullName(name).getIDNumber();
-                }
-                final int userID = id;
-                boolean result = AllUsers.getOneUser(userID).isRetired();
-                return new SimpleBooleanProperty(result);
+            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<UserBase, Boolean> param) {
+               return new SimpleBooleanProperty(AllUsers.getOneUser(param.getValue().getUserID()).isRetired());
+
             }
         });
 
-        actionColumn.setCellFactory(new Callback<TableColumn, TableCell>() {
+        actionColumn.setCellFactory(new Callback<TableColumn<UserBase, Boolean>, TableCell<UserBase, Boolean>>() {
             @Override
-            public TableCell call(TableColumn param) {
+            public TableCell<UserBase, Boolean> call(TableColumn<UserBase, Boolean> param) {
                 return new UserCell();
             }
         });
@@ -451,6 +380,10 @@ public class StaffWindowController {
             userBaseList.add(ub);
         }
 
+        // Все вычисления по времени производим заранее, до выполнения методов
+        // setCellValueFactory() и setCellFactory()
+        Map<Integer, Double> sumMap = new HashMap<>();
+
 
         for (int i = 1; i <= monthLemgth; i++) {
 
@@ -471,7 +404,15 @@ public class StaffWindowController {
                 // setCellValueFactory() и setCellFactory()
                 Map<Integer, Double> valuesMap = new HashMap<>();
                 for (UserBase ub : userBaseList) {
-                    valuesMap.put(ub.getUserID(), ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j)));
+                    double value = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j));
+                    valuesMap.put(ub.getUserID(), value);
+                    if (sumMap.containsKey(ub.getUserID())) {
+                        double current = sumMap.get(ub.getUserID());
+                        sumMap.put(ub.getUserID(), AllData.formatDouble(current + value, 1));
+                    }
+                    else {
+                        sumMap.put(ub.getUserID(), AllData.formatDouble(value, 1));
+                    }
                 }
 
                 TableColumn<UserBase, String> columnTime = new TableColumn<>(String.valueOf(i));
@@ -479,7 +420,8 @@ public class StaffWindowController {
                 columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                     @Override
                     public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                        return new SimpleStringProperty(AllData.formatWorkTime(valuesMap.get(param.getValue().getUserID())));
+                        double val = valuesMap.get(param.getValue().getUserID()) == null ? 0 : valuesMap.get(param.getValue().getUserID());
+                        return new SimpleStringProperty(AllData.formatWorkTime(val));
                     }
                 });
                 columnTime.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
@@ -501,18 +443,13 @@ public class StaffWindowController {
             }
         }
 
-        // Все вычисления по времени в колонке "Всего" производим заранее,
-        // до выполнения методов setCellValueFactory() и setCellFactory()
-        Map<Integer, Double> sumMap = new HashMap<>();
-        for (UserBase ub : userBaseList) {
-            sumMap.put(ub.getUserID(), ub.getWorkSumForMonth(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue()));
-        }
 
         TableColumn<UserBase, String> workSumColumn = new TableColumn<>("Всего");
         workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                return new SimpleStringProperty(AllData.formatWorkTime(sumMap.get(param.getValue().getUserID())));
+                double val = sumMap.get(param.getValue().getUserID()) == null ? 0 : sumMap.get(param.getValue().getUserID());
+                return new SimpleStringProperty(AllData.formatWorkTime(val));
             }
         });
         //workSumColumn.setStyle("-fx-alignment: CENTER; -fx-background-color: #fffbdc;");
@@ -559,7 +496,7 @@ public class StaffWindowController {
 
 
 
-    public void initializeTableMonthlyTime() {
+    private void initializeTableMonthlyTime() {
 
         LocalDate fromDate = LocalDate.of(yearsChoiceBox.getValue(), 1, 1);
         LocalDate tillDate = LocalDate.of(yearsChoiceBox.getValue(), 12, 31);
@@ -569,6 +506,9 @@ public class StaffWindowController {
             userBaseList.add(ub);
         }
 
+        // Все вычисления по времени производим заранее, до выполнения методов
+        // setCellValueFactory() и setCellFactory()
+        Map<Integer, Double> sumMap = new HashMap<>();
 
         for (int i = 1; i <= 12; i++) {
 
@@ -578,11 +518,28 @@ public class StaffWindowController {
 
             TableColumn<UserBase, String> columnTime = new TableColumn<>(monthName);
             final int j = i;
+
+            // Все вычисления по времени производим заранее, до выполнения методов
+            // setCellValueFactory() и setCellFactory()
+            Map<Integer, Double> valuesMap = new HashMap<>();
+            for (UserBase ub : userBaseList) {
+                double time = ub.getWorkSumForMonth(yearsChoiceBox.getValue(), j);
+                valuesMap.put(ub.getUserID(), AllData.formatDouble(time, 1));
+                if (sumMap.containsKey(ub.getUserID())) {
+                    double current = sumMap.get(ub.getUserID());
+                    sumMap.put(ub.getUserID(), AllData.formatDouble((current + time), 1));
+                }
+                else {
+                    sumMap.put(ub.getUserID(), AllData.formatDouble(time, 1));
+                }
+            }
+
+
+
             columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                    double time = param.getValue().getWorkSumForMonth(yearsChoiceBox.getValue(), j);
-                    return new SimpleStringProperty(AllData.formatWorkTime(time));
+                    return new SimpleStringProperty(AllData.formatWorkTime(valuesMap.get(param.getValue().getUserID())));
                 }
             });
 
@@ -591,18 +548,17 @@ public class StaffWindowController {
             columnTime.setResizable(true);
 
             columnTime.setMinWidth(35);
-            //columnTime.setPrefWidth(30);
             columnTime.setMaxWidth(70);
             columnTime.setStyle("-fx-alignment: CENTER;");
 
-            columns.add(columnTime);
-        }
+            columnTime.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
+                @Override
+                public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
+                    return new ValueCellMonth(valuesMap);
+                }
+            });
 
-        // Все вычисления по времени в колонке "Всего" производим заранее,
-        // до выполнения методов setCellValueFactory() и setCellFactory()
-        Map<Integer, Double> sumMap = new HashMap<>();
-        for (UserBase ub : userBaseList) {
-            sumMap.put(ub.getUserID(), ub.getWorkSumForYear(yearsChoiceBox.getValue()));
+            columns.add(columnTime);
         }
 
         TableColumn<UserBase, String> workSumColumn = new TableColumn<>("Всего");
@@ -661,10 +617,9 @@ public class StaffWindowController {
         LocalDate fromDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), 1);
         Year y = Year.from(fromDate);
         int monthLemgth = monthChoiceBox.getValue().length(y.isLeap());
-        LocalDate tillDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), monthLemgth);
 
         for (User u : getUsers().values()) {
-            userNamesList.add(u.getFullName());
+            userBaseList.add(new UserBase(u.getIDNumber()));
         }
 
         Map<Integer, Integer> sumMap = new HashMap<>();
@@ -682,24 +637,23 @@ public class StaffWindowController {
             }
 
             if (dayIsWorking) {
-                TableColumn<String, String> columnMoney = new TableColumn<>(String.valueOf(i));
+                TableColumn<UserBase, String> columnMoney = new TableColumn<>(String.valueOf(i));
                 final int j = i;
 
                 // Все вычисления по времени производим заранее, до выполнения методов
                 // setCellValueFactory() и setCellFactory()
                 Map<Integer, Integer> valuesMap = new HashMap<>();
-                for (String name : userNamesList) {
-                    int userID = AllUsers.getOneUserForFullName(name).getIDNumber();
+                for (UserBase ub : userBaseList) {
                     LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j);
-                    List<Project> projects = AllData.getAllProjectsForDesignerAndDate(userID, date);
+                    List<Project> projects = AllData.getAllProjectsForDesignerAndDate(ub.getUserID(), date);
                     if (projects.isEmpty()) {
-                        valuesMap.put(userID, 0);
+                        valuesMap.put(ub.getUserID(), 0);
                     }
                     else {
                         double money = 0;
                         for (Project p : projects) {
                             if (p.getBudget() != 0) {
-                                int sumInt = p.getWorkSumForDesignerAndDate(userID, date);
+                                int sumInt = p.getWorkSumForDesignerAndDate(ub.getUserID(), date);
                                 int total = p.getWorkSum();
                                 double totalDouble = AllData.intToDouble(total);
                                 double percent = totalDouble / 100;
@@ -711,29 +665,28 @@ public class StaffWindowController {
                             }
                         }
                         int result = (int) money;
-                        valuesMap.put(userID, result);
-                        if (sumMap.containsKey(userID)) {
-                            int curr = sumMap.get(userID);
-                            sumMap.put(userID, (curr + result));
+                        valuesMap.put(ub.getUserID(), result);
+                        if (sumMap.containsKey(ub.getUserID())) {
+                            int curr = sumMap.get(ub.getUserID());
+                            sumMap.put(ub.getUserID(), (curr + result));
                         }
                         else {
-                            sumMap.put(userID, result);
+                            sumMap.put(ub.getUserID(), result);
                         }
                     }
                 }
 
-                columnMoney.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<String, String>, ObservableValue<String>>() {
+                columnMoney.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                     @Override
-                    public ObservableValue<String> call(TableColumn.CellDataFeatures<String, String> param) {
-                        System.out.println(valuesMap.get(AllUsers.getOneUserForFullName(param.getValue()).getIDNumber()));
-                        return new SimpleStringProperty(AllData.formatInputInteger(valuesMap.get(AllUsers.getOneUserForFullName(param.getValue()).getIDNumber())));
+                    public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                        return new SimpleStringProperty(AllData.formatInputInteger(valuesMap.get(param.getValue().getUserID())));
                     }
                 });
 
-                columnMoney.setCellFactory(new Callback<TableColumn<String, String>, TableCell<String, String>>() {
+                columnMoney.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
                     @Override
-                    public TableCell<String, String> call(TableColumn<String, String> param) {
-                        return new ValueCell(valuesMap);
+                    public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
+                        return new ValueCellMonth(valuesMap);
                     }
                 });
 
@@ -750,24 +703,26 @@ public class StaffWindowController {
             }
         }
 
-        TableColumn<String, String> workSumColumn = new TableColumn<>("Всего");
+        TableColumn<UserBase, String> workSumColumn = new TableColumn<>("Всего");
 
-        workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<String, String>, ObservableValue<String>>() {
+        workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<String, String> param) {
-                return new SimpleStringProperty(AllData.formatInputInteger(sumMap.get(AllUsers.getOneUserForFullName(param.getValue()).getIDNumber())));            }
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                return new SimpleStringProperty(AllData.formatInputInteger(sumMap.get(param.getValue().getUserID())));
+            }
         });
 
         workSumColumn.setEditable(true);
         workSumColumn.setSortable(true);
         workSumColumn.setResizable(true);
 
-        workSumColumn.setCellFactory(new Callback<TableColumn<String, String>, TableCell<String, String>>() {
+        workSumColumn.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
             @Override
-            public TableCell<String, String> call(TableColumn<String, String> param) {
+            public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
                 return new SumCell(sumMap);
             }
         });
+
 
         columns.add(0, workSumColumn);
 
@@ -780,23 +735,84 @@ public class StaffWindowController {
         initializeTableBaseColumns();
 
 
-        SortedList<String> sortedList = new SortedList<>(userNamesList, new Comparator<String>() {
+        SortedList<UserBase> sortedList = new SortedList<>(userBaseList, new Comparator<UserBase>() {
             @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
+            public int compare(UserBase o1, UserBase o2) {
+                return AllUsers.getOneUser(o1.getUserID()).getFullName().compareTo(AllUsers.getOneUser(o2.getUserID()).getFullName());
             }
         });
 
         tableUsers.setItems(sortedList);
         sortedList.comparatorProperty().bind(tableUsers.comparatorProperty());
 
-        userNamesList.sort(new Comparator<String>() {
+        userBaseList.sort(new Comparator<UserBase>() {
             @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
+            public int compare(UserBase o1, UserBase o2) {
+                return AllUsers.getOneUser(o1.getUserID()).getFullName().compareTo(AllUsers.getOneUser(o2.getUserID()).getFullName());
             }
         });
+    }
 
+
+    private void initializeTableMonthlyMoney() {
+        for (User u : getUsers().values()) {
+            userBaseList.add(new UserBase(u.getIDNumber()));
+        }
+
+        // Все вычисления по времени производим заранее, до выполнения методов
+        // setCellValueFactory() и setCellFactory()
+        Map<Integer, Integer> sumMap = new HashMap<>();
+
+        for (int i = 1; i <= 12; i++) {
+            LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), i, 1);
+            Month month = date.getMonth();
+            String monthName = month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+
+            TableColumn<UserBase, String> columnMoney = new TableColumn<>(monthName);
+            final int j = i;
+
+            // Все вычисления по времени производим заранее, до выполнения методов
+            // setCellValueFactory() и setCellFactory()
+            Map<Integer, Integer> valuesMap = new HashMap<>();
+            for (UserBase ub : userBaseList) {
+                List<Project> projects = AllData.getAllProjectsForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue());
+                if (projects.isEmpty()) {
+                    valuesMap.put(ub.getUserID(), 0);
+                }
+                else {
+                    double money = 0;
+                    for (Project p : projects) {
+                        if (p.getBudget() != 0) {
+                            int sumInt = p.getWorkSumForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue());
+                            int total = p.getWorkSum();
+                            double totalDouble = AllData.intToDouble(total);
+                            double percent = totalDouble / 100;
+                            double sum = AllData.intToDouble(sumInt);
+                            double part = sum / percent;
+                            double totalBudget = (double) (p.getBudget());
+                            double partBudget = (totalBudget / 100) * part;
+                            money += partBudget;
+                        }
+                    }
+                    int result = (int) money;
+                    valuesMap.put(ub.getUserID(), result);
+                    if (sumMap.containsKey(ub.getUserID())) {
+                        int curr = sumMap.get(ub.getUserID());
+                        sumMap.put(ub.getUserID(), (curr + result));
+                    }
+                    else {
+                        sumMap.put(ub.getUserID(), result);
+                    }
+                }
+            }
+
+            columnMoney.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
+                @Override
+                public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                    return new SimpleStringProperty(AllData.formatInputInteger(valuesMap.get(param.getValue().getUserID())));
+                }
+            });
+        }
     }
 
 
@@ -845,6 +861,10 @@ public class StaffWindowController {
             fillWorkSumForPeriod(fromDate, tillDate);
         }
 
+        public UserBase(int userID) {
+            this.userID = userID;
+        }
+
         public int getUserID() {
             return userID;
         }
@@ -890,7 +910,7 @@ public class StaffWindowController {
                 for (WorkTime wt : project.getWorkTimeForDesignerAndPeriod(this.userID, fromDate, tillDate)) {
                     if (workSumMap.containsKey(wt.getDate())) {
                         double current = workSumMap.get(wt.getDate());
-                        double added = AllData.formatDouble(current + wt.getTimeDouble());
+                        double added = AllData.formatDouble(current + wt.getTimeDouble(), 1);
                         workSumMap.put(wt.getDate(), added);
                     }
                     else {
@@ -904,11 +924,11 @@ public class StaffWindowController {
             if (day.compareTo(fromDate) >= 0 && day.compareTo(tillDate) <= 0) {
                 if (workSumMap.containsKey(day)) {
                     double current = workSumMap.get(day);
-                    double added = AllData.formatDouble(current + workSum);
+                    double added = AllData.formatDouble(current + workSum, 1);
                     workSumMap.put(day, added);
                 }
                 else {
-                    workSumMap.put(day, AllData.formatDouble(workSum));
+                    workSumMap.put(day, AllData.formatDouble(workSum, 1));
                 }
             }
         }
@@ -930,7 +950,7 @@ public class StaffWindowController {
                 result += getWorkSumForDay(d);
             }
 
-            return AllData.formatDouble(result);
+            return AllData.formatDouble(result, 1);
         }
 
         public double getWorkSumForYear(int year) {
@@ -943,8 +963,8 @@ public class StaffWindowController {
                 Month m = d.getMonth();
                 result += getWorkSumForMonth(year, m.getValue());
             }
-            yearWorkSums.put(year, AllData.formatDouble(result));
-            return AllData.formatDouble(result);
+            yearWorkSums.put(year, AllData.formatDouble(result, 1));
+            return AllData.formatDouble(result, 1);
         }
 
     } // конец класса UserBase
@@ -989,10 +1009,10 @@ public class StaffWindowController {
     }*/
 
 
-    class ValueCell<T> extends TableCell<T, String> {
-        private Map<Integer, Number> values;
+    class ValueCell extends TableCell<UserBase, String> {
+        private Map<Integer, ? extends Number> values;
 
-        public ValueCell(Map<Integer, Number> values) {
+        public ValueCell(Map<Integer, ? extends Number> values) {
             this.values = values;
         }
 
@@ -1004,10 +1024,11 @@ public class StaffWindowController {
                 setGraphic(null);
             }
             else {
+                UserBase ub = getTableView().getItems().get(getIndex());
                 if (timeRadioButton.isSelected()) {
-                    UserBase ub = (UserBase) getTableView().getItems().get(getIndex());
-                    double time = (double) values.get(ub.getUserID());
-                    if (time < AllData.getLimitMoneyForStaffWindow()) {
+                    Double time = (Double) values.get(ub.getUserID());
+
+                    if (time < AllData.getLimitTimeForStaffWindow()) {
                         setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
                     }
                     else {
@@ -1016,8 +1037,7 @@ public class StaffWindowController {
                     setGraphic(new Text(AllData.formatWorkTime(time)));
                 }
                 else {
-                    String fullName = (String) getTableView().getItems().get(getIndex());
-                    int money = (int) values.get(AllUsers.getOneUserForFullName(fullName).getIDNumber());
+                    Integer money = (Integer) values.get((ub.getUserID()));
                     if (money < AllData.getLimitMoneyForStaffWindow()) {
                         setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
                     }
@@ -1031,11 +1051,66 @@ public class StaffWindowController {
     }
 
 
-    class SumCell<T> extends TableCell<T, String> {
+    class ValueCellMonth extends TableCell<UserBase, String> {
+        private Map<Integer, ? extends Number> values;
 
-        private Map<Integer, Number> values;
+        public ValueCellMonth(Map<Integer, ? extends Number> values) {
+            this.values = values;
+        }
 
-        public SumCell(Map<Integer, Number> values) {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            //super.updateItem(item, empty);
+
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+                if (values.isEmpty()) {
+                    setGraphic(new Text("0"));
+                }
+                else {
+                    UserBase ub = getTableView().getItems().get(getIndex());
+                    Set<Number> sorted = new TreeSet<>();
+                    sorted.addAll(values.values());
+
+                    if (timeRadioButton.isSelected()) {
+                        Double time = (Double) values.get(ub.getUserID()) == null ? 0d : (Double) values.get(ub.getUserID());
+                        if (time.equals(((TreeSet<Number>) sorted).first()) && sorted.size() > 1) {
+                            setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
+                        }
+                        else if (time.equals(((TreeSet<Number>) sorted).last()) && sorted.size() > 1) {
+                            setStyle("-fx-alignment: CENTER; -fx-background-color: #dbe9d8;");
+                        }
+                        else {
+                            setStyle("-fx-alignment: CENTER");
+                        }
+                        setGraphic(new Text(AllData.formatWorkTime(time)));
+                    }
+                    else {
+                        Integer money = (Integer) values.get((ub.getUserID())) == null ? 0 : (Integer) values.get(ub.getUserID());
+                        if (money == ((TreeSet<Number>) sorted).first()) {
+                            setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
+                        }
+                        else if (money == ((TreeSet<Number>) sorted).last()) {
+                            setStyle("-fx-alignment: CENTER; -fx-background-color: #dbe9d8;");
+                        }
+                        else {
+                            setStyle("-fx-alignment: CENTER");
+                        }
+                        setGraphic(new Text(AllData.formatInputInteger(money)));
+                    }
+                }
+            }
+        }
+    }
+
+
+    class SumCell extends TableCell<UserBase, String> {
+
+        private Map<Integer, ? extends Number> values;
+
+        public SumCell(Map<Integer, ? extends Number> values) {
             this.values = values;
         }
 
@@ -1046,14 +1121,13 @@ public class StaffWindowController {
                 setGraphic(null);
             }
             else {
+                UserBase ub = getTableView().getItems().get(getIndex());
                 if (timeRadioButton.isSelected()) {
-                    UserBase ub = (UserBase) getTableView().getItems().get(getIndex());
-                    double time = (double) values.get(ub.getUserID());
+                    Double time = (Double) values.get(ub.getUserID()) == null ? 0d : (Double) values.get(ub.getUserID());
                     setGraphic(new Text(AllData.formatWorkTime(time)));
                 }
                 else {
-                    String fullName = (String) getTableView().getItems().get(getIndex());
-                    int money = (int) values.get(AllUsers.getOneUserForFullName(fullName).getIDNumber());
+                    Integer money = (Integer) values.get((ub.getUserID())) == null ? 0 : (Integer) values.get(ub.getUserID());
                     setGraphic(new Text(AllData.formatInputInteger(money)));
                 }
                 setStyle("-fx-alignment: CENTER; -fx-background-color: #fffbdc;");
@@ -1063,7 +1137,7 @@ public class StaffWindowController {
     }
 
 
-    class UserCell<T> extends TableCell<T, Boolean> {
+    class UserCell extends TableCell<UserBase, Boolean> {
 
         private final Button manageButton = new Button("Инфо");
         private final CheckBox retiredCheckBox = new CheckBox("Уволен");
@@ -1076,16 +1150,8 @@ public class StaffWindowController {
                 setGraphic(null);
             }
             else {
-                int id = 0;
-                if (timeRadioButton.isSelected()) {
-                    UserBase ub = (UserBase) getTableView().getItems().get(getIndex());
-                    id = ub.getUserID();
-                }
-                else {
-                    String name = (String) getTableView().getItems().get(getIndex());
-                    id = AllUsers.getOneUserForFullName(name).getIDNumber();
-                }
-                final int userID = id;
+                UserBase ub = getTableView().getItems().get(getIndex());
+                final int userID = ub.getUserID();
 
                 if (AllUsers.isUserDeleted(userID)) {
                     retiredCheckBox.setSelected(true);

@@ -300,6 +300,9 @@ public class TableProjectsManagerController {
                 if (budget.equals("0")) {
                     return new SimpleStringProperty("");
                 }
+
+                System.out.println("budget = " + budget);
+
                 return new SimpleStringProperty(budget);
                 //return param.getValue().getValue().budgetProperty();
             }
@@ -307,7 +310,7 @@ public class TableProjectsManagerController {
 
         /** TODO Переписать чтобы возвращался другой класс. В этом неправильное форматирование числа*/
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell  ();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCellttt  ();
 
         columnBudget.setCellFactory(cellFactory);
 
@@ -319,9 +322,9 @@ public class TableProjectsManagerController {
                 if (event.getOldValue() == null || event.getOldValue().isEmpty()) {
                 }
                 else {
-                    oldValue = AllData.parseWorkTime(0, event.getOldValue());
+                    oldValue = AllData.parseMoney(0, event.getOldValue());
                 }
-                int budget = AllData.parseWorkTime(oldValue, event.getNewValue());
+                int budget = AllData.parseMoney(oldValue, event.getNewValue());
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 project.setBudget(budget);
 

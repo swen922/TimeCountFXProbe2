@@ -731,17 +731,12 @@ public class AllData {
         return result.doubleValue();
     }
 
-    public static double formatDouble(double argDouble) {
+    public static double formatDouble(double argDouble, int scale) {
         BigDecimal result = new BigDecimal(Double.toString(argDouble));
-        result = result.setScale(1, RoundingMode.HALF_UP);
+        result = result.setScale(scale, RoundingMode.HALF_UP);
         return result.doubleValue();
     }
 
-    public static double formatDoubleHourPay(double argDouble) {
-        BigDecimal result = new BigDecimal(Double.toString(argDouble));
-        result = result.setScale(3, RoundingMode.HALF_UP);
-        return result.doubleValue();
-    }
 
     public static String formatWorkTime(Double timeDouble) {
         String result = String.valueOf(timeDouble);
@@ -774,7 +769,7 @@ public class AllData {
         return "часов";
     }
 
-    public static String formatStringInput(String oldText, String input) {
+    public static String formatStringInputDouble(String oldText, String input, int scale) {
         String newText = input.replaceAll(" ", ".");
         newText = newText.replaceAll("-", ".");
         newText = newText.replaceAll(",", ".");
@@ -786,10 +781,10 @@ public class AllData {
         } catch (NumberFormatException e) {
             return oldText;
         }
-        return String.valueOf(AllData.formatDouble(newTimeDouble));
+        return String.valueOf(AllData.formatDouble(newTimeDouble, scale));
     }
 
-    public static Double getDoubleFromText(double current, String input) {
+    public static Double getDoubleFromText(double current, String input, int scale) {
         String newText = input.replaceAll(" ", ".");
         newText = newText.replaceAll("-", ".");
         newText = newText.replaceAll(",", ".");
@@ -803,24 +798,9 @@ public class AllData {
         } catch (NumberFormatException e) {
             return current;
         }
-        return AllData.formatDouble(newTimeDouble);
+        return AllData.formatDouble(newTimeDouble, scale);
     }
 
-
-    public static String formatStringInputHourPay(String oldText, String input) {
-        String newText = input.replaceAll(" ", ".");
-        newText = newText.replaceAll("-", ".");
-        newText = newText.replaceAll(",", ".");
-        newText = newText.replaceAll("=", ".");
-
-        Double newTimeDouble = null;
-        try {
-            newTimeDouble = Double.parseDouble(newText);
-        } catch (NumberFormatException e) {
-            return oldText;
-        }
-        return String.valueOf(AllData.formatDoubleHourPay(newTimeDouble));
-    }
 
     public static String formatStringInputInteger(String oldText, String input) {
 
@@ -861,19 +841,9 @@ public class AllData {
     public static String formatInputInteger(int input) {
 
         String inputString = String.valueOf(input);
-        inputString = inputString.replaceAll(",", "");
-        inputString = inputString.replaceAll("\\.", "");
-        inputString = inputString.replaceAll(" ", "");
-        inputString = inputString.replaceAll("-", "");
 
-        Integer newInt = null;
-        try {
-            newInt = Integer.parseInt(inputString);
-        } catch (NumberFormatException e) {
-            return inputString;
-        }
         List<Character> listChars = new ArrayList<>();
-        char[] inp = String.valueOf(newInt).toCharArray();
+        char[] inp = inputString.toCharArray();
 
         for (char c : inp) {
             listChars.add(c);
@@ -891,7 +861,8 @@ public class AllData {
         return String.valueOf(res);
     }
 
-    public static Integer parseWorkTime(Integer oldValue, String input) {
+
+    public static Integer parseMoney(Integer oldValue, String input) {
 
         String corrected = input.replaceAll(",", "");
         corrected = corrected.replaceAll("\\.", "");
@@ -909,6 +880,7 @@ public class AllData {
         }
         return newValue;
     }
+
 
     public static List<WorkDay> convertWorkTimesToWorkDays(List<WorkTime> workTimeList) {
         List<WorkDay> result = new ArrayList<>();

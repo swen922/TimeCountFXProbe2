@@ -74,7 +74,7 @@ public class EditingCell<T, String> extends TableCell<T, String> {
             public void handle(KeyEvent event) {
                 KeyCode keyCode = event.getCode();
                 if (keyCode == KeyCode.ENTER) {
-                    commitEdit((String) AllData.formatStringInput((java.lang.String) oldText, textField.getText()));
+                    commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
                     EditingCell.this.getTableView().requestFocus();
                     EditingCell.this.getTableView().getSelectionModel().selectAll();
                     //initialize();
@@ -86,7 +86,7 @@ public class EditingCell<T, String> extends TableCell<T, String> {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (!newValue) {
-                    commitEdit((String) AllData.formatStringInput((java.lang.String) oldText, textField.getText()));
+                    commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
                     EditingCell.this.getTableView().requestFocus();
                     EditingCell.this.getTableView().getSelectionModel().selectAll();
                     //initialize();

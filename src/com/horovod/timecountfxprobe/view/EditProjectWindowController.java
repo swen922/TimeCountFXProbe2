@@ -286,7 +286,7 @@ public class EditProjectWindowController {
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<WorkDay, String> param) {
-                    return new SimpleStringProperty(String.valueOf(AllData.formatDouble(param.getValue().getWorkTimeForDesigner(i))));
+                    return new SimpleStringProperty(String.valueOf(AllData.formatDouble(param.getValue().getWorkTimeForDesigner(i), 1)));
                 }
             });
 
@@ -872,7 +872,7 @@ public class EditProjectWindowController {
         myProject.setLinkedProjects(linkedProjectsTextField.getText());
 
         if (budgetTextField.getText() != null && !budgetTextField.getText().isEmpty()) {
-            myProject.setBudget(AllData.parseWorkTime(myProject.getBudget(), budgetTextField.getText()));
+            myProject.setBudget(AllData.parseMoney(myProject.getBudget(), budgetTextField.getText()));
         }
         budgetTextField.setText(AllData.formatInputInteger(myProject.getBudget()));
         textAreas.put(budgetTextField, budgetTextField.getText());
@@ -1000,7 +1000,7 @@ public class EditProjectWindowController {
                 public void handle(KeyEvent event) {
                     KeyCode keyCode = event.getCode();
                     if (keyCode == KeyCode.ENTER) {
-                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
+                        commitEdit(AllData.formatStringInputDouble(oldText, textField.getText(), 1));
                         EditProjectWindowController.EditCell.this.getTableView().requestFocus();
                         EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
                         initializeTable();
@@ -1012,7 +1012,7 @@ public class EditProjectWindowController {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     if (!newValue) {
-                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
+                        commitEdit(AllData.formatStringInputDouble(oldText, textField.getText(), 1));
                         EditProjectWindowController.EditCell.this.getTableView().requestFocus();
                         EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
                         initializeTable();
