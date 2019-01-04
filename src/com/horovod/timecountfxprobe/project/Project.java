@@ -303,7 +303,6 @@ public class Project {
 
 
 
-
     @XmlElement(name = "listworks")
     public List<WorkTime> getWork() {
         return work;

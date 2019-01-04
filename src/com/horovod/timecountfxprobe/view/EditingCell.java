@@ -16,9 +16,14 @@ import java.util.Map;
 public class EditingCell<T, String> extends TableCell<T, String> {
 
     private TextField textField;
+    private FillChartMode fillChartMode;
 
-    public EditingCell() {
+    public EditingCell(FillChartMode fillChartMode) {
+        this.fillChartMode = fillChartMode;
     }
+
+    /*public EditingCell() {
+    }*/
 
     @Override
     public void startEdit() {
@@ -74,7 +79,13 @@ public class EditingCell<T, String> extends TableCell<T, String> {
             public void handle(KeyEvent event) {
                 KeyCode keyCode = event.getCode();
                 if (keyCode == KeyCode.ENTER) {
-                    commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
+                    if (fillChartMode.equals(FillChartMode.TIME)) {
+                        commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
+                    }
+                    else {
+                        commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
+
+                    }
                     EditingCell.this.getTableView().requestFocus();
                     EditingCell.this.getTableView().getSelectionModel().selectAll();
                     //initialize();

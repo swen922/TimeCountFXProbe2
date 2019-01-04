@@ -301,16 +301,13 @@ public class TableProjectsManagerController {
                     return new SimpleStringProperty("");
                 }
 
-                System.out.println("budget = " + budget);
-
                 return new SimpleStringProperty(budget);
                 //return param.getValue().getValue().budgetProperty();
             }
         });
 
-        /** TODO Переписать чтобы возвращался другой класс. В этом неправильное форматирование числа*/
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCellttt  ();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell(FillChartMode.MONEY);
 
         columnBudget.setCellFactory(cellFactory);
 

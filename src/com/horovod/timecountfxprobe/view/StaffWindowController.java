@@ -118,6 +118,7 @@ public class StaffWindowController {
 
 
         initTimeLimitTextField();
+        initMoneyLimitTextField();
 
         initializeTable();
 
@@ -134,8 +135,23 @@ public class StaffWindowController {
                 if (keyCode == KeyCode.ENTER) {
                     double limit = AllData.getDoubleFromText(AllData.getLimitTimeForStaffWindow(), limitTimeTextField.getText(), 1);
                     AllData.setLimitTimeForStaffWindow(limit);
-                    String input = AllData.formatWorkTime(limit);
-                    limitTimeTextField.setText(input);
+                    limitTimeTextField.setText(AllData.formatWorkTime(limit));
+                    initializeTable();
+                }
+            }
+        });
+    }
+
+    private void initMoneyLimitTextField() {
+        limitMoneyTextField.setText(String.valueOf(AllData.formatInputInteger(AllData.getLimitMoneyForStaffWindow())));
+        limitMoneyTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode keyCode = event.getCode();
+                if (keyCode == KeyCode.ENTER) {
+                    int limit = AllData.getIntFromText(AllData.getLimitMoneyForStaffWindow(), limitMoneyTextField.getText());
+                    AllData.setLimitMoneyForStaffWindow(limit);
+                    limitMoneyTextField.setText(AllData.formatInputInteger(limit));
                     initializeTable();
                 }
             }
@@ -253,6 +269,10 @@ public class StaffWindowController {
         else if (daysRadioButton.isSelected() && moneyRadioButton.isSelected()) {
             initializeTableDailyMoney();
         }
+        else if (monthsRadioButton.isSelected() && moneyRadioButton.isSelected()) {
+            initializeTableMonthlyMoney();
+        }
+
 
     }
 
@@ -686,7 +706,7 @@ public class StaffWindowController {
                 columnMoney.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
                     @Override
                     public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
-                        return new ValueCellMonth(valuesMap);
+                        return new ValueCell(valuesMap);
                     }
                 });
 
@@ -775,7 +795,7 @@ public class StaffWindowController {
             // setCellValueFactory() и setCellFactory()
             Map<Integer, Integer> valuesMap = new HashMap<>();
             for (UserBase ub : userBaseList) {
-                List<Project> projects = AllData.getAllProjectsForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue());
+                List<Project> projects = AllData.getAllProjectsForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), j);
                 if (projects.isEmpty()) {
                     valuesMap.put(ub.getUserID(), 0);
                 }
@@ -783,7 +803,7 @@ public class StaffWindowController {
                     double money = 0;
                     for (Project p : projects) {
                         if (p.getBudget() != 0) {
-                            int sumInt = p.getWorkSumForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue());
+                            int sumInt = p.getWorkSumForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), j);
                             int total = p.getWorkSum();
                             double totalDouble = AllData.intToDouble(total);
                             double percent = totalDouble / 100;
@@ -812,7 +832,73 @@ public class StaffWindowController {
                     return new SimpleStringProperty(AllData.formatInputInteger(valuesMap.get(param.getValue().getUserID())));
                 }
             });
+
+            columnMoney.setEditable(true);
+            columnMoney.setSortable(true);
+            columnMoney.setResizable(true);
+
+            columnMoney.setMinWidth(35);
+            columnMoney.setMaxWidth(70);
+            columnMoney.setStyle("-fx-alignment: CENTER;");
+
+            columnMoney.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
+                @Override
+                public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
+                    return new ValueCellMonth(valuesMap);
+                }
+            });
+
+            columns.add(columnMoney);
         }
+
+
+        TableColumn<UserBase, String> workSumColumn = new TableColumn<>("Всего");
+        workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
+                return new SimpleStringProperty(AllData.formatInputInteger(sumMap.get(param.getValue().getUserID())));
+            }
+        });
+        workSumColumn.setStyle("-fx-alignment: CENTER;");
+
+        workSumColumn.setEditable(true);
+        workSumColumn.setSortable(true);
+        workSumColumn.setResizable(true);
+
+        workSumColumn.setCellFactory(new Callback<TableColumn<UserBase, String>, TableCell<UserBase, String>>() {
+            @Override
+            public TableCell<UserBase, String> call(TableColumn<UserBase, String> param) {
+                return new SumCell(sumMap);
+            }
+        });
+        columns.add(0, workSumColumn);
+
+        workSumColumn.setMinWidth(40);
+        workSumColumn.setMaxWidth(50);
+
+
+        tableUsers.getColumns().setAll(columns);
+
+
+        initializeTableBaseColumns();
+
+
+        SortedList<UserBase> sortedList = new SortedList<>(userBaseList, new Comparator<UserBase>() {
+            @Override
+            public int compare(UserBase o1, UserBase o2) {
+                return AllUsers.getOneUser(o1.userID).getFullName().compareTo(AllUsers.getOneUser(o2.userID).getFullName());
+            }
+        });
+
+        tableUsers.setItems(sortedList);
+        sortedList.comparatorProperty().bind(tableUsers.comparatorProperty());
+
+        userBaseList.sort(new Comparator<UserBase>() {
+            @Override
+            public int compare(UserBase o1, UserBase o2) {
+                return AllUsers.getOneUser(o1.userID).getFullName().compareTo(AllUsers.getOneUser(o2.userID).getFullName());
+            }
+        });
     }
 
 
@@ -1036,7 +1122,7 @@ public class StaffWindowController {
                     }
                     setGraphic(new Text(AllData.formatWorkTime(time)));
                 }
-                else {
+                else if (moneyRadioButton.isSelected()) {
                     Integer money = (Integer) values.get((ub.getUserID()));
                     if (money < AllData.getLimitMoneyForStaffWindow()) {
                         setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
@@ -1088,6 +1174,7 @@ public class StaffWindowController {
                         setGraphic(new Text(AllData.formatWorkTime(time)));
                     }
                     else {
+                        System.out.println("Integer!");
                         Integer money = (Integer) values.get((ub.getUserID())) == null ? 0 : (Integer) values.get(ub.getUserID());
                         if (money == ((TreeSet<Number>) sorted).first()) {
                             setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
@@ -1124,11 +1211,23 @@ public class StaffWindowController {
                 UserBase ub = getTableView().getItems().get(getIndex());
                 if (timeRadioButton.isSelected()) {
                     Double time = (Double) values.get(ub.getUserID()) == null ? 0d : (Double) values.get(ub.getUserID());
-                    setGraphic(new Text(AllData.formatWorkTime(time)));
+                    if (time != 0) {
+                        setGraphic(new Text(AllData.formatWorkTime(time)));
+                    }
+                    else {
+                        setGraphic(new Text(""));
+                    }
+
                 }
                 else {
                     Integer money = (Integer) values.get((ub.getUserID())) == null ? 0 : (Integer) values.get(ub.getUserID());
-                    setGraphic(new Text(AllData.formatInputInteger(money)));
+                    if (money != 0) {
+                        setGraphic(new Text(AllData.formatInputInteger(money)));
+                    }
+                    else {
+                        setGraphic(new Text(""));
+                    }
+
                 }
                 setStyle("-fx-alignment: CENTER; -fx-background-color: #fffbdc;");
                 setEditable(true);

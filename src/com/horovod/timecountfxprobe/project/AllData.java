@@ -77,7 +77,7 @@ public class AllData {
     public static Map<Integer, Stage> editUserStages = new ConcurrentHashMap<>();
 
     private static volatile double limitTimeForStaffWindow = 6;
-    private static volatile double limitMoneyForStaffWindow = 6;
+    private static volatile int limitMoneyForStaffWindow = 6000;
 
 
     /** Стандартные геттеры и сеттеры */
@@ -161,11 +161,11 @@ public class AllData {
         AllData.limitTimeForStaffWindow = limitTimeForStaffWindow;
     }
 
-    public static double getLimitMoneyForStaffWindow() {
+    public static int getLimitMoneyForStaffWindow() {
         return limitMoneyForStaffWindow;
     }
 
-    public static void setLimitMoneyForStaffWindow(double limitMoneyForStaffWindow) {
+    public static void setLimitMoneyForStaffWindow(int limitMoneyForStaffWindow) {
         AllData.limitMoneyForStaffWindow = limitMoneyForStaffWindow;
     }
 
@@ -802,10 +802,33 @@ public class AllData {
     }
 
 
+
+    public static int getIntFromText(int current, String input) {
+        if (input.equals("0")) {
+            return 0;
+        }
+
+        String corrected = input.replaceAll(",", "");
+        corrected = corrected.replaceAll("\\.", "");
+        corrected = corrected.replaceAll(" ", "");
+        corrected = corrected.replaceAll("-", "");
+
+        Integer result = null;
+        try {
+            result = Integer.parseInt(corrected);
+        } catch (NumberFormatException e) {
+            return current;
+        }
+
+        return result;
+    }
+
+
+
     public static String formatStringInputInteger(String oldText, String input) {
 
         if (input.equals("0")) {
-            return "0";
+            return "";
         }
 
         String corrected = input.replaceAll(",", "");
@@ -838,7 +861,10 @@ public class AllData {
         return String.valueOf(res);
     }
 
-    public static String formatInputInteger(int input) {
+    public static String formatInputInteger(Integer input) {
+        if (input == null) {
+            return "";
+        }
 
         String inputString = String.valueOf(input);
 

@@ -191,7 +191,7 @@ public class TableProjectsDesignerController {
 
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell(FillChartMode.TIME);
 
         columnTime.setCellFactory(cellFactory);
 
