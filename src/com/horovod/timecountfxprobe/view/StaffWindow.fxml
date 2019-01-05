@@ -60,7 +60,7 @@
                </children>
             </VBox>
             <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <VBox alignment="CENTER_LEFT" minWidth="280.0" spacing="15.0">
+            <VBox alignment="CENTER_LEFT" minWidth="250.0" spacing="15.0">
                <children>
                   <HBox spacing="20.0">
                      <children>
@@ -84,7 +84,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </RadioButton>
-                        <RadioButton fx:id="moneyRadioButton" mnemonicParsing="false" onAction="#initializeTable" text="Деньги (тыс. руб.)">
+                        <RadioButton fx:id="moneyRadioButton" mnemonicParsing="false" onAction="#initializeTable" text="Деньги (руб.)">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -104,7 +104,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
                      <children>
-                        <TextField fx:id="limitTimeTextField" alignment="CENTER" prefWidth="50.0" />
+                        <TextField fx:id="limitTimeTextField" alignment="CENTER" prefWidth="70.0" />
                         <Label text="Минимум часов">
                            <HBox.margin>
                               <Insets left="-14.0" />
@@ -114,8 +114,8 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
                      <children>
-                        <TextField fx:id="limitMoneyTextField" alignment="CENTER" prefWidth="50.0" />
-                        <Label text="Минимум тыс. руб.">
+                        <TextField fx:id="limitMoneyTextField" alignment="CENTER" prefWidth="70.0" />
+                        <Label text="Минимум рублей">
                            <padding>
                               <Insets left="-14.0" />
                            </padding>

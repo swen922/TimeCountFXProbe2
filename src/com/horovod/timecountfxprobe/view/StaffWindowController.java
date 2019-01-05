@@ -323,8 +323,8 @@ public class StaffWindowController {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
                 UserBase ub = (UserBase) param.getValue();
-                double sum = AllData.formatDouble(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue(), 3);
-                return new SimpleStringProperty(AllData.formatWorkTime(sum));
+                int sum = AllUsers.getOneUser(ub.getUserID()).getWorkHourValue();
+                return new SimpleStringProperty(AllData.formatInputInteger(sum));
             }
         });
 
@@ -341,7 +341,7 @@ public class StaffWindowController {
             @Override
             public void handle(TableColumn.CellEditEvent<UserBase, String> event) {
                 UserBase ub = event.getTableView().getItems().get(event.getTablePosition().getRow());
-                double hourPay = AllData.getDoubleFromText(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue(), event.getNewValue(), 3);
+                int hourPay = AllData.getIntFromText(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue(), event.getNewValue());
                 AllUsers.getOneUser(ub.getUserID()).setWorkHourValue(hourPay);
                 initializeTable();
             }
@@ -602,8 +602,8 @@ public class StaffWindowController {
         });
         columns.add(0, workSumColumn);
 
-        workSumColumn.setMinWidth(40);
-        workSumColumn.setMaxWidth(50);
+        workSumColumn.setMinWidth(50);
+        workSumColumn.setMaxWidth(70);
 
 
         tableUsers.getColumns().setAll(columns);
@@ -873,8 +873,8 @@ public class StaffWindowController {
         });
         columns.add(0, workSumColumn);
 
-        workSumColumn.setMinWidth(40);
-        workSumColumn.setMaxWidth(50);
+        workSumColumn.setMinWidth(50);
+        workSumColumn.setMaxWidth(70);
 
 
         tableUsers.getColumns().setAll(columns);
@@ -1174,12 +1174,11 @@ public class StaffWindowController {
                         setGraphic(new Text(AllData.formatWorkTime(time)));
                     }
                     else {
-                        System.out.println("Integer!");
                         Integer money = (Integer) values.get((ub.getUserID())) == null ? 0 : (Integer) values.get(ub.getUserID());
-                        if (money == ((TreeSet<Number>) sorted).first()) {
+                        if (money.equals(((TreeSet<Number>) sorted).first()) && sorted.size() > 1) {
                             setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
                         }
-                        else if (money == ((TreeSet<Number>) sorted).last()) {
+                        else if (money.equals(((TreeSet<Number>) sorted).last()) && sorted.size() > 1) {
                             setStyle("-fx-alignment: CENTER; -fx-background-color: #dbe9d8;");
                         }
                         else {

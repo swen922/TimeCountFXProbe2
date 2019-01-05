@@ -11,7 +11,7 @@ public class Designer implements User {
     private Role role = Role.DESIGNER;
     private String fullName;
     private String email;
-    private double workHourValue = 0.0;
+    private int workHourValue = 0;
     private boolean isRetired = false;
 
     /**
@@ -82,11 +82,11 @@ public class Designer implements User {
     }
 
     @XmlElement(name = "designerworkhourvalue")
-    public double getWorkHourValue() {
+    public int getWorkHourValue() {
         return workHourValue;
     }
 
-    public void setWorkHourValue(double workHourValue) {
+    public void setWorkHourValue(int workHourValue) {
         this.workHourValue = workHourValue;
     }
 
