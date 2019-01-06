@@ -26,6 +26,7 @@ import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -94,14 +95,8 @@ public class StaffWindowController {
     @FXML
     public void initialize() {
 
-        LocalDate today = LocalDate.now();
-        Year year = Year.from(today);
-        LocalDate fromDate = LocalDate.of(today.getYear(), today.getMonthValue(), 1);
-        LocalDate tillDate = LocalDate.of(today.getYear(), today.getMonthValue(), today.getMonth().length(year.isLeap()));
-
-        // Этот пункт надо отрабатывать только один раз, при запуске программы,
-        // поэтому во время работы initialize() запускать нельзя
-        // вместо него – initializeStaff()
+        // Эти пункты надо отрабатывать только один раз, при запуске программы,
+        // поэтому во время работы initialize() снова запускать нельзя
         designersOnlyCheckBox.setSelected(true);
 
         initYearChoiceBox();
@@ -116,7 +111,6 @@ public class StaffWindowController {
         moneyRadioButton.setToggleGroup(timeMoneyGroup);
         timeRadioButton.setSelected(true);
 
-
         initTimeLimitTextField();
         initMoneyLimitTextField();
 
@@ -125,9 +119,26 @@ public class StaffWindowController {
     }
 
 
+    public void handleDayMonthRadioButtons() {
+        if (daysRadioButton.isSelected()) {
+            monthChoiceBox.setDisable(false);
+        }
+        else {
+            monthChoiceBox.setDisable(true);
+        }
+        initializeTable();
+    }
+
+
 
     private void initTimeLimitTextField() {
         limitTimeTextField.setText(AllData.formatWorkTime(AllData.getLimitTimeForStaffWindow()));
+        limitTimeTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                limitTimeTextField.setText("");
+            }
+        });
         limitTimeTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -144,6 +155,12 @@ public class StaffWindowController {
 
     private void initMoneyLimitTextField() {
         limitMoneyTextField.setText(String.valueOf(AllData.formatInputInteger(AllData.getLimitMoneyForStaffWindow())));
+        limitMoneyTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                limitMoneyTextField.setText("");
+            }
+        });
         limitMoneyTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -317,7 +334,7 @@ public class StaffWindowController {
         });
 
 
-        TableColumn<UserBase, String> hourPayColumn = new TableColumn<>("З/п в час");
+        TableColumn<UserBase, String> hourPayColumn = new TableColumn<>("Руб/ч");
 
         hourPayColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
@@ -900,19 +917,6 @@ public class StaffWindowController {
             }
         });
     }
-
-
-
-    public void handleDayMonthRadioButtons() {
-        if (daysRadioButton.isSelected()) {
-            monthChoiceBox.setDisable(false);
-        }
-        else {
-            monthChoiceBox.setDisable(true);
-        }
-        initializeTable();
-    }
-
 
 
     private TableCell<UserBase, String> getTableCell(TableColumn column, TextAlignment textAlignment) {

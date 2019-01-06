@@ -338,6 +338,9 @@ public class TableProjectsManagerController {
                 if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
                     AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
                 }
+                if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
+                    AllData.staffWindowController.initializeTable();
+                }
 
                 filterField.setText("-");
                 filterField.clear();
@@ -1234,6 +1237,9 @@ public class TableProjectsManagerController {
                         if (option.get() == ButtonType.OK) {
                             AllData.deleteProject(entry.getKey());
                             handleFilters();
+                            if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
+                                AllData.staffWindowController.initializeTable();
+                            }
                             initialize();
                         }
                     }

@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StaffWindowController">
+<AnchorPane prefHeight="700.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StaffWindowController">
    <children>
       <HBox prefHeight="60.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
@@ -30,7 +30,7 @@
                   </HBox>
                   <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
                      <children>
-                        <CheckBox fx:id="designersOnlyCheckBox" lineSpacing="10.0" mnemonicParsing="false" text="Показывать только дизайнеров">
+                        <CheckBox fx:id="designersOnlyCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#initializeTable" text="Показывать только дизайнеров">
                            <padding>
                               <Insets bottom="5.0" />
                            </padding>
@@ -41,7 +41,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </CheckBox>
-                        <CheckBox fx:id="includeRetiredsCheckBox" lineSpacing="10.0" mnemonicParsing="false" text="Показывать уволенных">
+                        <CheckBox fx:id="includeRetiredsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#initializeTable" text="Показывать уволенных">
                            <padding>
                               <Insets bottom="5.0" />
                            </padding>

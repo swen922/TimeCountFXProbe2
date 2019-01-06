@@ -10,6 +10,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 import java.util.Map;
 
@@ -74,6 +75,12 @@ public class EditingCell<T, String> extends TableCell<T, String> {
         textField = new TextField((java.lang.String) oldText);
         textField.setAlignment(Pos.CENTER);
         textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+        textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                textField.setText("");
+            }
+        });
         textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {

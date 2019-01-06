@@ -195,7 +195,7 @@ public class Generator {
 
     public static void generateProjects2() {
 
-        for (int i = 11; i >=1; i--) {
+        for (int i = 251; i >=1; i--) {
             String descr = "project-" + i;
             Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
             project.setBudget((int) (Math.random() * 90000));
@@ -212,12 +212,12 @@ public class Generator {
         int minusDays = 0;
 
         for (int j = 0; j <= 5000; j++) {
-            int projectID = (int) (Math.random() * 10 + 1);
-            if (j % 50 == 0) {
+            int projectID = (int) (Math.random() * 250 + 1);
+            if (j % 20 == 0) {
                 minusDays++;
             }
             int ID = (int) (Math.random() * 12 + 1);
-            int tmp = (int) ((Math.random() * 1000) / 30);
+            int tmp = (int) ((Math.random() * 1000) / 5);
             double newtime = AllData.intToDouble(tmp);
 
             if (!LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
@@ -226,31 +226,17 @@ public class Generator {
             }
         }
 
-        for (int j = 0; j <= 50; j++) {
-            int projectID = (int) (Math.random() * 9 + 1);
+        /*for (int j = 0; j <= 20; j++) {
+            int projectID = (int) (Math.random() * 250 + 1);
             int ID = (int) (Math.random() * 12 + 1);
             int tmp = (int) ((Math.random() * 1000) / 30);
             double newtime = AllData.intToDouble(tmp);
             AllData.addWorkTime(projectID, LocalDate.now(), ID, newtime);
-        }
+        }*/
 
-        for (int j = 0; j <= 20; j++) {
-            int projectID = (int) (Math.random() * 9 + 1);
-            int ID = (int) (Math.random() * 12 + 1);
-            int tmp = (int) ((Math.random() * 1000) / 30);
-            double newtime = AllData.intToDouble(tmp);
-            AllData.addWorkTime(projectID, LocalDate.now().plusDays(1), ID, newtime);
-        }
 
-        for (int j = 0; j <= 20; j++) {
-            int projectID = (int) (Math.random() * 9 + 1);
-            int ID = (int) (Math.random() * 12 + 1);
-            int tmp = (int) ((Math.random() * 1000) / 30);
-            double newtime = AllData.intToDouble(tmp);
-            AllData.addWorkTime(projectID, LocalDate.now().plusDays(2), ID, newtime);
-        }
 
-        AllData.addWorkTime(2, LocalDate.now(), 3, 35.5);
+        AllData.addWorkTime(2, LocalDate.now().minusDays(3), 3, 35.5);
 
         String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
         String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";
@@ -270,8 +256,8 @@ public class Generator {
         p15.setBudget((int) (Math.random() * 90000));
         AllData.addNewProject(p15);
 
-        AllData.addWorkTime(12, LocalDate.now().minusDays(1), 3, 2.0);
-        AllData.addWorkTime(12, LocalDate.now().minusDays(2), 2, 2.0);
+        AllData.addWorkTime(12, LocalDate.now().minusDays(3), 3, 2.0);
+        AllData.addWorkTime(12, LocalDate.now().minusDays(4), 2, 2.0);
     }
 
 }
