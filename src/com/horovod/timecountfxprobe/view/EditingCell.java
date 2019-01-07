@@ -104,11 +104,16 @@ public class EditingCell<T, String> extends TableCell<T, String> {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (!newValue) {
-                    commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
+                    if (fillChartMode.equals(FillChartMode.TIME)) {
+                        commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
+                    }
+                    else {
+                        commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
+                    }
                     EditingCell.this.getTableView().requestFocus();
                     EditingCell.this.getTableView().getSelectionModel().selectAll();
-                    //initialize();
-                    //projectsTable.refresh();
+
+
                 }
             }
         });

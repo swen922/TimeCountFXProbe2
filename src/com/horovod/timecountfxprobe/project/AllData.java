@@ -70,7 +70,7 @@ public class AllData {
     public static TableProjectsManagerController tableProjectsManagerController;
     public static Map<Integer, Stage> openEditProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();
-    public static volatile int IDnumberForEditProject;
+    public static volatile int IDnumberForEdit;
     public static StaffWindowController staffWindowController;
     public static Stage staffWindowStage;
     public static Map<Integer, EditUserWindowController> editUserWindowControllers = new ConcurrentHashMap<>();
@@ -556,6 +556,16 @@ public class AllData {
         return result;
     }
 
+    public static List<Project> getAllProjectsForDesignerAndWeek(int designerIDnumber, int year, int week) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTimeForDesignerAndWeek(designerIDnumber, year, week)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
     public static List<Project> getAllProjectsForDesignerAndMonth(int designerIDnumber, int year, int month) {
         List<Project> result = new ArrayList<>();
         LocalDate fromDate = LocalDate.of(year, month, 1);
@@ -568,10 +578,34 @@ public class AllData {
         return result;
     }
 
+    public static List<Project> getAllProjectsForDesignerAndYear(int designerIDnumber, int year) {
+        List<Project> result = new ArrayList<>();
+        LocalDate fromDate = LocalDate.of(year, 1, 1);
+        LocalDate tillDate = LocalDate.of(year, 12, 31);
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
 
 
 
     /** Методы добавления, удаления проектов */
+
+    public synchronized static void createProject(String company, String manager, String description, LocalDate newDate) {
+        Project project = null;
+        if (newDate == null) {
+            project = new Project(company, manager, description);
+        }
+        else {
+            project = new Project(company, manager, description, newDate);
+        }
+        allProjects.put(project.getIdNumber(), project);
+        activeProjects.put(project.getIdNumber(), project);
+    }
 
     public synchronized static boolean addNewProject(Project newProject) {
         if (!isProjectExist(newProject.getIdNumber())) {

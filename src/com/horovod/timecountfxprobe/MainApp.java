@@ -114,7 +114,7 @@ public class MainApp extends Application {
 
     public synchronized void showEditProjectWindow(int projectIDnumber) {
         try {
-            AllData.IDnumberForEditProject = projectIDnumber;
+            AllData.IDnumberForEdit = projectIDnumber;
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/EditProjectWindow.fxml"));
             AnchorPane editWindow = (AnchorPane) loader.load();
@@ -153,7 +153,7 @@ public class MainApp extends Application {
             AddWorkDayDialogController controller = loader.getController();
             controller.setProjectIDnumber(projectIDnumber);
             controller.setMyStage(addWorkStage);
-            controller.setEditProjectWindowController(editProjectWindowController);
+            //controller.setEditProjectWindowController(editProjectWindowController);
 
             addWorkStage.showAndWait();
         } catch (IOException e) {
@@ -211,23 +211,24 @@ public class MainApp extends Application {
         }
     }
 
-    public void showEditUserWindow(int userID) {
+    public void showEditUserWindow(int userID, Stage staff) {
         try {
+            AllData.IDnumberForEdit = userID;
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/EditUserWindow.fxml"));
             AnchorPane editUser = (AnchorPane) loader.load();
 
             Stage editUserStage = new Stage();
             editUserStage.setTitle("Работник id-" + userID + ", " + AllUsers.getOneUser(userID).getFullName());
-            editUserStage.initModality(Modality.NONE);
+            editUserStage.initOwner(staff);
+            editUserStage.initModality(Modality.WINDOW_MODAL);
             Scene scene = new Scene(editUser);
             editUserStage.setScene(scene);
             AllData.editUserStages.put(userID, editUserStage);
 
             EditUserWindowController controller = loader.getController();
-            controller.setUserID(userID);
             AllData.editUserWindowControllers.put(userID, controller);
-
+            controller.setMyStage(editUserStage);
 
             editUserStage.showAndWait();
         } catch (IOException e) {

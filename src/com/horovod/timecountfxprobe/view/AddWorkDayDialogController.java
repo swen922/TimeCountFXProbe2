@@ -19,8 +19,6 @@ public class AddWorkDayDialogController {
     private int projectIDnumber;
     private ObservableList<String> designers = FXCollections.observableArrayList();
     private Stage myStage;
-    private EditProjectWindowController editProjectWindowController;
-
 
     public void setProjectIDnumber(int projectIDnumber) {
         this.projectIDnumber = projectIDnumber;
@@ -30,9 +28,6 @@ public class AddWorkDayDialogController {
         this.myStage = myStage;
     }
 
-    public void setEditProjectWindowController(EditProjectWindowController editProjectWindowController) {
-        this.editProjectWindowController = editProjectWindowController;
-    }
 
     @FXML
     private DatePicker datePicker;
@@ -107,13 +102,14 @@ public class AddWorkDayDialogController {
             alert.showAndWait();
         }
         else {
-            System.out.println(projectIDnumber);
-            System.out.println(datePicker.getValue());
-            System.out.println(AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber());
-            System.out.println(time);
             AllData.addWorkTime(projectIDnumber, datePicker.getValue(), AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber(), time);
-            editProjectWindowController.initializeTable();
             AllData.tableProjectsManagerController.initialize();
+            if (AllData.editProjectWindowControllers.get(projectIDnumber) != null) {
+                AllData.editProjectWindowControllers.get(projectIDnumber).initializeTable();
+            }
+            if (AllData.staffWindowController != null) {
+                AllData.staffWindowController.initializeTable();
+            }
             myStage.close();
         }
     }

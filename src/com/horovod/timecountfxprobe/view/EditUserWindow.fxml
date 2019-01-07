@@ -6,6 +6,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -13,74 +14,93 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="260.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.EditUserWindowController">
    <children>
       <HBox alignment="CENTER" layoutX="14.0" prefHeight="30.0" prefWidth="200.0" spacing="30.0" style="-fx-background-color: d6d6d6;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox alignment="CENTER" prefHeight="20.0" prefWidth="120.0" spacing="10.0">
+            <HBox alignment="CENTER" minWidth="160.0" prefHeight="20.0" spacing="5.0">
                <children>
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="Сегодня" textAlignment="RIGHT" wrapText="true">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="0">
+                  <Label fx:id="todayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                   </Label>
+                  <Label fx:id="hoursToday" contentDisplay="RIGHT" text="ч" wrapText="true">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="20.0" prefWidth="150.0" spacing="10.0">
+            <HBox alignment="CENTER" minWidth="180.0" prefHeight="20.0" spacing="5.0">
                <children>
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="На этой неделе" textAlignment="RIGHT" wrapText="true">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="00">
+                  <Label fx:id="weekWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="00">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                   </Label>
+                  <Label fx:id="hoursWeek" contentDisplay="RIGHT" text="ч" wrapText="true">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="20.0" prefWidth="150.0" spacing="10.0">
+            <HBox alignment="CENTER" minWidth="180.0" prefHeight="20.0" spacing="5.0">
                <children>
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="В этом месяце" textAlignment="RIGHT" wrapText="true">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="000">
+                  <Label fx:id="monthWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="000">
                      <font>
                         <Font name="System Bold" size="20.0" />
                      </font>
                   </Label>
+                  <Label fx:id="hoursMonth" contentDisplay="RIGHT" text="ч" wrapText="true">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
                </children>
             </HBox>
-            <HBox alignment="CENTER" prefHeight="20.0" prefWidth="150.0" spacing="10.0">
+            <HBox alignment="CENTER" minWidth="190.0" prefHeight="20.0" spacing="5.0">
                <children>
                   <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" text="В этом году" textAlignment="RIGHT" wrapText="true">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="0000">
+                  <Label fx:id="yearWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0000">
                      <font>
                         <Font name="System Bold" size="20.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="hoursYear" contentDisplay="RIGHT" text="ч" wrapText="true">
+                     <font>
+                        <Font size="11.0" />
                      </font>
                   </Label>
                </children>
             </HBox>
          </children>
       </HBox>
-      <AnchorPane layoutX="148.0" layoutY="24.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+      <AnchorPane fx:id="topColoredAnchorPane" layoutX="148.0" layoutY="24.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="20.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" maxWidth="60.0" minWidth="50.0" text="25" textAlignment="CENTER">
+                  <Label fx:id="userIDLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="60.0" minWidth="50.0" text="0" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
@@ -91,7 +111,7 @@
                   <VBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
                      <children>
                         <Label text="Логин:" />
-                        <TextArea editable="false" maxWidth="250.0" minWidth="80.0" prefHeight="10.0" wrapText="true">
+                        <TextArea fx:id="loginTextArea" editable="false" maxWidth="150.0" minWidth="80.0" prefHeight="10.0" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="20.0" />
                            </VBox.margin>
@@ -103,15 +123,31 @@
                   </VBox>
                   <VBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
                      <children>
+                        <Label text="Новый пароль:" />
+                        <PasswordField fx:id="passwordField" maxWidth="200.0" minWidth="180.0" prefHeight="41.5" promptText="Только для смены пароля">
+                           <VBox.margin>
+                              <Insets bottom="20.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </PasswordField>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </VBox>
+                  <VBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
+                     <children>
                         <Label text="Полное имя:" />
-                        <TextArea editable="false" maxWidth="350.0" minWidth="100.0" prefHeight="10.0" wrapText="true">
+                        <TextArea fx:id="fullNameTextArea" editable="false" maxWidth="250.0" minWidth="100.0" prefHeight="10.0" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="20.0" />
                            </VBox.margin>
                         </TextArea>
                      </children>
                   </VBox>
-                  <CheckBox minWidth="80.0" mnemonicParsing="false" text="Уволен">
+                  <CheckBox fx:id="retiredCheckBox" minWidth="80.0" mnemonicParsing="false" text="Уволен">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -129,7 +165,7 @@
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <ChoiceBox maxWidth="250.0" minWidth="150.0" />
+                  <ChoiceBox fx:id="roleChoiceBox" maxWidth="250.0" minWidth="150.0" />
                </children>
             </VBox>
             <VBox spacing="5.0">
@@ -139,7 +175,7 @@
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <TextField minWidth="300.0" />
+                  <TextField fx:id="emailTextField" minWidth="300.0" />
                </children>
             </VBox>
             <VBox spacing="5.0">
@@ -149,7 +185,7 @@
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <TextField alignment="CENTER" maxWidth="130.0" minWidth="40.0" />
+                  <TextField fx:id="hourPayTextField" alignment="CENTER" maxWidth="130.0" minWidth="40.0" />
                </children>
             </VBox>
          </children>

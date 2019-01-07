@@ -187,8 +187,10 @@ public class StaffWindowController {
                 @Override
                 public void handle(WindowEvent event) {
 
-                    for (EditUserWindowController eu : AllData.editUserWindowControllers.values()) {
-                        eu.closing();
+                    if (!AllData.editUserWindowControllers.isEmpty()) {
+                        for (EditUserWindowController eu : AllData.editUserWindowControllers.values()) {
+                            eu.closing();
+                        }
                     }
 
                     if (!AllData.editUserStages.isEmpty()) {
@@ -1273,7 +1275,7 @@ public class StaffWindowController {
                         initClosing();
 
                         if (!AllData.editUserStages.containsKey(userID)) {
-                            AllData.mainApp.showEditUserWindow(userID);
+                            AllData.mainApp.showEditUserWindow(userID, AllData.staffWindowStage);
                         }
                         else {
                             AllData.editUserStages.get(userID).close();

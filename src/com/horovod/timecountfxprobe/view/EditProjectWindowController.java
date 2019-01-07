@@ -134,17 +134,8 @@ public class EditProjectWindowController {
     private TableView<WorkDay> workTimeTableView;
 
 
-
-    public Project getMyProject() {
-        return myProject;
-    }
-
     public void setMyProject(Project myProject) {
         this.myProject = myProject;
-    }
-
-    public Stage getMyStage() {
-        return myStage;
     }
 
     public void setMyStage(Stage myStage) {
@@ -156,7 +147,7 @@ public class EditProjectWindowController {
     private void initialize() {
 
         if (myProject == null) {
-            myProject = AllData.getAnyProject(AllData.IDnumberForEditProject);
+            myProject = AllData.getAnyProject(AllData.IDnumberForEdit);
         }
 
         // id-номер проекта
@@ -164,10 +155,6 @@ public class EditProjectWindowController {
 
         descriptionTextArea.setText(myProject.getDescription());
         textAreas.put(descriptionTextArea, descriptionTextArea.getText());
-
-        // название папки
-        /*projectNameTextArea.setText(myProject.getDescription().split(" - ")[0].trim());
-        textAreas.put(projectNameTextArea, projectNameTextArea.getText());*/
 
         // инициализация кнопки открытия папки – прописано в FXML
 
@@ -274,7 +261,7 @@ public class EditProjectWindowController {
         });
 
         Callback<TableColumn<WorkDay, String>, TableCell<WorkDay, String>> cellFactory =
-                (TableColumn<WorkDay, String> p) -> new EditProjectWindowController.EditCell();
+                (TableColumn<WorkDay, String> p) -> new EditingCell(FillChartMode.TIME);
 
 
         for (Integer i : des) {
@@ -298,14 +285,16 @@ public class EditProjectWindowController {
 
                     /**м TODO Не забыть, что у дизайнеров должно обновляться после внесения правок.
                      * TODO Видимо, тут нужен запуск thread с обновлением на сервер */
-                    String fullName = event.getTableColumn().getText();
-                    double newTimeDouble = Double.parseDouble(event.getNewValue());
-                    int designerID = AllUsers.getOneUserForFullName(fullName).getIDNumber();
                     String dateString = event.getRowValue().getDateString();
+                    double current = myProject.getWorkSumForDesignerAndDate(i, AllData.parseDate(dateString));
+                    double newTimeDouble = AllData.getDoubleFromText(current, event.getNewValue(), 1);
 
-                    AllData.addWorkTime(myProject.getIdNumber(), AllData.parseDate(dateString), designerID, newTimeDouble);
-                    AllData.deleteZeroTime(designerID);
+                    AllData.addWorkTime(myProject.getIdNumber(), AllData.parseDate(dateString), i, newTimeDouble);
+                    AllData.deleteZeroTime(myProject.getIdNumber());
                     AllData.tableProjectsManagerController.initialize();
+                    if (AllData.staffWindowController != null) {
+                        AllData.staffWindowController.initializeTable();
+                    }
                     initializeTable();
                 }
             });
@@ -938,96 +927,5 @@ public class EditProjectWindowController {
             handleSaveAndCloseButton();
         }
     }
-
-
-    class EditCell extends TableCell<WorkDay, String> {
-        private TextField textField;
-
-        public EditCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((String) getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        protected void updateItem(String item, boolean empty) {
-
-            super.updateItem(item, empty);
-            if (empty) {
-
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(null);
-                }
-                else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            String oldText = getString();
-            textField = new TextField(oldText);
-            textField.setAlignment(Pos.CENTER);
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent event) {
-                    KeyCode keyCode = event.getCode();
-                    if (keyCode == KeyCode.ENTER) {
-                        commitEdit(AllData.formatStringInputDouble(oldText, textField.getText(), 1));
-                        EditProjectWindowController.EditCell.this.getTableView().requestFocus();
-                        EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
-                        initializeTable();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (!newValue) {
-                        commitEdit(AllData.formatStringInputDouble(oldText, textField.getText(), 1));
-                        EditProjectWindowController.EditCell.this.getTableView().requestFocus();
-                        EditProjectWindowController.EditCell.this.getTableView().getSelectionModel().selectAll();
-                        initializeTable();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            EditProjectWindowController.EditCell.this.textField.selectAll();
-
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    }
-    // конец класса EditCell
 
 }
