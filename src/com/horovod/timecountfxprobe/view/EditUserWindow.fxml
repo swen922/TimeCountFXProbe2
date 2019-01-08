@@ -111,7 +111,7 @@
                   <VBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
                      <children>
                         <Label text="Логин:" />
-                        <TextArea fx:id="loginTextArea" editable="false" maxWidth="150.0" minWidth="80.0" prefHeight="10.0" wrapText="true">
+                        <TextArea fx:id="loginTextArea" maxWidth="150.0" minWidth="80.0" onKeyTyped="#listenChanges" prefHeight="10.0" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="20.0" />
                            </VBox.margin>
@@ -124,7 +124,7 @@
                   <VBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
                      <children>
                         <Label text="Новый пароль:" />
-                        <PasswordField fx:id="passwordField" maxWidth="200.0" minWidth="180.0" prefHeight="41.5" promptText="Только для смены пароля">
+                        <PasswordField fx:id="passwordField" maxWidth="200.0" minWidth="180.0" onKeyTyped="#listenChanges" prefHeight="41.5" promptText="Только для смены пароля">
                            <VBox.margin>
                               <Insets bottom="20.0" />
                            </VBox.margin>
@@ -140,7 +140,7 @@
                   <VBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0">
                      <children>
                         <Label text="Полное имя:" />
-                        <TextArea fx:id="fullNameTextArea" editable="false" maxWidth="250.0" minWidth="100.0" prefHeight="10.0" wrapText="true">
+                        <TextArea fx:id="fullNameTextArea" maxWidth="250.0" minWidth="100.0" onKeyTyped="#listenChanges" prefHeight="10.0" wrapText="true">
                            <VBox.margin>
                               <Insets bottom="20.0" />
                            </VBox.margin>
@@ -175,27 +175,27 @@
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="emailTextField" minWidth="300.0" />
+                  <TextField fx:id="emailTextField" minWidth="300.0" onKeyTyped="#listenChanges" />
                </children>
             </VBox>
             <VBox spacing="5.0">
                <children>
-                  <Label text="Оплата в час (тыс. руб.)">
+                  <Label text="Оплата в час (руб.)">
                      <font>
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="hourPayTextField" alignment="CENTER" maxWidth="130.0" minWidth="40.0" />
+                  <TextField fx:id="hourPayTextField" alignment="CENTER" maxWidth="130.0" minWidth="40.0" onKeyTyped="#listenChanges" />
                </children>
             </VBox>
          </children>
       </HBox>
       <HBox alignment="CENTER" layoutX="309.0" layoutY="181.0" prefHeight="50.0" prefWidth="200.0" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="200.0">
          <children>
-            <Button mnemonicParsing="false" text="Вернуть как было" />
-            <Button mnemonicParsing="false" text="Сохранить " />
-            <Button mnemonicParsing="false" text="Сохранить и закрыть" />
-            <Button mnemonicParsing="false" text="Закрыть" />
+            <Button fx:id="revertButton" mnemonicParsing="false" onAction="#handleRevertButton" text="Вернуть как было" />
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveButton" text="Сохранить " />
+            <Button fx:id="saveAndCloseButton" mnemonicParsing="false" onAction="#handleSaveAndCloseButton" text="Сохранить и закрыть" />
+            <Button fx:id="closeButton" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" />
          </children>
       </HBox>
    </children>

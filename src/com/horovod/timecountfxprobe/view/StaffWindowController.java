@@ -87,7 +87,14 @@ public class StaffWindowController {
     private TextField limitMoneyTextField;
 
     @FXML
+    private Button countSalary;
+
+    @FXML
+    private Button reloadButton;
+
+    @FXML
     private TableView tableUsers;
+
 
 
 

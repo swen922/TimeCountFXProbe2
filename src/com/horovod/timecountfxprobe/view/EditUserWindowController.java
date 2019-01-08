@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
+import com.horovod.timecountfxprobe.user.SecurePassword;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -11,6 +12,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -26,6 +30,7 @@ public class EditUserWindowController {
     private Stage myStage;
     private boolean isChanged = false;
     private Map<Node, String> textAreas = new HashMap<>();
+    String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz";
 
     public void setMyStage(Stage myStage) {
         this.myStage = myStage;
@@ -119,8 +124,8 @@ public class EditUserWindowController {
 
         initRetiredCheckBox();
         initRoleChoiceBox();
+        initHourPayTextField();
         initSaveButtons();
-
 
     }
 
@@ -252,11 +257,23 @@ public class EditUserWindowController {
         roleChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (!roleChoiceBox.getValue().equals(AllUsers.getOneUser(userID).getRole())) {
+                if (!AllUsers.getOneUser(userID).getRole().equals(roleChoiceBox.getValue())) {
                     isChanged = true;
-                    /*AllUsers.getOneUser(userID).setRole(roleChoiceBox.getValue());
-                    AllData.staffWindowController.initializeTable();*/
                 }
+                else {
+                    isChanged = false;
+                }
+                initSaveButtons();
+
+            }
+        });
+    }
+
+    private void initHourPayTextField() {
+        hourPayTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                hourPayTextField.setText("");
             }
         });
     }
@@ -276,27 +293,6 @@ public class EditUserWindowController {
     }
 
 
-
-    public void handleSaveButton() {
-
-        textAreas.put(loginTextArea, loginTextArea.getText());
-        for (User u : AllUsers.getUsers().values()) {
-            if (u.getNameLogin().equalsIgnoreCase(loginTextArea.getText())) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-            }
-        }
-
-        AllUsers.getOneUser(userID).setNameLogin(loginTextArea.getText());
-
-
-
-
-        isChanged = false;
-        initSaveButtons();
-        AllData.tableProjectsManagerController.initialize();
-    }
-
-
     public void handleRevertButton() {
         loginTextArea.setText(AllUsers.getOneUser(userID).getNameLogin());
         passwordField.setText(null);
@@ -305,13 +301,239 @@ public class EditUserWindowController {
         emailTextField.setText(AllUsers.getOneUser(userID).getEmail());
         hourPayTextField.setText(AllData.formatInputInteger(AllUsers.getOneUser(userID).getWorkHourValue()));
         isChanged = false;
+        initSaveButtons();
     }
+
+
+    public void handleSaveButton() {
+
+        if (!textAreas.get(loginTextArea).equalsIgnoreCase(loginTextArea.getText().trim())) {
+            if (loginTextArea.getText() == null || loginTextArea.getText().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Неправильный логин");
+                StringBuilder sb = new StringBuilder("Указанный вами новый логин\n");
+                sb.append("для пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append("не соответствует правилам создания логинов.\n");
+                sb.append("Логин должен состоять не менее, чем из 1 символа\n");
+                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
+                sb.append("Укажите другой логин, состоящий только из латинских букв и цифр!");
+
+                alert.setHeaderText(sb.toString());
+
+                alert.showAndWait();
+                return;
+            }
+
+            for (User u : AllUsers.getUsers().values()) {
+                if (u.getNameLogin().equalsIgnoreCase(loginTextArea.getText().trim())) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Дублирующийся логин");
+                    StringBuilder sb = new StringBuilder("Указанный вами новый логин \"");
+                    sb.append(loginTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
+                    sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                    sb.append("совпадает с существующим логином пользователя id-").append(u.getIDNumber());
+                    sb.append("\n").append(u.getFullName()).append("\n");
+                    sb.append("Укажите другой логин!");
+
+                    alert.setHeaderText(sb.toString());
+
+                    alert.showAndWait();
+                    return;
+                }
+            }
+
+            boolean hasOtherSymbols = false;
+            char[] newLoginArray = loginTextArea.getText().trim().toCharArray();
+            for (Character ch : newLoginArray) {
+                if (!latinForPass.contains(ch.toString())) {
+                    hasOtherSymbols = true;
+                    break;
+                }
+            }
+            if (loginTextArea.getText().trim().length() < 1 || hasOtherSymbols) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Неправильный логин");
+                StringBuilder sb = new StringBuilder("Указанный вами новый логин\n");
+                sb.append("для пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append("не соответствует правилам создания логинов.\n");
+                sb.append("Логин должен состоять не менее, чем из 1 символа\n");
+                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
+                sb.append("Укажите другой логин, состоящий только из латинских букв и цифр!");
+
+                alert.setHeaderText(sb.toString());
+
+                alert.showAndWait();
+                return;
+            }
+
+            AllUsers.getOneUser(userID).setNameLogin(loginTextArea.getText().trim());
+            textAreas.put(loginTextArea, loginTextArea.getText().trim());
+        }
+
+        if (passwordField.getText() != null && !passwordField.getText().trim().isEmpty()) {
+            boolean hasOtherSymbols = false;
+            char[] newPassArray = passwordField.getText().trim().toCharArray();
+            for (Character ch : newPassArray) {
+                if (!latinForPass.contains(ch.toString())) {
+                    hasOtherSymbols = true;
+                    break;
+                }
+            }
+
+            if (passwordField.getText().trim().length() < 12 || hasOtherSymbols) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Неправильный пароль");
+                StringBuilder sb = new StringBuilder("Указанный вами новый пароль\n");
+                sb.append("для пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append("не соответствует правилам создания паролей.\n");
+                sb.append("Пароль должен состоять не менее, чем из 12 символов\n");
+                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
+                sb.append("Укажите другой пароль, состоящий только из латинских букв и цифр\n");
+                sb.append("либо очистите поле пароля, чтобы оставить пароль прежним.");
+
+                alert.setHeaderText(sb.toString());
+
+                alert.showAndWait();
+                return;
+            }
+
+            SecurePassword sp = SecurePassword.getInstance(passwordField.getText().trim());
+            AllUsers.getUsersPass().put(userID, sp);
+            passwordField.setText(null);
+        }
+
+
+        if (!textAreas.get(fullNameTextArea).equalsIgnoreCase(fullNameTextArea.getText())) {
+
+            if (fullNameTextArea.getText() == null || fullNameTextArea.getText().trim().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Неправильное имя");
+                StringBuilder sb = new StringBuilder("Указанное вами новое имя\n");
+                sb.append("для пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append("не соответствует правилам создания имен.\n");
+                sb.append("Имя должно состоять не менее, чем из 1 символа\n");
+                sb.append("Укажите другое имя, состоящее более, чем из 1 символа!");
+
+                alert.setHeaderText(sb.toString());
+
+                alert.showAndWait();
+                return;
+            }
+
+            for (User u : AllUsers.getUsers().values()) {
+                if (u.getFullName().equalsIgnoreCase(fullNameTextArea.getText())) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Дублирующееся имя");
+                    StringBuilder sb = new StringBuilder("Указанное вами новое имя \"");
+                    sb.append(fullNameTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
+                    sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                    sb.append("совпадает с существующим именем пользователя id-").append(u.getIDNumber());
+                    sb.append(" ").append(u.getFullName()).append("\n");
+                    sb.append("Укажите другое имя!");
+
+                    alert.setHeaderText(sb.toString());
+
+                    alert.showAndWait();
+                    return;
+                }
+            }
+
+            AllUsers.getOneUser(userID).setFullName(fullNameTextArea.getText());
+            textAreas.put(fullNameTextArea, fullNameTextArea.getText());
+        }
+
+        if (!AllUsers.getOneUser(userID).getRole().equals(roleChoiceBox.getValue())) {
+            AllUsers.getOneUser(userID).setRole(roleChoiceBox.getValue());
+        }
+
+        if ((textAreas.get(emailTextField) == null && emailTextField.getText() != null) ||
+                (textAreas.get(emailTextField) != null && !textAreas.get(emailTextField).equalsIgnoreCase(emailTextField.getText()))) {
+
+            if (emailTextField.getText() == null || emailTextField.getText().isEmpty()) {
+                AllUsers.getOneUser(userID).setEmail("");
+            }
+            else {
+                boolean hasOtherSymbols = false;
+                char[] newEmailArray = emailTextField.getText().toCharArray();
+                for (Character ch : newEmailArray) {
+                    if (!latinForPass.contains(ch.toString()) && !ch.toString().equalsIgnoreCase("@")) {
+                        hasOtherSymbols = true;
+                        break;
+                    }
+                }
+
+                if (emailTextField.getText() == null || emailTextField.getText().isEmpty() ||
+                        !emailTextField.getText().contains("@") || hasOtherSymbols) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Неправильный е-мейл");
+                    StringBuilder sb = new StringBuilder("Указанный вами новый е-мейл\n");
+                    sb.append("для пользователя id-").append(userID);
+                    sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                    sb.append("не соответствует правилам создания е-мейлов.\n");
+                    sb.append("Е-мейл должен состоять из нескольких символов,\n");
+                    sb.append("одним из которых должен быть \"@\"\n");
+                    sb.append("Укажите другой е-мейл, состоящий из правильных символов!");
+
+                    alert.setHeaderText(sb.toString());
+
+                    alert.showAndWait();
+                    return;
+                }
+
+                AllUsers.getOneUser(userID).setEmail(emailTextField.getText());
+            }
+            textAreas.put(emailTextField, emailTextField.getText());
+        }
+
+
+
+        if (!textAreas.get(hourPayTextField).equalsIgnoreCase(hourPayTextField.getText())) {
+
+            Integer hourPay = null;
+            try {
+                hourPay = Integer.parseInt(hourPayTextField.getText());
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Неправильная сумма");
+                StringBuilder sb = new StringBuilder("Указанный вами новый размер часовой оплаты\n");
+                sb.append("для пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\nне является корректным числом\n");
+                sb.append("Укажите правильную сумму!");
+
+                alert.setHeaderText(sb.toString());
+
+                alert.showAndWait();
+                return;
+            }
+
+            if (hourPay != null) {
+                AllUsers.getOneUser(userID).setWorkHourValue(hourPay);
+                hourPayTextField.setText(AllData.formatInputInteger(hourPay));
+                textAreas.put(hourPayTextField, AllData.formatInputInteger(hourPay));
+            }
+        }
+
+        isChanged = false;
+        initSaveButtons();
+        AllData.staffWindowController.initializeTable();
+        AllData.tableProjectsManagerController.initialize();
+    }
+
+
+
 
     public void handleSaveAndCloseButton() {
         handleSaveButton();
-        myStage.close();
-        AllData.editUserStages.remove(userID);
-        AllData.editProjectWindowControllers.remove(userID);
+        if (!isChanged) {
+            myStage.close();
+            AllData.editUserStages.remove(userID);
+            AllData.editUserWindowControllers.remove(userID);
+        }
+
     }
 
 
@@ -320,7 +542,7 @@ public class EditUserWindowController {
         if (!isChanged) {
             myStage.close();
             AllData.editUserStages.remove(userID);
-            AllData.editProjectWindowControllers.remove(userID);
+            AllData.editUserWindowControllers.remove(userID);
         }
         else {
             handleAlerts();
@@ -330,7 +552,9 @@ public class EditUserWindowController {
     private void handleAlerts() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение закрытия");
-        alert.setHeaderText("В текст полей пользователя id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + "\nбыли внесены изменения.\nСохранить их или проигнорировать?");
+        alert.setHeaderText("В текст полей пользователя id-" + userID + " " +
+                AllUsers.getOneUser(userID).getFullName() +
+                "\nбыли внесены изменения.\nСохранить их или проигнорировать?");
 
         ButtonType returnButton = new ButtonType("Вернуться обратно");
         ButtonType dontSaveButton = new ButtonType("Не сохранять");
@@ -348,7 +572,7 @@ public class EditUserWindowController {
         else if (option.get() == dontSaveButton) {
             handleRevertButton();
             AllData.editUserStages.remove(userID);
-            AllData.editProjectWindowControllers.remove(userID);
+            AllData.editUserWindowControllers.remove(userID);
             alert.close();
             myStage.close();
         }
@@ -360,7 +584,36 @@ public class EditUserWindowController {
 
 
 
+    public void listenChanges() {
 
+        if (myStage != null) {
+            myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    handleCloseButton();
+                    event.consume();
+                }
+            });
+        }
+
+        isChanged = false;
+
+        if (textAreas.get(emailTextField) == null && emailTextField.getText() != null) {
+            isChanged = true;
+            initSaveButtons();
+            return;
+        }
+
+        if (!textAreas.get(loginTextArea).equalsIgnoreCase(loginTextArea.getText()) ||
+                (passwordField.getText() != null && !passwordField.getText().isEmpty()) ||
+                !textAreas.get(fullNameTextArea).equalsIgnoreCase(fullNameTextArea.getText()) ||
+                (textAreas.get(emailTextField) != null && !textAreas.get(emailTextField).equalsIgnoreCase(emailTextField.getText())) ||
+                !AllUsers.getOneUser(userID).getRole().equals(roleChoiceBox.getValue()) ||
+                !textAreas.get(hourPayTextField).equalsIgnoreCase(hourPayTextField.getText())) {
+            isChanged = true;
+        }
+        initSaveButtons();
+    }
 
 
     public void closing() {
@@ -375,32 +628,5 @@ public class EditUserWindowController {
             }
 
         }
-    }
-
-    public void initClosing() {
-        System.out.println("inside initClosing()");
-        AllData.editUserStages.get(userID).setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-
-                System.out.println("inside handle() EditUserWindowController");
-
-                //AllData.editUserStages.get(userID).close();
-                AllData.editUserStages.remove(userID);
-                AllData.editUserWindowControllers.remove(userID);
-                System.out.println("set on close");
-                System.out.println("inside EditUserController: mAllData.editUserStages.containsKey(userID) = " + AllData.editUserStages.containsKey(userID));
-
-                /*if (!isChanged) {
-                    System.out.println("set on close");
-                    AllData.editUserStages.get(userID).close();
-                    AllData.editUserStages.remove(userID);
-                    AllData.editUserWindowControllers.remove(userID);
-                }
-                else {
-
-                }*/
-            }
-        });
     }
 }

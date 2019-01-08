@@ -130,9 +130,21 @@
                   <Insets left="10.0" />
                </HBox.margin>
             </VBox>
-            <VBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="10.0">
+            <VBox alignment="CENTER_LEFT" prefWidth="120.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#initializeTable" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="countSalary" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" text="Рассчитать зарплату" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </VBox>
+            <VBox alignment="CENTER_LEFT" prefWidth="120.0">
+               <children>
+                  <Button fx:id="reloadButton" mnemonicParsing="false" onAction="#initializeTable" prefHeight="40.0" prefWidth="80.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="12.0" />
                      </font>

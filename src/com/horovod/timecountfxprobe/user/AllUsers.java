@@ -187,12 +187,12 @@ public class AllUsers {
                 return null;
             }
 
-            users.put(result.getIDNumber(), result);
-
             SecurePassword sp = SecurePassword.getInstance(password);
             if (sp == null) {
                 return null;
             }
+
+            users.put(result.getIDNumber(), result);
             usersPass.put(result.getIDNumber(), sp);
         }
         return result;
