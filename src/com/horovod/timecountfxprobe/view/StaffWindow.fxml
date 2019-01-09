@@ -16,9 +16,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StaffWindowController">
+<AnchorPane prefHeight="520.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StaffWindowController">
    <children>
-      <HBox prefHeight="60.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+      <HBox prefHeight="60.0" prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0">
          <children>
             <VBox alignment="CENTER_LEFT" minWidth="430.0" spacing="10.0">
                <children>
@@ -100,7 +100,7 @@
                </HBox.margin>
             </VBox>
             <Separator orientation="VERTICAL" prefHeight="200.0" />
-            <VBox alignment="TOP_CENTER" minWidth="220.0" spacing="5.0">
+            <VBox alignment="TOP_CENTER" minWidth="200.0" spacing="5.0">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="20.0">
                      <children>
@@ -156,7 +156,7 @@
             </VBox>
          </children>
       </HBox>
-      <AnchorPane layoutX="373.0" layoutY="104.0" prefHeight="500.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0">
+      <AnchorPane layoutX="373.0" layoutY="104.0" prefHeight="400.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="80.0">
          <children>
             <TableView fx:id="tableUsers" editable="true" layoutX="88.0" layoutY="43.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <columnResizePolicy>
@@ -165,5 +165,11 @@
             </TableView>
          </children>
       </AnchorPane>
+      <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="250.0" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
+         <children>
+            <Button fx:id="exportButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" minWidth="70.0" mnemonicParsing="false" text="Экспорт" textAlignment="CENTER" />
+            <ChoiceBox fx:id="exportChoiceBox" prefWidth="150.0" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

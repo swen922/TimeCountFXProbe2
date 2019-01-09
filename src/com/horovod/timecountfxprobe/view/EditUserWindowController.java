@@ -6,6 +6,7 @@ import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.SecurePassword;
 import com.horovod.timecountfxprobe.user.User;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -80,7 +81,7 @@ public class EditUserWindowController {
     private CheckBox retiredCheckBox;
 
     @FXML
-    private ChoiceBox<Role> roleChoiceBox;
+    private Label roleLabel;
 
     @FXML
     private TextField emailTextField;
@@ -117,14 +118,16 @@ public class EditUserWindowController {
         textAreas.put(loginTextArea, AllUsers.getOneUser(userID).getNameLogin());
         fullNameTextArea.setText(AllUsers.getOneUser(userID).getFullName());
         textAreas.put(fullNameTextArea, AllUsers.getOneUser(userID).getFullName());
-        emailTextField.setText(AllUsers.getOneUser(userID).getEmail());
-        textAreas.put(emailTextField, AllUsers.getOneUser(userID).getEmail());
-        hourPayTextField.setText(AllData.formatInputInteger(AllUsers.getOneUser(userID).getWorkHourValue()));
-        textAreas.put(hourPayTextField, AllData.formatInputInteger(AllUsers.getOneUser(userID).getWorkHourValue()));
+        String email = AllUsers.getOneUser(userID).getEmail() == null ? "" : AllUsers.getOneUser(userID).getEmail();
+        emailTextField.setText(email);
+        textAreas.put(emailTextField, email);
+        String hourPay = AllUsers.getOneUser(userID).getWorkHourValue() == 0 ? "" : AllData.formatInputInteger(AllUsers.getOneUser(userID).getWorkHourValue());
+        hourPayTextField.setText(hourPay);
+        textAreas.put(hourPayTextField, hourPay);
 
         initRetiredCheckBox();
-        initRoleChoiceBox();
         initHourPayTextField();
+        initRoleCLabel();
         initSaveButtons();
 
     }
@@ -251,22 +254,8 @@ public class EditUserWindowController {
         });
     }
 
-    private void initRoleChoiceBox() {
-        roleChoiceBox.setItems(FXCollections.observableArrayList(Role.values()));
-        roleChoiceBox.setValue(AllUsers.getOneUser(userID).getRole());
-        roleChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (!AllUsers.getOneUser(userID).getRole().equals(roleChoiceBox.getValue())) {
-                    isChanged = true;
-                }
-                else {
-                    isChanged = false;
-                }
-                initSaveButtons();
-
-            }
-        });
+    private void initRoleCLabel() {
+        roleLabel.textProperty().bind(new SimpleStringProperty(AllUsers.getOneUser(userID).getRole().toString()));
     }
 
     private void initHourPayTextField() {
@@ -295,11 +284,12 @@ public class EditUserWindowController {
 
     public void handleRevertButton() {
         loginTextArea.setText(AllUsers.getOneUser(userID).getNameLogin());
-        passwordField.setText(null);
+        passwordField.setText("");
         fullNameTextArea.setText(AllUsers.getOneUser(userID).getFullName());
-        roleChoiceBox.setValue(AllUsers.getOneUser(userID).getRole());
-        emailTextField.setText(AllUsers.getOneUser(userID).getEmail());
-        hourPayTextField.setText(AllData.formatInputInteger(AllUsers.getOneUser(userID).getWorkHourValue()));
+        String mail = AllUsers.getOneUser(userID).getEmail() == null ? "" : AllUsers.getOneUser(userID).getEmail();
+        emailTextField.setText(mail);
+        String hourPay = AllUsers.getOneUser(userID).getWorkHourValue() == 0 ? "" : AllData.formatInputInteger(AllUsers.getOneUser(userID).getWorkHourValue());
+        hourPayTextField.setText(hourPay);
         isChanged = false;
         initSaveButtons();
     }
@@ -446,19 +436,16 @@ public class EditUserWindowController {
             textAreas.put(fullNameTextArea, fullNameTextArea.getText());
         }
 
-        if (!AllUsers.getOneUser(userID).getRole().equals(roleChoiceBox.getValue())) {
-            AllUsers.getOneUser(userID).setRole(roleChoiceBox.getValue());
-        }
 
         if ((textAreas.get(emailTextField) == null && emailTextField.getText() != null) ||
                 (textAreas.get(emailTextField) != null && !textAreas.get(emailTextField).equalsIgnoreCase(emailTextField.getText()))) {
 
-            if (emailTextField.getText() == null || emailTextField.getText().isEmpty()) {
+            if (emailTextField.getText() == null || emailTextField.getText().trim().isEmpty()) {
                 AllUsers.getOneUser(userID).setEmail("");
             }
             else {
                 boolean hasOtherSymbols = false;
-                char[] newEmailArray = emailTextField.getText().toCharArray();
+                char[] newEmailArray = emailTextField.getText().trim().toCharArray();
                 for (Character ch : newEmailArray) {
                     if (!latinForPass.contains(ch.toString()) && !ch.toString().equalsIgnoreCase("@")) {
                         hasOtherSymbols = true;
@@ -466,8 +453,7 @@ public class EditUserWindowController {
                     }
                 }
 
-                if (emailTextField.getText() == null || emailTextField.getText().isEmpty() ||
-                        !emailTextField.getText().contains("@") || hasOtherSymbols) {
+                if (!emailTextField.getText().trim().contains("@") || hasOtherSymbols || emailTextField.getText().trim().length() < 3) {
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Неправильный е-мейл");
                     StringBuilder sb = new StringBuilder("Указанный вами новый е-мейл\n");
@@ -492,6 +478,13 @@ public class EditUserWindowController {
 
 
         if (!textAreas.get(hourPayTextField).equalsIgnoreCase(hourPayTextField.getText())) {
+
+            if (hourPayTextField.getText() == null || hourPayTextField.getText().trim().isEmpty()) {
+                AllUsers.getOneUser(userID).setWorkHourValue(0);
+                hourPayTextField.setText("");
+                textAreas.put(hourPayTextField, "");
+                return;
+            }
 
             Integer hourPay = null;
             try {
@@ -608,7 +601,6 @@ public class EditUserWindowController {
                 (passwordField.getText() != null && !passwordField.getText().isEmpty()) ||
                 !textAreas.get(fullNameTextArea).equalsIgnoreCase(fullNameTextArea.getText()) ||
                 (textAreas.get(emailTextField) != null && !textAreas.get(emailTextField).equalsIgnoreCase(emailTextField.getText())) ||
-                !AllUsers.getOneUser(userID).getRole().equals(roleChoiceBox.getValue()) ||
                 !textAreas.get(hourPayTextField).equalsIgnoreCase(hourPayTextField.getText())) {
             isChanged = true;
         }

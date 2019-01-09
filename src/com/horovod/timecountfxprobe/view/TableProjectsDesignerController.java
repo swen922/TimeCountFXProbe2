@@ -202,22 +202,27 @@ public class TableProjectsDesignerController {
                 //return param.getValue().getValue().workSumProperty();
 
                 int time = param.getValue().getValue().getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
-                StringProperty result = new SimpleStringProperty(String.valueOf(AllData.intToDouble(time)));
-                return result;
+                return new SimpleStringProperty(AllData.formatWorkTime(AllData.intToDouble(time)));
             }
         });
 
         columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
-                double newTimeDouble = Double.parseDouble(event.getNewValue());
+
+
+                //double newTimeDouble = Double.parseDouble(event.getNewValue());
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
+                double newTimeDouble = AllData.getDoubleFromText(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())), event.getNewValue(), 1);
                 AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
 
                 // код для мгновенного обновления страниц у менеджера
                 if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
                     AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                }
+                if (AllData.statisticWindowController != null) {
+                    AllData.statisticWindowController.initialize();
                 }
                 initialize();
 
@@ -387,7 +392,7 @@ public class TableProjectsDesignerController {
                 if (selectUser != null) {
                     if (selectUser.equalsIgnoreCase(toLoginWindow)) {
 
-                        AllData.getRootLayout().setCenter(null);
+                        AllData.rootLayout.setCenter(null);
                         AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
@@ -395,12 +400,12 @@ public class TableProjectsDesignerController {
 
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {
-                            AllData.getRootLayout().setCenter(null);
+                            AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             initialize();
                             AllData.mainApp.showTableProjectsDesigner();
-                            if (AllData.getStatStage() != null) {
-                                if (AllData.getStatStage().isShowing()) {
+                            if (AllData.statisticStage != null) {
+                                if (AllData.statisticStage.isShowing()) {
                                     AllData.mainApp.showStatisticWindow();
                                 }
                             }
@@ -408,14 +413,14 @@ public class TableProjectsDesignerController {
 
                         }
                         else if (role.equals(Role.MANAGER)) {
-                            AllData.getRootLayout().setCenter(null);
+                            AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             initialize();
                             AllData.mainApp.showTableProjectsManager();
 
                             // Переписать для окна статистики менеджера
-                            if (AllData.getStatStage() != null) {
-                                if (AllData.getStatStage().isShowing()) {
+                            if (AllData.statisticStage != null) {
+                                if (AllData.statisticStage.isShowing()) {
                                     AllData.mainApp.showStatisticWindow();
                                 }
                             }

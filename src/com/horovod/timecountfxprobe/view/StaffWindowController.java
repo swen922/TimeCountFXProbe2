@@ -30,11 +30,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.MonthDay;
@@ -95,6 +97,12 @@ public class StaffWindowController {
     @FXML
     private TableView tableUsers;
 
+    @FXML
+    private Button exportButton;
+
+    @FXML
+    private ChoiceBox<String> exportChoiceBox;
+
 
 
 
@@ -120,8 +128,20 @@ public class StaffWindowController {
 
         initTimeLimitTextField();
         initMoneyLimitTextField();
-
         initializeTable();
+        initExportChoiceBox();
+
+    }
+
+    private void initExportChoiceBox() {
+        if (exportChoiceBox.getItems().isEmpty()) {
+            exportChoiceBox.getItems().add("Время в TXT");
+            exportChoiceBox.getItems().add("Таблицу в CSV");
+            exportChoiceBox.setValue("Время в TXT");
+        }
+    }
+
+    public void handleCountSalaryButton() {
 
     }
 
@@ -349,8 +369,8 @@ public class StaffWindowController {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
                 UserBase ub = (UserBase) param.getValue();
-                int sum = AllUsers.getOneUser(ub.getUserID()).getWorkHourValue();
-                return new SimpleStringProperty(AllData.formatInputInteger(sum));
+                String hourPayCell = AllUsers.getOneUser(ub.getUserID()).getWorkHourValue() == 0 ? "-" : AllData.formatInputInteger(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue());
+                return new SimpleStringProperty(hourPayCell);
             }
         });
 
@@ -943,6 +963,48 @@ public class StaffWindowController {
     }
 
 
+    private void writeText() {
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+        chooser.getExtensionFilters().add(extFilter);
+
+        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+        chooser.setInitialDirectory(new File(path));
+
+
+        StringBuilder fileName = new StringBuilder("Статистика по персоналу за ");
+        if (daysRadioButton.isSelected()) {
+            fileName.append(monthChoiceBox.getValue().getValue()).append(".");
+        }
+        fileName.append(yearsChoiceBox.getValue());
+
+        chooser.setInitialFileName(fileName.toString());
+
+        File file = chooser.showSaveDialog(AllData.staffWindowStage);
+
+        if (file != null) {
+            if (!file.getPath().endsWith(".txt")) {
+                file = new File(file.getPath() + ".txt");
+            }
+        }
+
+
+        StringBuilder sb = new StringBuilder(fileName).append("\n\n\n");
+
+        for (UserBase ub : userBaseList) {
+            sb.append(AllUsers.getOneUser(ub.getUserID()).getFullName()).append(":\n");
+        }
+
+
+
+        if (file != null) {
+
+        }
+
+    }
+
+
 
 
     class UserBase {
@@ -972,16 +1034,8 @@ public class StaffWindowController {
             this.userID = userID;
         }
 
-        public LocalDate getFromDate() {
-            return fromDate;
-        }
-
         public synchronized void setFromDate(LocalDate fromDate) {
             this.fromDate = fromDate;
-        }
-
-        public LocalDate getTillDate() {
-            return tillDate;
         }
 
         public synchronized void setTillDate(LocalDate tillDate) {
@@ -1067,45 +1121,6 @@ public class StaffWindowController {
         }
 
     } // конец класса UserBase
-
-
-    /*class TimeCell<T> extends TableCell<T, String> {
-        private Integer day;
-        private Class ParamClass;
-
-        *//*public TimeCell(Integer day) {
-            this.day = day;
-        }*//*
-
-        public TimeCell(Integer day, Class ParamClass) {
-            this.day = day;
-            this.ParamClass = ParamClass;
-        }
-
-        @Override
-        protected void updateItem(String item, boolean empty) {
-            //super.updateItem(item, empty);
-
-            if (empty) {
-                setGraphic(null);
-            }
-            else {
-                if (ParamClass == UserBase.class) {
-                    UserBase ub = (UserBase) getTableView().getItems().get(getIndex());
-                    double dayTime = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), day));
-                    if (dayTime < AllData.getLimitTimeForStaffWindow()) {
-                        setStyle("-fx-alignment: CENTER; -fx-background-color: #f2d8c9;");
-                    }
-                    else {
-                        setStyle("-fx-alignment: CENTER");
-                    }
-                    setGraphic(new Text(String.valueOf(dayTime)));
-
-                }
-
-            }
-        }
-    }*/
 
 
     class ValueCell extends TableCell<UserBase, String> {
@@ -1373,52 +1388,3 @@ public class StaffWindowController {
 
 
 
-
-
-
-/*private void initUsersChoiceBox() {
-        if (listUsers == null) {
-            listUsers = FXCollections.observableArrayList();
-        }
-        listUsers.clear();
-
-        if (designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                if (u.getRole().equals(Role.DESIGNER)) {
-                    listUsers.add(u.getFullName());
-                }
-            }
-        }
-        else if (designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                if (u.getRole().equals(Role.DESIGNER)) {
-                    listUsers.add(u.getFullName());
-                }
-            }
-            for (User u : AllUsers.getDeletedUsers().values()) {
-                if (u.getRole().equals(Role.DESIGNER)) {
-                    listUsers.add(u.getFullName());
-                }
-            }
-        }
-        else if (!designersOnlyCheckBox.isSelected() && !includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                listUsers.add(u.getFullName());
-            }
-        }
-        else if (!designersOnlyCheckBox.isSelected() && includeRetiredsCheckBox.isSelected()) {
-            for (User u : AllUsers.getUsers().values()) {
-                listUsers.add(u.getFullName());
-            }
-            for (User u : AllUsers.getDeletedUsers().values()) {
-                listUsers.add(u.getFullName());
-            }
-        }
-
-        listUsers.sort(new Comparator<String>() {
-            @Override
-            public int compare(String o1, String o2) {
-                return o1.compareTo(o2);
-            }
-        });
-    }*/

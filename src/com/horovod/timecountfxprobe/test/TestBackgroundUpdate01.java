@@ -16,8 +16,8 @@ public class TestBackgroundUpdate01 {
             public void run() {
                 AllData.addWorkTime(12, LocalDate.now(),3, 60);
 
-                if (AllData.getTableProjectsDesignerController() != null) {
-                    AllData.getTableProjectsDesignerController().initialize();
+                if (AllData.tableProjectsDesignerController != null) {
+                    AllData.tableProjectsDesignerController.initialize();
                 }
                 if (AllData.tableProjectsManagerController != null) {
                     AllData.tableProjectsManagerController.initialize();
@@ -43,8 +43,8 @@ public class TestBackgroundUpdate01 {
             public void run() {
                 AllData.addWorkTime(12, LocalDate.now(),3, 20);
 
-                if (AllData.getTableProjectsDesignerController() != null) {
-                    AllData.getTableProjectsDesignerController().initialize();
+                if (AllData.tableProjectsDesignerController != null) {
+                    AllData.tableProjectsDesignerController.initialize();
                 }
                 if (AllData.tableProjectsManagerController != null) {
                     AllData.tableProjectsManagerController.initialize();

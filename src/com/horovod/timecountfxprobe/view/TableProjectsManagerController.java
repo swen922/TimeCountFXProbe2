@@ -538,7 +538,7 @@ public class TableProjectsManagerController {
                 if (selectUser != null) {
                     if (selectUser.equalsIgnoreCase(toLoginWindow)) {
 
-                        AllData.getRootLayout().setCenter(null);
+                        AllData.rootLayout.setCenter(null);
                         AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
@@ -546,25 +546,25 @@ public class TableProjectsManagerController {
 
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {
-                            AllData.getRootLayout().setCenter(null);
+                            AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             //initialize();
                             AllData.mainApp.showTableProjectsDesigner();
-                            if (AllData.getStatStage() != null) {
-                                if (AllData.getStatStage().isShowing()) {
+                            if (AllData.statisticStage != null) {
+                                if (AllData.statisticStage.isShowing()) {
                                     AllData.mainApp.showStatisticWindow();
                                 }
                             }
                         }
                         else if (role.equals(Role.MANAGER)) {
-                            AllData.getRootLayout().setCenter(null);
+                            AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             //initialize();
                             AllData.mainApp.showTableProjectsManager();
 
                             /** TODO Переписать для окна статистики менеджера */
-                            if (AllData.getStatStage() != null) {
-                                if (AllData.getStatStage().isShowing()) {
+                            if (AllData.statisticStage != null) {
+                                if (AllData.statisticStage.isShowing()) {
                                     //mainApp.showStatisticWindow();
                                 }
                             }

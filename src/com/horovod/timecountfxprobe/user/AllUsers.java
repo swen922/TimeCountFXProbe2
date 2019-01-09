@@ -176,10 +176,10 @@ public class AllUsers {
         User result = null;
         if (!isNameLoginExist(login)) {
             if (role.equals(Role.DESIGNER)) {
-                result = new Designer(login, password);
+                result = new Designer(login);
             }
             else if (role.equals(Role.MANAGER)) {
-                result = new Manager(login, password);
+                result = new Manager(login);
 
             }
 

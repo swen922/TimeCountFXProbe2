@@ -273,7 +273,7 @@ public class EditProjectWindowController {
             column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<WorkDay, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<WorkDay, String> param) {
-                    return new SimpleStringProperty(String.valueOf(AllData.formatDouble(param.getValue().getWorkTimeForDesigner(i), 1)));
+                    return new SimpleStringProperty(AllData.formatWorkTime(param.getValue().getWorkTimeForDesigner(i)));
                 }
             });
 

@@ -61,10 +61,11 @@ public class AllData {
      * И решить по всем единообразно: либо через геттеры-сеттеры доступ, либо public сделать (второе экономней по коду)
      * !!!!!!!!*/
 
-    private static TableProjectsDesignerController tableProjectsDesignerController;
-    private static StatisticWindowController statisticWindowController;
-    private static BorderPane rootLayout;
-    private static Stage statStage;
+    public static TableProjectsDesignerController tableProjectsDesignerController;
+    public static StatisticWindowController statisticWindowController;
+    public static Stage statisticStage;
+    public static BorderPane rootLayout;
+
 
     public static MainApp mainApp;
     public static TableProjectsManagerController tableProjectsManagerController;
@@ -391,40 +392,6 @@ public class AllData {
         int result = listPlaces.indexOf(AllUsers.getCurrentUser());
         
         designerRatingPosition.set(result + 1);
-    }
-
-
-
-    public static TableProjectsDesignerController getTableProjectsDesignerController() {
-        return tableProjectsDesignerController;
-    }
-
-    public static synchronized void setTableProjectsDesignerController(TableProjectsDesignerController newTableProjectsDesignerController) {
-        AllData.tableProjectsDesignerController = newTableProjectsDesignerController;
-    }
-
-    public static StatisticWindowController getStatisticWindowController() {
-        return statisticWindowController;
-    }
-
-    public static void setStatisticWindowController(StatisticWindowController statisticWindowController) {
-        AllData.statisticWindowController = statisticWindowController;
-    }
-
-    public static BorderPane getRootLayout() {
-        return rootLayout;
-    }
-
-    public static synchronized void setRootLayout(BorderPane newRootLayout) {
-        AllData.rootLayout = newRootLayout;
-    }
-
-    public static Stage getStatStage() {
-        return statStage;
-    }
-
-    public static void setStatStage(Stage statStage) {
-        AllData.statStage = statStage;
     }
 
 
@@ -773,6 +740,11 @@ public class AllData {
 
 
     public static String formatWorkTime(Double timeDouble) {
+
+        if (timeDouble == 0d) {
+            return "-";
+        }
+
         String result = String.valueOf(timeDouble);
         result = result.replaceAll("\\.", ",");
         result = result.replaceAll(",0", "");
@@ -804,6 +776,11 @@ public class AllData {
     }
 
     public static String formatStringInputDouble(String oldText, String input, int scale) {
+
+        if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
+            return "-";
+        }
+
         String newText = input.replaceAll(" ", ".");
         newText = newText.replaceAll("-", ".");
         newText = newText.replaceAll(",", ".");
@@ -819,12 +796,15 @@ public class AllData {
     }
 
     public static Double getDoubleFromText(double current, String input, int scale) {
+
+        if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
+            return 0d;
+        }
+
         String newText = input.replaceAll(" ", ".");
         newText = newText.replaceAll("-", ".");
         newText = newText.replaceAll(",", ".");
         newText = newText.replaceAll("=", ".");
-
-        System.out.println(newText);
 
         Double newTimeDouble = null;
         try {
@@ -838,7 +818,8 @@ public class AllData {
 
 
     public static int getIntFromText(int current, String input) {
-        if (input.equals("0")) {
+
+        if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
             return 0;
         }
 
@@ -861,8 +842,8 @@ public class AllData {
 
     public static String formatStringInputInteger(String oldText, String input) {
 
-        if (input.equals("0")) {
-            return "";
+        if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
+            return "-";
         }
 
         String corrected = input.replaceAll(",", "");
@@ -896,8 +877,9 @@ public class AllData {
     }
 
     public static String formatInputInteger(Integer input) {
-        if (input == null) {
-            return "";
+
+        if (input == null || input == 0) {
+            return "-";
         }
 
         String inputString = String.valueOf(input);
@@ -923,6 +905,10 @@ public class AllData {
 
 
     public static Integer parseMoney(Integer oldValue, String input) {
+
+        if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
+            return 0;
+        }
 
         String corrected = input.replaceAll(",", "");
         corrected = corrected.replaceAll("\\.", "");

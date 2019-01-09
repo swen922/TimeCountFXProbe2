@@ -14,7 +14,7 @@ public class Manager implements User {
     private int workHourValue = 0;
     private boolean isRetired = false;
 
-    public Manager(String nameLogin, String password) {
+    public Manager(String nameLogin) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;

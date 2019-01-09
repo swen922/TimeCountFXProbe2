@@ -71,7 +71,7 @@ public class MainApp extends Application {
             primaryStage.setTitle("Заголовок окна");
 
             RootLayoutController controller = loader.getController();
-            AllData.setRootLayout(rootLayout);
+            AllData.rootLayout = rootLayout;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -90,7 +90,7 @@ public class MainApp extends Application {
             rootLayout.setCenter(tableDesigner);
 
             tableProjectsDesignerController = loader.getController();
-            AllData.setTableProjectsDesignerController(tableProjectsDesignerController);
+            AllData.tableProjectsDesignerController = tableProjectsDesignerController;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -296,8 +296,8 @@ public class MainApp extends Application {
 
                 statisticWindowController = loader.getController();
                 statisticWindowController.setStage(statStage);
-                AllData.setStatisticWindowController(statisticWindowController);
-                AllData.setStatStage(statStage);
+                AllData.statisticWindowController = statisticWindowController;
+                AllData.statisticStage = statStage;
 
             } catch (IOException e) {
                 e.printStackTrace();

@@ -236,7 +236,7 @@ public class Generator {
 
 
 
-        AllData.addWorkTime(2, LocalDate.now().minusDays(3), 3, 35.5);
+        //AllData.addWorkTime(2, LocalDate.now().minusDays(3), 3, 35.5);
 
         String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
         String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";
@@ -256,8 +256,8 @@ public class Generator {
         p15.setBudget((int) (Math.random() * 90000));
         AllData.addNewProject(p15);
 
-        AllData.addWorkTime(12, LocalDate.now().minusDays(3), 3, 2.0);
-        AllData.addWorkTime(12, LocalDate.now().minusDays(4), 2, 2.0);
+        //AllData.addWorkTime(12, LocalDate.now().minusDays(3), 3, 2.0);
+        //AllData.addWorkTime(12, LocalDate.now().minusDays(4), 2, 2.0);
     }
 
 }
