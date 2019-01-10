@@ -36,7 +36,12 @@ import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.MonthDay;
@@ -53,8 +58,10 @@ public class StaffWindowController {
     private ObservableList<Month> monthsValues;
     private ObservableList<UserBase> userBaseList;
     private ObservableList<TableColumn<?, String>> columns;
+    private Map<Integer, Number> sumMap = new HashMap<>();
+    private Map<Integer, Map<Integer, Number>> allValuesMaps = new HashMap<>();
 
-    private String allWorkers = "Все работники";
+    private String logString = "";
 
 
 
@@ -103,6 +110,8 @@ public class StaffWindowController {
     @FXML
     private ChoiceBox<String> exportChoiceBox;
 
+    @FXML
+    private Label logLabel;
 
 
 
@@ -139,6 +148,14 @@ public class StaffWindowController {
             exportChoiceBox.getItems().add("Таблицу в CSV");
             exportChoiceBox.setValue("Время в TXT");
         }
+    }
+
+    /** TODO долелать else !!! */
+    public void handleExportButton() {
+        if (exportChoiceBox.getValue().equals("Время в TXT")) {
+            writeText();
+        }
+        else {}
     }
 
     public void handleCountSalaryButton() {
@@ -436,6 +453,8 @@ public class StaffWindowController {
 
     private void initializeTableDailyTime() {
 
+        logLabel.setText("");
+
         LocalDate fromDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), 1);
         Year y = Year.from(fromDate);
         int monthLemgth = monthChoiceBox.getValue().length(y.isLeap());
@@ -448,8 +467,9 @@ public class StaffWindowController {
 
         // Все вычисления по времени производим заранее, до выполнения методов
         // setCellValueFactory() и setCellFactory()
-        Map<Integer, Double> sumMap = new HashMap<>();
 
+        sumMap.clear();
+        allValuesMaps.clear();
 
         for (int i = 1; i <= monthLemgth; i++) {
 
@@ -468,25 +488,27 @@ public class StaffWindowController {
 
                 // Все вычисления по времени производим заранее, до выполнения методов
                 // setCellValueFactory() и setCellFactory()
-                Map<Integer, Double> valuesMap = new HashMap<>();
+                Map<Integer, Number> valuesMap = new HashMap<>();
+
                 for (UserBase ub : userBaseList) {
-                    double value = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j));
+                    Double value = ub.getWorkSumForDay(LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j));
                     valuesMap.put(ub.getUserID(), value);
                     if (sumMap.containsKey(ub.getUserID())) {
-                        double current = sumMap.get(ub.getUserID());
+                        double current = (Double) sumMap.get(ub.getUserID());
                         sumMap.put(ub.getUserID(), AllData.formatDouble(current + value, 1));
                     }
                     else {
                         sumMap.put(ub.getUserID(), AllData.formatDouble(value, 1));
                     }
                 }
+                allValuesMaps.put(j, valuesMap);
 
                 TableColumn<UserBase, String> columnTime = new TableColumn<>(String.valueOf(i));
 
                 columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                     @Override
                     public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                        double val = valuesMap.get(param.getValue().getUserID()) == null ? 0 : valuesMap.get(param.getValue().getUserID());
+                        double val = valuesMap.get(param.getValue().getUserID()) == null ? 0d : (Double) valuesMap.get(param.getValue().getUserID());
                         return new SimpleStringProperty(AllData.formatWorkTime(val));
                     }
                 });
@@ -514,7 +536,7 @@ public class StaffWindowController {
         workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                double val = sumMap.get(param.getValue().getUserID()) == null ? 0 : sumMap.get(param.getValue().getUserID());
+                double val = sumMap.get(param.getValue().getUserID()) == null ? 0 : (Double) sumMap.get(param.getValue().getUserID());
                 return new SimpleStringProperty(AllData.formatWorkTime(val));
             }
         });
@@ -564,6 +586,8 @@ public class StaffWindowController {
 
     private void initializeTableMonthlyTime() {
 
+        logLabel.setText("");
+
         LocalDate fromDate = LocalDate.of(yearsChoiceBox.getValue(), 1, 1);
         LocalDate tillDate = LocalDate.of(yearsChoiceBox.getValue(), 12, 31);
 
@@ -574,7 +598,10 @@ public class StaffWindowController {
 
         // Все вычисления по времени производим заранее, до выполнения методов
         // setCellValueFactory() и setCellFactory()
-        Map<Integer, Double> sumMap = new HashMap<>();
+
+        sumMap.clear();
+        allValuesMaps.clear();
+
 
         for (int i = 1; i <= 12; i++) {
 
@@ -587,25 +614,27 @@ public class StaffWindowController {
 
             // Все вычисления по времени производим заранее, до выполнения методов
             // setCellValueFactory() и setCellFactory()
-            Map<Integer, Double> valuesMap = new HashMap<>();
+
+            Map<Integer, Number> valuesMap = new HashMap<>();
+
             for (UserBase ub : userBaseList) {
                 double time = ub.getWorkSumForMonth(yearsChoiceBox.getValue(), j);
                 valuesMap.put(ub.getUserID(), AllData.formatDouble(time, 1));
                 if (sumMap.containsKey(ub.getUserID())) {
-                    double current = sumMap.get(ub.getUserID());
+                    double current = (Double) sumMap.get(ub.getUserID());
                     sumMap.put(ub.getUserID(), AllData.formatDouble((current + time), 1));
                 }
                 else {
                     sumMap.put(ub.getUserID(), AllData.formatDouble(time, 1));
                 }
             }
-
+            allValuesMaps.put(j, valuesMap);
 
 
             columnTime.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                    return new SimpleStringProperty(AllData.formatWorkTime(valuesMap.get(param.getValue().getUserID())));
+                    return new SimpleStringProperty(AllData.formatWorkTime((Double) valuesMap.get(param.getValue().getUserID())));
                 }
             });
 
@@ -631,7 +660,7 @@ public class StaffWindowController {
         workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                return new SimpleStringProperty(AllData.formatWorkTime(sumMap.get(param.getValue().getUserID())));
+                return new SimpleStringProperty(AllData.formatWorkTime((Double) sumMap.get(param.getValue().getUserID())));
             }
         });
         workSumColumn.setStyle("-fx-alignment: CENTER;");
@@ -677,8 +706,29 @@ public class StaffWindowController {
 
     }
 
+    private void logNoBudget(int counterAllProjcts, int counterNoBudgets) {
+        if (counterNoBudgets != 0) {
+            double percent = ((double) counterAllProjcts) / 100;
+            double part = ((double) counterNoBudgets) / percent;
+            BigDecimal partDec = new BigDecimal(Double.toString(part));
+            partDec = partDec.setScale(2, RoundingMode.HALF_UP);
+            part = partDec.doubleValue();
+
+            StringBuilder counterSB = new StringBuilder("Примечание: данный подсчет выработки в рублях не является точным, так как у ");
+            counterSB.append(part).append("% проектов в данной выборке не внесена сумма итоговой сметы");
+            logLabel.setText(counterSB.toString());
+            logString = counterSB.toString();
+
+        }
+    }
+
 
     private void initializeTableDailyMoney() {
+
+        logLabel.setText("");
+
+        int counterAllProjcts = 0;
+        int counterNoBudgets = 0;
 
         LocalDate fromDate = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), 1);
         Year y = Year.from(fromDate);
@@ -688,7 +738,8 @@ public class StaffWindowController {
             userBaseList.add(new UserBase(u.getIDNumber()));
         }
 
-        Map<Integer, Integer> sumMap = new HashMap<>();
+        sumMap.clear();
+        allValuesMaps.clear();
 
         for (int i = 1; i <= monthLemgth; i++) {
 
@@ -708,7 +759,9 @@ public class StaffWindowController {
 
                 // Все вычисления по времени производим заранее, до выполнения методов
                 // setCellValueFactory() и setCellFactory()
-                Map<Integer, Integer> valuesMap = new HashMap<>();
+
+                Map<Integer, Number> valuesMap = new HashMap<>();
+
                 for (UserBase ub : userBaseList) {
                     LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), j);
                     List<Project> projects = AllData.getAllProjectsForDesignerAndDate(ub.getUserID(), date);
@@ -716,6 +769,7 @@ public class StaffWindowController {
                         valuesMap.put(ub.getUserID(), 0);
                     }
                     else {
+                        counterAllProjcts += projects.size();
                         double money = 0;
                         for (Project p : projects) {
                             if (p.getBudget() != 0) {
@@ -729,11 +783,14 @@ public class StaffWindowController {
                                 double partBudget = (totalBudget / 100) * part;
                                 money += partBudget;
                             }
+                            else {
+                                counterNoBudgets++;
+                            }
                         }
                         int result = (int) money;
                         valuesMap.put(ub.getUserID(), result);
                         if (sumMap.containsKey(ub.getUserID())) {
-                            int curr = sumMap.get(ub.getUserID());
+                            int curr = (Integer) sumMap.get(ub.getUserID());
                             sumMap.put(ub.getUserID(), (curr + result));
                         }
                         else {
@@ -741,11 +798,12 @@ public class StaffWindowController {
                         }
                     }
                 }
+                allValuesMaps.put(j, valuesMap);
 
                 columnMoney.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                     @Override
                     public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                        return new SimpleStringProperty(AllData.formatInputInteger(valuesMap.get(param.getValue().getUserID())));
+                        return new SimpleStringProperty(AllData.formatInputInteger((Integer) valuesMap.get(param.getValue().getUserID())));
                     }
                 });
 
@@ -774,7 +832,7 @@ public class StaffWindowController {
         workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                return new SimpleStringProperty(AllData.formatInputInteger(sumMap.get(param.getValue().getUserID())));
+                return new SimpleStringProperty(AllData.formatInputInteger((Integer) sumMap.get(param.getValue().getUserID())));
             }
         });
 
@@ -817,17 +875,27 @@ public class StaffWindowController {
                 return AllUsers.getOneUser(o1.getUserID()).getFullName().compareTo(AllUsers.getOneUser(o2.getUserID()).getFullName());
             }
         });
+
+        logNoBudget(counterAllProjcts, counterNoBudgets);
     }
 
 
     private void initializeTableMonthlyMoney() {
+
+        logLabel.setText("");
+
+        int counterAllProjcts = 0;
+        int counterNoBudgets = 0;
+
         for (User u : getUsers().values()) {
             userBaseList.add(new UserBase(u.getIDNumber()));
         }
 
         // Все вычисления по времени производим заранее, до выполнения методов
         // setCellValueFactory() и setCellFactory()
-        Map<Integer, Integer> sumMap = new HashMap<>();
+
+        sumMap.clear();
+        allValuesMaps.clear();
 
         for (int i = 1; i <= 12; i++) {
             LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), i, 1);
@@ -839,13 +907,16 @@ public class StaffWindowController {
 
             // Все вычисления по времени производим заранее, до выполнения методов
             // setCellValueFactory() и setCellFactory()
-            Map<Integer, Integer> valuesMap = new HashMap<>();
+
+            Map<Integer, Number> valuesMap = new HashMap<>();
+
             for (UserBase ub : userBaseList) {
                 List<Project> projects = AllData.getAllProjectsForDesignerAndMonth(ub.getUserID(), yearsChoiceBox.getValue(), j);
                 if (projects.isEmpty()) {
                     valuesMap.put(ub.getUserID(), 0);
                 }
                 else {
+                    counterAllProjcts += projects.size();
                     double money = 0;
                     for (Project p : projects) {
                         if (p.getBudget() != 0) {
@@ -859,11 +930,14 @@ public class StaffWindowController {
                             double partBudget = (totalBudget / 100) * part;
                             money += partBudget;
                         }
+                        else {
+                            counterNoBudgets++;
+                        }
                     }
                     int result = (int) money;
                     valuesMap.put(ub.getUserID(), result);
                     if (sumMap.containsKey(ub.getUserID())) {
-                        int curr = sumMap.get(ub.getUserID());
+                        int curr = (Integer) sumMap.get(ub.getUserID());
                         sumMap.put(ub.getUserID(), (curr + result));
                     }
                     else {
@@ -871,11 +945,12 @@ public class StaffWindowController {
                     }
                 }
             }
+            allValuesMaps.put(j, valuesMap);
 
             columnMoney.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
                 @Override
                 public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                    return new SimpleStringProperty(AllData.formatInputInteger(valuesMap.get(param.getValue().getUserID())));
+                    return new SimpleStringProperty(AllData.formatInputInteger((Integer) valuesMap.get(param.getValue().getUserID())));
                 }
             });
 
@@ -897,12 +972,11 @@ public class StaffWindowController {
             columns.add(columnMoney);
         }
 
-
         TableColumn<UserBase, String> workSumColumn = new TableColumn<>("Всего");
         workSumColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<UserBase, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
-                return new SimpleStringProperty(AllData.formatInputInteger(sumMap.get(param.getValue().getUserID())));
+                return new SimpleStringProperty(AllData.formatInputInteger((Integer) sumMap.get(param.getValue().getUserID())));
             }
         });
         workSumColumn.setStyle("-fx-alignment: CENTER;");
@@ -945,6 +1019,9 @@ public class StaffWindowController {
                 return AllUsers.getOneUser(o1.userID).getFullName().compareTo(AllUsers.getOneUser(o2.userID).getFullName());
             }
         });
+
+        logNoBudget(counterAllProjcts, counterNoBudgets);
+
     }
 
 
@@ -965,6 +1042,8 @@ public class StaffWindowController {
 
     private void writeText() {
 
+        String period = "";
+
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
         chooser.getExtensionFilters().add(extFilter);
@@ -975,9 +1054,17 @@ public class StaffWindowController {
 
         StringBuilder fileName = new StringBuilder("Статистика по персоналу за ");
         if (daysRadioButton.isSelected()) {
-            fileName.append(monthChoiceBox.getValue().getValue()).append(".");
+            period = monthChoiceBox.getValue().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) + " ";
         }
-        fileName.append(yearsChoiceBox.getValue());
+        period = period + yearsChoiceBox.getValue() + " г.";
+        fileName.append(period);
+
+        if (timeRadioButton.isSelected()) {
+            fileName.append(" в часах");
+        }
+        else {
+            fileName.append(" в рублях");
+        }
 
         chooser.setInitialFileName(fileName.toString());
 
@@ -990,18 +1077,87 @@ public class StaffWindowController {
         }
 
 
-        StringBuilder sb = new StringBuilder(fileName).append("\n\n\n");
+        StringBuilder sb = new StringBuilder("\n").append(fileName).append("\n");
 
         for (UserBase ub : userBaseList) {
-            sb.append(AllUsers.getOneUser(ub.getUserID()).getFullName()).append(":\n");
+            sb.append("\n\n\n").append(AllUsers.getOneUser(ub.getUserID()).getFullName()).append(":\n\n");
+            sb.append("Итого за ").append(period).append(" = ");
+            if (timeRadioButton.isSelected()) {
+                sb.append(AllData.formatWorkTime((Double) sumMap.get(ub.getUserID())));
+                sb.append(" ").append(AllData.formatHours(String.valueOf(sumMap.get(ub.getUserID()))));
+            }
+            else {
+                sb.append(AllData.formatInputInteger((Integer) sumMap.get(ub.getUserID())));
+                sb.append(" руб.");
+            }
+            sb.append("\n");
+
+            if (daysRadioButton.isSelected()) {
+
+                for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+                    LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), monthChoiceBox.getValue().getValue(), entry.getKey());
+
+                    if (timeRadioButton.isSelected()) {
+                        double value = (Double) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        String valuesString = AllData.formatWorkTime(value);
+                        if (value != 0) {
+                            sb.append(AllData.formatDate(date)).append(" = ");
+                            sb.append(valuesString).append(" ").append(AllData.formatHours(String.valueOf(value)));
+                            sb.append("\n");
+                        }
+                    }
+                    else {
+                        int value = (Integer) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        String valuesString = AllData.formatInputInteger(value);
+                        if (value != 0) {
+                            sb.append(AllData.formatDate(date)).append(" = ");
+                            sb.append(valuesString).append(" ").append("руб.");
+                            sb.append("\n");
+                        }
+                    }
+
+                }
+            }
+            else {
+                for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+                    LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), entry.getKey(), 1);
+                    String monthName = date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+
+                    if (timeRadioButton.isSelected()) {
+                        double value = (Double) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        String valuesString = AllData.formatWorkTime(value);
+                        if (value != 0) {
+                            sb.append(monthName).append(" = ");
+                            sb.append(valuesString).append(" ").append(AllData.formatHours(String.valueOf(value)));
+                            sb.append("\n");
+                        }
+                    }
+                    else {
+                        int value = (Integer) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        String valuesString = AllData.formatInputInteger(value);
+                        if (value != 0) {
+                            sb.append(monthName).append(" = ");
+                            sb.append(valuesString).append(" руб.");
+                            sb.append("\n");
+                        }
+                    }
+                }
+            }
         }
 
 
 
         if (file != null) {
 
-        }
+            try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 
+                writer.write(sb.toString());
+                writer.flush();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
 
@@ -1086,7 +1242,7 @@ public class StaffWindowController {
             }
         }
 
-        private double getWorkSumForDay(LocalDate date) {
+        public double getWorkSumForDay(LocalDate date) {
             if (workSumMap.get(date) == null) {
                 return 0;
             }
@@ -1124,10 +1280,10 @@ public class StaffWindowController {
 
 
     class ValueCell extends TableCell<UserBase, String> {
-        private Map<Integer, ? extends Number> values;
+        private Map<Integer, Number> values = new HashMap<>();
 
-        public ValueCell(Map<Integer, ? extends Number> values) {
-            this.values = values;
+        public ValueCell(Map<Integer, Number> values) {
+            this.values.putAll(values);
         }
 
         @Override
@@ -1166,10 +1322,10 @@ public class StaffWindowController {
 
 
     class ValueCellMonth extends TableCell<UserBase, String> {
-        private Map<Integer, ? extends Number> values;
+        private Map<Integer, Number> values = new HashMap<>();
 
-        public ValueCellMonth(Map<Integer, ? extends Number> values) {
-            this.values = values;
+        public ValueCellMonth(Map<Integer, Number> values) {
+            this.values.putAll(values);
         }
 
         @Override

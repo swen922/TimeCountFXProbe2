@@ -167,9 +167,10 @@
       </AnchorPane>
       <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="250.0" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0">
          <children>
-            <Button fx:id="exportButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" minWidth="70.0" mnemonicParsing="false" text="Экспорт" textAlignment="CENTER" />
+            <Button fx:id="exportButton" alignment="CENTER_RIGHT" contentDisplay="RIGHT" minWidth="70.0" mnemonicParsing="false" onAction="#handleExportButton" text="Экспорт" textAlignment="CENTER" />
             <ChoiceBox fx:id="exportChoiceBox" prefWidth="150.0" />
          </children>
       </HBox>
+      <Label fx:id="logLabel" layoutX="293.0" layoutY="493.0" minHeight="30.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="260.0" />
    </children>
 </AnchorPane>

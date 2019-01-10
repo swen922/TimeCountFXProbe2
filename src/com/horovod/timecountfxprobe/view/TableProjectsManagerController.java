@@ -42,6 +42,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Predicate;
@@ -802,12 +804,15 @@ public class TableProjectsManagerController {
                 sb0.append("Это значит, что подсчитать сумму невозможно");
             }
             else {
-                double size = (double) sortedList.size();
-                double percent = size / 100;
-                double notBudgPercent = notBudgeted / percent;
-                int notB = (int) notBudgPercent;
+
+                double percent = ((double) sortedList.size()) / 100;
+                double part = ((double) notBudgeted) / percent;
+                BigDecimal partDec = new BigDecimal(Double.toString(part));
+                partDec = partDec.setScale(2, RoundingMode.HALF_UP);
+                part = partDec.doubleValue();
+
                 sb0.append("Примечание: в данной выборке\n");
-                sb0.append("отсутствует внесенная сметная стоимость у ").append(notB).append("% проектов.\n");
+                sb0.append("отсутствует внесенная сметная стоимость у ").append(part).append("% проектов.\n");
                 sb0.append("Это значит, что подсчитанная сумма неточна");
             }
             alert.setContentText(sb0.toString());

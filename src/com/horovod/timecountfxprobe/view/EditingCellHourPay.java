@@ -81,8 +81,6 @@ public class EditingCellHourPay<T, String> extends TableCell<T, String> {
                     commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
                     EditingCellHourPay.this.getTableView().requestFocus();
                     EditingCellHourPay.this.getTableView().getSelectionModel().selectAll();
-                    //initialize();
-                    //projectsTable.refresh();
                 }
             }
         });

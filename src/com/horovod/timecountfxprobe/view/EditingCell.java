@@ -78,7 +78,9 @@ public class EditingCell<T, String> extends TableCell<T, String> {
         textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                textField.setText("");
+                if (fillChartMode.equals(FillChartMode.TIME)) {
+                    textField.setText("");
+                }
             }
         });
         textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
