@@ -150,12 +150,13 @@ public class StaffWindowController {
         }
     }
 
-    /** TODO долелать else !!! */
     public void handleExportButton() {
         if (exportChoiceBox.getValue().equals("Время в TXT")) {
             writeText();
         }
-        else {}
+        else {
+            writeCSV();
+        }
     }
 
     public void handleCountSalaryButton() {
@@ -1040,6 +1041,7 @@ public class StaffWindowController {
     }
 
 
+
     private void writeText() {
 
         String period = "";
@@ -1158,6 +1160,131 @@ public class StaffWindowController {
                 ex.printStackTrace();
             }
         }
+    }
+
+
+
+    private void writeCSV() {
+
+        String period = "";
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
+        chooser.getExtensionFilters().add(extFilter);
+
+        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+        chooser.setInitialDirectory(new File(path));
+
+
+        StringBuilder fileName = new StringBuilder("Статистика по персоналу за ");
+        if (daysRadioButton.isSelected()) {
+            period = monthChoiceBox.getValue().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()) + " ";
+        }
+        period = period + yearsChoiceBox.getValue() + " г.";
+        fileName.append(period);
+
+        if (timeRadioButton.isSelected()) {
+            fileName.append(" в часах");
+        }
+        else {
+            fileName.append(" в рублях");
+        }
+
+        chooser.setInitialFileName(fileName.toString());
+
+        File file = chooser.showSaveDialog(AllData.staffWindowStage);
+
+        if (file != null) {
+            if (!file.getPath().endsWith(".csv")) {
+                file = new File(file.getPath() + ".csv");
+            }
+        }
+
+
+        StringBuilder sb = new StringBuilder("\n").append(fileName).append("\n");
+
+        sb.append("\n\n\n").append("Работник").append("\t").append("Всего").append("\t");
+        for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+            sb.append(entry.getKey()).append("\t");
+        }
+        sb.append("\n\n");
+
+        for (UserBase ub : userBaseList) {
+
+            sb.append(AllUsers.getOneUser(ub.getUserID()).getFullName()).append("\t");
+
+            if (timeRadioButton.isSelected()) {
+                sb.append(AllData.formatWorkTime((Double) sumMap.get(ub.getUserID()))).append("\t");
+            }
+            else {
+                sb.append(AllData.formatInputInteger((Integer) sumMap.get(ub.getUserID()))).append("\t");
+            }
+
+            if (daysRadioButton.isSelected()) {
+
+                for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+
+                    if (timeRadioButton.isSelected()) {
+                        double value = (Double) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        if (value == 0) {
+                            sb.append("\t");
+                        }
+                        else {
+                            String valuesString = AllData.formatWorkTime(value);
+                            sb.append(valuesString).append("\t");
+                        }
+                    }
+                    else {
+                        int value = (Integer) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        if (value == 0) {
+                            sb.append("\t");
+                        }
+                        else {
+                            String valuesString = AllData.formatInputInteger(value);
+                            sb.append(valuesString).append("\t");
+                        }
+                    }
+                }
+                sb.append("\n");
+
+            }
+            else {
+                for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+                    LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), entry.getKey(), 1);
+                    String monthName = date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+
+                    if (timeRadioButton.isSelected()) {
+                        double value = (Double) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        String valuesString = AllData.formatWorkTime(value);
+                        if (value != 0) {
+                            sb.append(valuesString).append("\t");
+                        }
+                    }
+                    else {
+                        int value = (Integer) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                        String valuesString = AllData.formatInputInteger(value);
+                        if (value != 0) {
+                            sb.append(valuesString).append("\t");
+                        }
+                    }
+                }
+                sb.append("\n");
+            }
+
+        }
+
+        if (file != null) {
+
+            try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                writer.write(sb.toString());
+                writer.flush();
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
     }
 
 
@@ -1531,6 +1658,7 @@ public class StaffWindowController {
 
 
         {
+            retiredCheckBox.setCursor(Cursor.HAND);
             manageButton.setMinHeight(20);
             manageButton.setMaxHeight(20);
             manageButton.setStyle("-fx-font-size:10");

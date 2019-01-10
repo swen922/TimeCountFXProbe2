@@ -22,6 +22,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -1078,7 +1079,6 @@ public class TableProjectsManagerController {
                 return null;
             }
         };
-
         *//** ОБЯЗАТЕЛЬНО к использованию! *//*
         Platform.runLater(task);*/
 
@@ -1261,6 +1261,8 @@ public class TableProjectsManagerController {
 
         {
 
+            archiveCheckBox.setCursor(Cursor.HAND);
+
             openFolderButton.setMinHeight(20);
             openFolderButton.setMaxHeight(20);
             openFolderButton.setStyle("-fx-font-size:10");
@@ -1280,7 +1282,6 @@ public class TableProjectsManagerController {
 
 
     /*class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
-
         @Override
         protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
             if (item == null) {
