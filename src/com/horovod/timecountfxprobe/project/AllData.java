@@ -74,8 +74,6 @@ public class AllData {
     public static volatile int IDnumberForEdit;
     public static StaffWindowController staffWindowController;
     public static Stage staffWindowStage;
-    public static Map<Integer, EditUserWindowController> editUserWindowControllers = new ConcurrentHashMap<>();
-    public static Map<Integer, Stage> editUserStages = new ConcurrentHashMap<>();
 
     private static volatile double limitTimeForStaffWindow = 6;
     private static volatile int limitMoneyForStaffWindow = 6000;
@@ -701,15 +699,6 @@ public class AllData {
 
     public static void rebuildEditProjectsControllers() {
         Iterator<Map.Entry<Integer, EditProjectWindowController>> iter = editProjectWindowControllers.entrySet().iterator();
-        while (iter.hasNext()) {
-            if (iter.next().getValue() == null) {
-                iter.remove();
-            }
-        }
-    }
-
-    public static void rebuildEditUsersControllers() {
-        Iterator<Map.Entry<Integer, EditUserWindowController>> iter = editUserWindowControllers.entrySet().iterator();
         while (iter.hasNext()) {
             if (iter.next().getValue() == null) {
                 iter.remove();

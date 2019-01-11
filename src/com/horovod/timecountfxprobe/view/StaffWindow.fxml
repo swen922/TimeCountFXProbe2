@@ -156,7 +156,7 @@
             </VBox>
          </children>
       </HBox>
-      <AnchorPane layoutX="373.0" layoutY="104.0" prefHeight="400.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="80.0">
+      <AnchorPane layoutX="373.0" layoutY="104.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="80.0">
          <children>
             <TableView fx:id="tableUsers" editable="true" layoutX="88.0" layoutY="43.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <columnResizePolicy>
@@ -171,6 +171,10 @@
             <ChoiceBox fx:id="exportChoiceBox" prefWidth="150.0" />
          </children>
       </HBox>
-      <Label fx:id="logLabel" layoutX="293.0" layoutY="493.0" minHeight="30.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="260.0" />
+      <Label fx:id="logLabel" layoutX="293.0" layoutY="493.0" maxHeight="30.0" minHeight="30.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="260.0" AnchorPane.rightAnchor="90.0">
+         <font>
+            <Font size="12.0" />
+         </font></Label>
+      <Button fx:id="closeButton" layoutX="1327.0" layoutY="485.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0" />
    </children>
 </AnchorPane>

@@ -224,10 +224,8 @@ public class MainApp extends Application {
             editUserStage.initModality(Modality.WINDOW_MODAL);
             Scene scene = new Scene(editUser);
             editUserStage.setScene(scene);
-            AllData.editUserStages.put(userID, editUserStage);
 
             EditUserWindowController controller = loader.getController();
-            AllData.editUserWindowControllers.put(userID, controller);
             controller.setMyStage(editUserStage);
 
             editUserStage.showAndWait();

@@ -113,6 +113,9 @@ public class StaffWindowController {
     @FXML
     private Label logLabel;
 
+    @FXML
+    private Button closeButton;
+
 
 
 
@@ -221,35 +224,6 @@ public class StaffWindowController {
     }
 
 
-
-    // initclosing надо отрабатывать где-то уже после запуска
-    // когда стейдж и контроллер полностью инициализированы
-    private void initClosing() {
-
-        if (AllData.staffWindowStage != null) {
-
-            AllData.staffWindowStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
-
-                    if (!AllData.editUserWindowControllers.isEmpty()) {
-                        for (EditUserWindowController eu : AllData.editUserWindowControllers.values()) {
-                            eu.closing();
-                        }
-                    }
-
-                    if (!AllData.editUserStages.isEmpty()) {
-                        event.consume();
-                    }
-                    else {
-                        AllData.staffWindowStage.close();
-                    }
-                }
-            });
-        }
-    }
-
-
     public void initYearChoiceBox() {
         if (yearsValues == null) {
             yearsValues = FXCollections.observableArrayList();
@@ -309,6 +283,10 @@ public class StaffWindowController {
                 initializeTable();
             }
         });
+    }
+
+    public void handleCloseButton() {
+        AllData.staffWindowStage.close();
     }
 
 
@@ -620,6 +598,7 @@ public class StaffWindowController {
 
             for (UserBase ub : userBaseList) {
                 double time = ub.getWorkSumForMonth(yearsChoiceBox.getValue(), j);
+
                 valuesMap.put(ub.getUserID(), AllData.formatDouble(time, 1));
                 if (sumMap.containsKey(ub.getUserID())) {
                     double current = (Double) sumMap.get(ub.getUserID());
@@ -1204,9 +1183,21 @@ public class StaffWindowController {
         StringBuilder sb = new StringBuilder("\n").append(fileName).append("\n");
 
         sb.append("\n\n\n").append("Работник").append("\t").append("Всего").append("\t");
-        for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
-            sb.append(entry.getKey()).append("\t");
+
+        if (daysRadioButton.isSelected()) {
+            for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+                sb.append(entry.getKey()).append("\t");
+            }
         }
+        else {
+            for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
+                LocalDate dd = LocalDate.of(yearsChoiceBox.getValue(), entry.getKey(), 1);
+                String monthString = dd.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+                sb.append(monthString).append("\t");
+            }
+        }
+
+
         sb.append("\n\n");
 
         for (UserBase ub : userBaseList) {
@@ -1250,21 +1241,31 @@ public class StaffWindowController {
             }
             else {
                 for (Map.Entry<Integer, Map<Integer, Number>> entry : allValuesMaps.entrySet()) {
-                    LocalDate date = LocalDate.of(yearsChoiceBox.getValue(), entry.getKey(), 1);
-                    String monthName = date.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
 
-                    if (timeRadioButton.isSelected()) {
-                        double value = (Double) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
-                        String valuesString = AllData.formatWorkTime(value);
-                        if (value != 0) {
-                            sb.append(valuesString).append("\t");
+                    LocalDate dd = LocalDate.of(yearsChoiceBox.getValue(), entry.getKey(), 1);
+                    int monthNumber = dd.getMonth().getValue();
+
+                    if (monthNumber == entry.getKey()) {
+
+                        if (timeRadioButton.isSelected()) {
+                            double value = (Double) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                            String valuesString = AllData.formatWorkTime(value);
+                            if (value == 0) {
+                                sb.append("\t");
+                            }
+                            else {
+                                sb.append(valuesString).append("\t");
+                            }
                         }
-                    }
-                    else {
-                        int value = (Integer) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
-                        String valuesString = AllData.formatInputInteger(value);
-                        if (value != 0) {
-                            sb.append(valuesString).append("\t");
+                        else {
+                            int value = (Integer) allValuesMaps.get(entry.getKey()).get(ub.getUserID());
+                            String valuesString = AllData.formatInputInteger(value);
+                            if (value == 0) {
+                                sb.append("\t");
+                            }
+                            else {
+                                sb.append(valuesString).append("\t");
+                            }
                         }
                     }
                 }
@@ -1575,17 +1576,7 @@ public class StaffWindowController {
                 manageButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-
-                        AllData.rebuildEditUsersControllers();
-                        initClosing();
-
-                        if (!AllData.editUserStages.containsKey(userID)) {
-                            AllData.mainApp.showEditUserWindow(userID, AllData.staffWindowStage);
-                        }
-                        else {
-                            AllData.editUserStages.get(userID).close();
-                            AllData.editUserStages.get(userID).show();
-                        }
+                        AllData.mainApp.showEditUserWindow(userID, AllData.staffWindowStage);
                     }
                 });
 

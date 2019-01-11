@@ -523,24 +523,19 @@ public class EditUserWindowController {
         handleSaveButton();
         if (!isChanged) {
             myStage.close();
-            AllData.editUserStages.remove(userID);
-            AllData.editUserWindowControllers.remove(userID);
         }
-
     }
 
 
     public void handleCloseButton() {
-
         if (!isChanged) {
             myStage.close();
-            AllData.editUserStages.remove(userID);
-            AllData.editUserWindowControllers.remove(userID);
         }
         else {
             handleAlerts();
         }
     }
+
 
     private void handleAlerts() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -564,8 +559,6 @@ public class EditUserWindowController {
         }
         else if (option.get() == dontSaveButton) {
             handleRevertButton();
-            AllData.editUserStages.remove(userID);
-            AllData.editUserWindowControllers.remove(userID);
             alert.close();
             myStage.close();
         }
@@ -608,17 +601,7 @@ public class EditUserWindowController {
     }
 
 
-    public void closing() {
-
-        if (!isChanged) {
-            if (AllData.editUserStages.containsKey(userID)) {
-                AllData.editUserStages.get(userID).close();
-                AllData.editUserStages.remove(userID);
-            }
-            if (AllData.editUserWindowControllers.containsKey(userID)) {
-                AllData.editUserWindowControllers.remove(userID);
-            }
-
-        }
+    public void close() {
+        myStage.close();
     }
 }

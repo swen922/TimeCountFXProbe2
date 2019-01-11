@@ -1,14 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.horovod.timecountfxprobe.view.CountSalaryWindowController"
-            prefHeight="400.0" prefWidth="600.0">
 
+<AnchorPane prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CountSalaryWindowController">
+   <children>
+      <HBox alignment="CENTER_LEFT" layoutX="26.0" layoutY="150.0" prefHeight="35.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+         <children>
+            <CheckBox mnemonicParsing="false" text="Только дизайнеры" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+            <Label text="За период с" />
+            <DatePicker />
+            <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
+               <tooltip>
+                  <Tooltip text="Очистить период" />
+               </tooltip>
+            </Button>
+            <Label text="по" />
+            <DatePicker />
+            <Button fx:id="clearDatePicker1" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
+               <tooltip>
+                  <Tooltip text="Очистить период" />
+               </tooltip>
+            </Button>
+         </children>
+      </HBox>
+      <Separator prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="45.0" />
+      <FlowPane alignment="CENTER_LEFT" hgap="10.0" layoutX="27.0" layoutY="61.0" prefHeight="100.0" rowValignment="TOP" vgap="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <CheckBox mnemonicParsing="false" text="Сергей Анисимов" />
+            <CheckBox mnemonicParsing="false" text="Сергей Шахматов" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" />
+         </children>
+      </FlowPane>
+      <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="155.0" />
+      <Button layoutX="14.0" layoutY="166.0" mnemonicParsing="false" text="Выбрать всех" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="165.0" />
+      <Button layoutX="120.0" layoutY="165.0" mnemonicParsing="false" text="Отключить всех" />
+      <Button layoutX="262.0" layoutY="165.0" mnemonicParsing="false" text="Рассчитать зарплату" />
+   </children>
 </AnchorPane>
