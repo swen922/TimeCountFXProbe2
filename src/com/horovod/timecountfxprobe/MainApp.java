@@ -7,7 +7,6 @@ import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;
 import javafx.application.Application;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -161,31 +160,6 @@ public class MainApp extends Application {
         }
     }
 
-    public void showSaveProjectChangesDialog(Stage editProjectStage, EditProjectWindowController editProjectWindowController, int projectIDnumber) {
-        try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(MainApp.class.getResource("view/SaveProjectChangesDialog.fxml"));
-            AnchorPane savePane = (AnchorPane) loader.load();
-
-            Stage saveStage = new Stage();
-            saveStage.setTitle("Пааагодь!");
-            saveStage.initOwner(editProjectStage);
-            saveStage.initModality(Modality.WINDOW_MODAL);
-
-            Scene scene = new Scene(savePane);
-            saveStage.setScene(scene);
-            SaveProjectChangesDialogController controller = loader.getController();
-            controller.setMyStage(saveStage);
-            controller.setEditProjectStage(editProjectStage);
-            controller.setEditProjectWindowController(editProjectWindowController);
-            controller.setProjectIDnumber(projectIDnumber);
-
-            saveStage.showAndWait();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void showStaffWindow() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -229,6 +203,29 @@ public class MainApp extends Application {
             controller.setMyStage(editUserStage);
 
             editUserStage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showCountSalaryWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/CountSalaryWindow.fxml"));
+            AnchorPane salaryPane = (AnchorPane) loader.load();
+
+            Stage salaryStage = new Stage();
+            salaryStage.setTitle("Расчет зарплаты");
+            salaryStage.initModality(Modality.NONE);
+            salaryStage.initOwner(AllData.staffWindowStage);
+            Scene scene = new Scene(salaryPane);
+            salaryStage.setScene(scene);
+            AllData.countSalaryWindow = salaryStage;
+
+            CountSalaryWindowController controller = loader.getController();
+            AllData.countSalaryWindowController = controller;
+
+            salaryStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }

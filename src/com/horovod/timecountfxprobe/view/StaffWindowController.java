@@ -163,7 +163,7 @@ public class StaffWindowController {
     }
 
     public void handleCountSalaryButton() {
-
+        AllData.mainApp.showCountSalaryWindow();
     }
 
 
@@ -284,6 +284,8 @@ public class StaffWindowController {
             }
         });
     }
+
+
 
     public void handleCloseButton() {
         AllData.staffWindowStage.close();

@@ -74,6 +74,8 @@ public class AllData {
     public static volatile int IDnumberForEdit;
     public static StaffWindowController staffWindowController;
     public static Stage staffWindowStage;
+    public static Stage countSalaryWindow;
+    public static CountSalaryWindowController countSalaryWindowController;
 
     private static volatile double limitTimeForStaffWindow = 6;
     private static volatile int limitMoneyForStaffWindow = 6000;

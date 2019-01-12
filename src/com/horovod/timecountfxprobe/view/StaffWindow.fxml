@@ -132,7 +132,7 @@
             </VBox>
             <VBox alignment="CENTER_LEFT" prefWidth="120.0">
                <children>
-                  <Button fx:id="countSalary" mnemonicParsing="false" prefHeight="40.0" prefWidth="90.0" text="Рассчитать зарплату" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="countSalary" mnemonicParsing="false" onAction="#handleCountSalaryButton" prefHeight="40.0" prefWidth="90.0" text="Рассчитать зарплату" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font size="12.0" />
                      </font>

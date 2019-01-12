@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-
-<AnchorPane prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CountSalaryWindowController">
+<AnchorPane prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CountSalaryWindowController">
    <children>
       <HBox alignment="CENTER_LEFT" layoutX="26.0" layoutY="150.0" prefHeight="35.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
-            <CheckBox mnemonicParsing="false" text="Только дизайнеры" />
+            <CheckBox fx:id="designersOnlyCheckBox" mnemonicParsing="false" text="Только дизайнеры" />
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <Label text="За период с" />
-            <DatePicker />
-            <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
+            <DatePicker fx:id="fromDatePicker" />
+            <Button fx:id="clearFromDatePickerButton" mnemonicParsing="false" text="X">
                <tooltip>
                   <Tooltip text="Очистить период" />
                </tooltip>
             </Button>
-            <Label text="по" />
-            <DatePicker />
-            <Button fx:id="clearDatePicker1" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
+            <Label text="по">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin></Label>
+            <DatePicker fx:id="tillDatePicker" />
+            <Button fx:id="clearTillDatePickerButton" mnemonicParsing="false" text="X">
                <tooltip>
                   <Tooltip text="Очистить период" />
                </tooltip>
@@ -34,34 +40,23 @@
          </children>
       </HBox>
       <Separator prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="45.0" />
-      <FlowPane alignment="CENTER_LEFT" hgap="10.0" layoutX="27.0" layoutY="61.0" prefHeight="100.0" rowValignment="TOP" vgap="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0">
+      <VBox alignment="CENTER" layoutX="5.0" prefHeight="100.0" prefWidth="80.0" spacing="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="50.0">
          <children>
-            <CheckBox mnemonicParsing="false" text="Сергей Анисимов" />
-            <CheckBox mnemonicParsing="false" text="Сергей Шахматов" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" />
+            <Button fx:id="selectAllButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="45.0" prefWidth="80.0" text="Выбрать всех" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="deselectAllButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="45.0" prefWidth="80.0" text="Выбрать никого" textAlignment="CENTER" wrapText="true" />
          </children>
-      </FlowPane>
+      </VBox>
+      <FlowPane fx:id="usersFlowPane" alignment="CENTER_LEFT" hgap="30.0" layoutX="27.0" layoutY="61.0" maxHeight="100.0" minHeight="100.0" rowValignment="TOP" vgap="7.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0" />
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="155.0" />
-      <Button layoutX="14.0" layoutY="166.0" mnemonicParsing="false" text="Выбрать всех" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="165.0" />
-      <Button layoutX="120.0" layoutY="165.0" mnemonicParsing="false" text="Отключить всех" />
-      <Button layoutX="262.0" layoutY="165.0" mnemonicParsing="false" text="Рассчитать зарплату" />
+      <HBox alignment="CENTER" layoutX="11.0" layoutY="158.0" prefHeight="40.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="160.0">
+         <children>
+            <Button fx:id="countSalaryButton" mnemonicParsing="false" text="Рассчитать зарплату">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+      <TextArea fx:id="textArea" layoutX="20.0" layoutY="209.0" prefHeight="200.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="205.0" />
    </children>
 </AnchorPane>
