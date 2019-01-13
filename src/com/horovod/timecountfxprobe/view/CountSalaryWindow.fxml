@@ -14,15 +14,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CountSalaryWindowController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CountSalaryWindowController">
    <children>
       <HBox alignment="CENTER_LEFT" layoutX="26.0" layoutY="150.0" prefHeight="35.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
          <children>
-            <CheckBox fx:id="designersOnlyCheckBox" mnemonicParsing="false" text="Только дизайнеры" />
+            <CheckBox fx:id="designersOnlyCheckBox" mnemonicParsing="false" onAction="#updateUsers" text="Только дизайнеры" />
             <Separator orientation="VERTICAL" prefHeight="200.0" />
             <Label text="За период с" />
-            <DatePicker fx:id="fromDatePicker" />
-            <Button fx:id="clearFromDatePickerButton" mnemonicParsing="false" text="X">
+            <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" />
+            <Button fx:id="clearFromDatePickerButton" mnemonicParsing="false" onAction="#handleClearFromDatePicker" text="X">
                <tooltip>
                   <Tooltip text="Очистить период" />
                </tooltip>
@@ -31,8 +31,8 @@
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin></Label>
-            <DatePicker fx:id="tillDatePicker" />
-            <Button fx:id="clearTillDatePickerButton" mnemonicParsing="false" text="X">
+            <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" />
+            <Button fx:id="clearTillDatePickerButton" mnemonicParsing="false" onAction="#handleClearTillDatePciker" text="X">
                <tooltip>
                   <Tooltip text="Очистить период" />
                </tooltip>
@@ -42,18 +42,23 @@
       <Separator prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="45.0" />
       <VBox alignment="CENTER" layoutX="5.0" prefHeight="100.0" prefWidth="80.0" spacing="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="50.0">
          <children>
-            <Button fx:id="selectAllButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="45.0" prefWidth="80.0" text="Выбрать всех" textAlignment="CENTER" wrapText="true" />
-            <Button fx:id="deselectAllButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="45.0" prefWidth="80.0" text="Выбрать никого" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="selectAllButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleSelectAllButton" prefHeight="45.0" prefWidth="80.0" text="Выбрать всех" textAlignment="CENTER" wrapText="true" />
+            <Button fx:id="deselectAllButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleDeselectAllButton" prefHeight="45.0" prefWidth="80.0" text="Выбрать никого" textAlignment="CENTER" wrapText="true" />
          </children>
       </VBox>
-      <FlowPane fx:id="usersFlowPane" alignment="CENTER_LEFT" hgap="30.0" layoutX="27.0" layoutY="61.0" maxHeight="100.0" minHeight="100.0" rowValignment="TOP" vgap="7.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0" />
+      <FlowPane fx:id="usersFlowPane" alignment="CENTER_LEFT" hgap="20.0" layoutX="27.0" layoutY="61.0" maxHeight="120.0" minHeight="100.0" rowValignment="TOP" vgap="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="50.0" />
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="155.0" />
       <HBox alignment="CENTER" layoutX="11.0" layoutY="158.0" prefHeight="40.0" prefWidth="200.0" spacing="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="160.0">
          <children>
-            <Button fx:id="countSalaryButton" mnemonicParsing="false" text="Рассчитать зарплату">
+            <Button fx:id="countSalaryButton" mnemonicParsing="false" onAction="#countSalary" text="Рассчитать зарплату">
                <font>
                   <Font size="15.0" />
                </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#handleClearSalaryButton" text="X">
+               <tooltip>
+                  <Tooltip text="Очистить период" />
+               </tooltip>
             </Button>
          </children>
       </HBox>

@@ -217,7 +217,6 @@ public class MainApp extends Application {
             Stage salaryStage = new Stage();
             salaryStage.setTitle("Расчет зарплаты");
             salaryStage.initModality(Modality.NONE);
-            salaryStage.initOwner(AllData.staffWindowStage);
             Scene scene = new Scene(salaryPane);
             salaryStage.setScene(scene);
             AllData.countSalaryWindow = salaryStage;

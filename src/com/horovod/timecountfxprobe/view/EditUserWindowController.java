@@ -31,7 +31,7 @@ public class EditUserWindowController {
     private Stage myStage;
     private boolean isChanged = false;
     private Map<Node, String> textAreas = new HashMap<>();
-    String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz";
+    String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz@.-_";
 
     public void setMyStage(Stage myStage) {
         this.myStage = myStage;
@@ -127,7 +127,7 @@ public class EditUserWindowController {
 
         initRetiredCheckBox();
         initHourPayTextField();
-        initRoleCLabel();
+        initRoleLabel();
         initSaveButtons();
 
     }
@@ -210,6 +210,9 @@ public class EditUserWindowController {
                             retiredCheckBox.setSelected(true);
                             topColoredAnchorPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                             AllData.staffWindowController.initializeTable();
+                            if (AllData.countSalaryWindowController != null) {
+                                AllData.countSalaryWindowController.updateUsers();
+                            }
                             initialize();
                         }
                         else {
@@ -236,6 +239,9 @@ public class EditUserWindowController {
                             retiredCheckBox.setSelected(false);
                             topColoredAnchorPane.setStyle(null);
                             AllData.staffWindowController.initializeTable();
+                            if (AllData.countSalaryWindowController != null) {
+                                AllData.countSalaryWindowController.updateUsers();
+                            }
                             initialize();
                         }
                         else {
@@ -254,7 +260,7 @@ public class EditUserWindowController {
         });
     }
 
-    private void initRoleCLabel() {
+    private void initRoleLabel() {
         roleLabel.textProperty().bind(new SimpleStringProperty(AllUsers.getOneUser(userID).getRole().toString()));
     }
 

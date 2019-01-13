@@ -324,6 +324,14 @@ public class AllData {
         AllData.designerYearWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
+    public static int getWorkSumForDesignerAndPeriod(int designerID, LocalDate from, LocalDate till) {
+        int workTime = 0;
+        for (Project p : allProjects.values()) {
+            workTime += p.getWorkSumForDesignerAndPeriod(designerID, from, till);
+        }
+        return workTime;
+    }
+
 
 
     /** Метод добавления и корректировки рабочего времени в проектах */

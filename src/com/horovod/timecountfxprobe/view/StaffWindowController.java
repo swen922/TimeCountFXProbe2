@@ -163,7 +163,12 @@ public class StaffWindowController {
     }
 
     public void handleCountSalaryButton() {
-        AllData.mainApp.showCountSalaryWindow();
+        if (AllData.countSalaryWindow == null) {
+            AllData.mainApp.showCountSalaryWindow();
+        }
+        else {
+            AllData.countSalaryWindow.show();
+        }
     }
 
 
@@ -1598,6 +1603,9 @@ public class StaffWindowController {
                                 if (retired) {
                                     retiredCheckBox.setSelected(true);
                                     setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                                    if (AllData.countSalaryWindowController != null) {
+                                        AllData.countSalaryWindowController.updateUsers();
+                                    }
                                     initializeTable();
                                 }
                                 else {
@@ -1624,6 +1632,9 @@ public class StaffWindowController {
                                 if (returned) {
                                     retiredCheckBox.setSelected(false);
                                     setStyle(null);
+                                    if (AllData.countSalaryWindowController != null) {
+                                        AllData.countSalaryWindowController.updateUsers();
+                                    }
                                     initializeTable();
                                 }
                                 else {

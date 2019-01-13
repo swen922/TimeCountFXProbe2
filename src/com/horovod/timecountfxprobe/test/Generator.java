@@ -133,12 +133,12 @@ public class Generator {
         AllUsers.getOneUser("des8").setFullName("Восьмой Артем");
         AllUsers.createUser("des9", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des9").setFullName("Девятый Валерий Павлович");
-        AllUsers.createUser("des10", "pass", Role.DESIGNER);
+        /*AllUsers.createUser("des10", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des10").setFullName("Десятый Кирилл Андреевич");
         AllUsers.createUser("des11", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des11").setFullName("Одиннадцатый Павел");
         AllUsers.createUser("des12", "pass", Role.DESIGNER);
-        AllUsers.getOneUser("des12").setFullName("Денадцатый Поль Элюар");
+        AllUsers.getOneUser("des12").setFullName("Денадцатый Поль Элюар");*/
 
 
         /*for (int i = 1; i <= 2; i++) {
@@ -148,14 +148,14 @@ public class Generator {
         AllUsers.createUser("man1", "pass", Role.MANAGER);
         AllUsers.getOneUser("man1").setFullName("Анисимова Инесса");
         AllUsers.createUser("man2", "pass", Role.MANAGER);
-        AllUsers.getOneUser("man2").setFullName("Анисимов Сергей_админ");
+        AllUsers.getOneUser("man2").setFullName("Анисимов Сергей-админ");
 
 
 
 
         AllUsers.addLoggedUserByIDnumber(2);
         AllUsers.addLoggedUserByIDnumber(3);
-        AllUsers.addLoggedUserByIDnumber(13);
+        //AllUsers.addLoggedUserByIDnumber(13);
     }
 
 
@@ -211,9 +211,9 @@ public class Generator {
 
         int minusDays = 0;
 
-        for (int j = 1; j <= 5000; j++) {
+        for (int j = 1; j <= 4000; j++) {
             int projectID = (int) (Math.random() * 250 + 1);
-            if (j % 20 == 0) {
+            if (j % 10 == 0) {
                 minusDays++;
             }
             int ID = (int) (Math.random() * 12 + 1);
