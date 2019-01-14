@@ -25,8 +25,6 @@ import java.util.*;
 
 public class StatisticWindowController {
 
-    private Stage stage;
-
     private ObservableList<String> datesForBarChart;
     private ObservableList<XYChart.Data<String, Double>> workTimeForBarChart;
     private XYChart.Series<String, Double> seriesBars;
@@ -85,15 +83,6 @@ public class StatisticWindowController {
     @FXML
     private CategoryAxis xAxis;
 
-
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
 
     @FXML
     public void initialize() {
@@ -456,5 +445,9 @@ public class StatisticWindowController {
         }
         LocalDate date = LocalDate.of(year, month.getValue(), 1);
         initializeBarChart(mode, date);
+    }
+
+    public void handleCloseButton() {
+        AllData.statisticStage.close();
     }
 }

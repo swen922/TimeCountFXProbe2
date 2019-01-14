@@ -219,6 +219,7 @@ public class EditUserWindowController {
                             Alert notRetired = new Alert(Alert.AlertType.WARNING);
                             notRetired.setTitle("Ошибка в программе");
                             notRetired.setHeaderText("Не удалось уволить работника " + AllUsers.getOneUser(userID).getFullName() + ".\nОбратитесь за помощью к Анисимову");
+                            notRetired.showAndWait();
                         }
                     }
                     else {
@@ -248,6 +249,7 @@ public class EditUserWindowController {
                             Alert notReturned = new Alert(Alert.AlertType.WARNING);
                             notReturned.setTitle("Ошибка в программе");
                             notReturned.setHeaderText("Не удалось вернуть работника " + AllUsers.getOneUser(userID).getFullName() + ".\nОбратитесь за помощью к Анисимову");
+                            notReturned.showAndWait();
                         }
                     }
                     else {

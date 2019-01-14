@@ -53,8 +53,6 @@ import java.awt.Desktop;
 
 public class TableProjectsManagerController {
 
-    private Stage myStage;
-
     private ObservableList<Map.Entry<Integer, Project>> showProjects;
     private FilteredList<Map.Entry<Integer, Project>> filterData;
     private Predicate<Map.Entry<Integer, Project>> filterPredicate;
@@ -171,15 +169,6 @@ public class TableProjectsManagerController {
     private Button testDeleteButton;
 
 
-
-
-    public Stage getStage() {
-        return myStage;
-    }
-
-    public void setStage(Stage newStage) {
-        this.myStage = newStage;
-    }
 
     public TextField getFilterField() {
         return filterField;
@@ -411,9 +400,9 @@ public class TableProjectsManagerController {
 
     private synchronized void initClosing() {
 
-        if (myStage != null) {
+        if (AllData.primaryStage != null) {
 
-            myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            AllData.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
                 @Override
                 public void handle(WindowEvent event) {
 
@@ -892,6 +881,25 @@ public class TableProjectsManagerController {
         }
     }
 
+    public void handleExitButton() {
+        AllData.rebuildEditProjectsControllers();
+
+        for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
+            ec.handleCloseButton();
+        }
+
+        if (AllData.editProjectWindowControllers.isEmpty()) {
+            Platform.exit();
+            System.exit(0);
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Не удалось выйти из программы");
+            alert.setHeaderText("Ошибка выхода из программы.\nПопробуйте еще раз.");
+            alert.showAndWait();
+        }
+    }
+
 
     private void writeCSV() {
 
@@ -919,7 +927,7 @@ public class TableProjectsManagerController {
 
         chooser.setInitialFileName(fileName.toString());
 
-        File file = chooser.showSaveDialog(myStage);
+        File file = chooser.showSaveDialog(AllData.primaryStage);
 
         if (file != null) {
             if (!file.getPath().endsWith(".csv")) {
@@ -987,7 +995,7 @@ public class TableProjectsManagerController {
 
         chooser.setInitialFileName(fileName.toString());
 
-        File file = chooser.showSaveDialog(myStage);
+        File file = chooser.showSaveDialog(AllData.primaryStage);
 
         if (file != null) {
             if (!file.getPath().endsWith(".txt")) {

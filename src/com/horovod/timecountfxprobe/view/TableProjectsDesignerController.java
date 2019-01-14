@@ -7,6 +7,7 @@ import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -38,9 +39,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
-
-    private Stage stage;
-    private StatisticWindowController statisticWindowController;
 
     private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
     private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
@@ -137,24 +135,8 @@ public class TableProjectsDesignerController {
     private Button testDeleteButton;*/
 
 
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setStage(Stage newStage) {
-        this.stage = newStage;
-    }
-
     public TextField getFilterField() {
         return filterField;
-    }
-
-    public StatisticWindowController getStatisticWindowController() {
-        return statisticWindowController;
-    }
-
-    public void setStatisticWindowController(StatisticWindowController statisticWindowController) {
-        this.statisticWindowController = statisticWindowController;
     }
 
 
@@ -659,7 +641,18 @@ public class TableProjectsDesignerController {
     }
 
     public void handleStatisticButton() {
-        AllData.mainApp.showStatisticWindow();
+        if (AllData.statisticStage == null) {
+            AllData.mainApp.showStatisticWindow();
+        }
+        else {
+            AllData.statisticStage.hide();
+            AllData.statisticStage.show();
+            AllData.statisticWindowController.initialize();
+            LocalDate today = LocalDate.now();
+            int y = today.getYear();
+            int m = today.getMonthValue();
+            AllData.statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
+        }
     }
 
     public void handleAbout() {
@@ -731,106 +724,10 @@ public class TableProjectsDesignerController {
         return Integer.compare(time2, time1);
     }
 
-    /*public void testAdd() {
-        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        testBackgroundUpdate01.testBackgroundAddTime();
+
+    public void handleExitButton() {
+        Platform.exit();
+        System.exit(0);
     }
-
-    public void testDelete() {
-        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        testBackgroundUpdate01.testBackgroundDeleteTime();
-    }*/
-
-
-
-    /*class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
-
-        private TextField textField;
-
-        public EditingCell() {
-        }
-
-        @Override
-        public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
-
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((String) getItem());
-            setGraphic(null);
-        }
-
-        @Override
-        protected void updateItem(String item, boolean empty) {
-
-            super.updateItem(item, empty);
-            if (empty) {
-
-                setText(null);
-                setGraphic(null);
-            }
-            else {
-                if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText(getString());
-                    }
-                    setText(null);
-                    setGraphic(null);
-                }
-                else {
-                    setText(getString());
-                    setGraphic(null);
-                }
-            }
-        }
-
-        private void createTextField() {
-            String oldText = getString();
-            textField = new TextField(oldText);
-            textField.setAlignment(Pos.CENTER);
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent event) {
-                    KeyCode keyCode = event.getCode();
-                    if (keyCode == KeyCode.ENTER) {
-                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
-                        EditingCell.this.getTableView().requestFocus();
-                        EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        //initialize();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (!newValue) {
-                        commitEdit(AllData.formatStringInput(oldText, textField.getText()));
-                        EditingCell.this.getTableView().requestFocus();
-                        EditingCell.this.getTableView().getSelectionModel().selectAll();
-                        //initialize();
-                        //projectsTable.refresh();
-                    }
-                }
-            });
-            EditingCell.this.textField.selectAll();
-
-        }
-
-        private String getString() {
-            return getItem() == null ? "" : getItem().toString();
-        }
-    } // Конец класса EditingCell*/
 
 }

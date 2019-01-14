@@ -225,10 +225,11 @@
             </Label>
          </children>
       </AnchorPane>
-      <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1036.0" layoutY="773.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
+      <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1036.0" layoutY="773.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0">
          <padding>
             <Insets left="10.0" right="10.0" />
          </padding>
       </ChoiceBox>
+      <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

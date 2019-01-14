@@ -61,19 +61,23 @@ public class AllData {
      * И решить по всем единообразно: либо через геттеры-сеттеры доступ, либо public сделать (второе экономней по коду)
      * !!!!!!!!*/
 
-    public static TableProjectsDesignerController tableProjectsDesignerController;
-    public static StatisticWindowController statisticWindowController;
-    public static Stage statisticStage;
+    public static Stage primaryStage;
     public static BorderPane rootLayout;
-
-
     public static MainApp mainApp;
+
+    public static TableProjectsDesignerController tableProjectsDesignerController;
     public static TableProjectsManagerController tableProjectsManagerController;
+
+    public static Stage statisticStage;
+    public static StatisticWindowController statisticWindowController;
+
+    public static Stage statisticManagerStage;
+    public static StatisticManagerWindowController statisticManagerWindowController;
     public static Map<Integer, Stage> openEditProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();
     public static volatile int IDnumberForEdit;
-    public static StaffWindowController staffWindowController;
     public static Stage staffWindowStage;
+    public static StaffWindowController staffWindowController;
     public static Stage countSalaryWindow;
     public static CountSalaryWindowController countSalaryWindowController;
 
@@ -82,6 +86,8 @@ public class AllData {
 
 
     /** Стандартные геттеры и сеттеры */
+
+
 
     public static int incrementIdNumberAndGet() {
         return idNumber.incrementAndGet();

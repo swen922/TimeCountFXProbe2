@@ -18,9 +18,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StatisticWindowController">
+
+<AnchorPane prefHeight="720.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.StatisticManagerWindowController">
    <children>
-      <AnchorPane layoutX="151.0" layoutY="54.0" prefHeight="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane layoutX="161.0" layoutY="64.0" prefHeight="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <SplitPane dividerPositions="0.9" layoutX="747.0" layoutY="112.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <items>
@@ -30,34 +31,48 @@
                            <items>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                  <children>
-                                    <Label alignment="CENTER" layoutX="231.0" layoutY="6.0" text="Мое время за любой день" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
-                                    <DatePicker fx:id="selectDayDatePicker" editable="false" layoutX="159.0" layoutY="38.0" onAction="#handleSelectDayDatePicker" promptText="Выбери дату тут ---&gt;" AnchorPane.leftAnchor="110.0" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="35.0">
-                                       <tooltip>
-                                          <Tooltip text="Выбери дату, за которую хочешь посмотреть рабочее время по всем проектам" />
-                                       </tooltip>
-                                    </DatePicker>
+                                    <HBox alignment="CENTER" spacing="10.0" AnchorPane.bottomAnchor="221.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                                       <children>
+                                          <ChoiceBox prefWidth="200.0">
+                                             <HBox.margin>
+                                                <Insets right="10.0" />
+                                             </HBox.margin>
+                                          </ChoiceBox>
+                                          <DatePicker fx:id="selectDayDatePicker" editable="false" onAction="#handleSelectDayDatePicker" prefWidth="150.0" promptText="Дата">
+                                             <tooltip>
+                                                <Tooltip text="Выбери дату, за которую хочешь посмотреть рабочее время по всем проектам" />
+                                             </tooltip>
+                                          </DatePicker>
+                                          <Button fx:id="clearSelectDayButton" mnemonicParsing="false" onAction="#handleClearSelectDayButton" text="X">
+                                             <tooltip>
+                                                <Tooltip text="Очистить дату" />
+                                             </tooltip>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <Label alignment="CENTER" layoutX="231.0" layoutY="6.0" text="Время за любой день" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
                                     <TextArea fx:id="selectedDayTextArea" editable="false" layoutX="145.0" layoutY="74.0" prefHeight="200.0" prefWidth="200.0" scrollTop="100.0" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
-                                    <Button fx:id="clearSelectDayButton" layoutX="356.0" layoutY="35.0" mnemonicParsing="false" onAction="#handleClearSelectDayButton" text="X" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="35.0">
-                                       <tooltip>
-                                          <Tooltip text="Очистить дату" />
-                                       </tooltip>
-                                    </Button>
                                  </children>
                               </AnchorPane>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                  <children>
-                                    <Label alignment="CENTER" layoutX="164.0" layoutY="14.0" text="Мое время в проекте" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
-                                    <TextField fx:id="projectNumberTextField" layoutX="173.0" layoutY="33.0" onAction="#handleProjectNumberTextField" onKeyPressed="#handleProjectNumberTextField" onKeyReleased="#handleProjectNumberTextField" onKeyTyped="#handleProjectNumberTextField" prefWidth="195.0" promptText="Номер проекта сюда" AnchorPane.leftAnchor="110.0" AnchorPane.rightAnchor="110.0" AnchorPane.topAnchor="35.0">
-                                       <tooltip>
-                                          <Tooltip text="Набери номер проекта, по которому хочешь посмотреть рабочее время" />
-                                       </tooltip>
-                                    </TextField>
+                                    <HBox alignment="CENTER" layoutX="-26.0" layoutY="-9.0" prefHeight="100.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="221.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                                       <children>
+                                          <ChoiceBox prefWidth="200.0" />
+                                          <TextField fx:id="projectNumberTextField" onAction="#handleProjectNumberTextField" onKeyPressed="#handleProjectNumberTextField" onKeyReleased="#handleProjectNumberTextField" onKeyTyped="#handleProjectNumberTextField" prefWidth="150.0" promptText="Номер проекта">
+                                             <tooltip>
+                                                <Tooltip text="Набери номер проекта, по которому хочешь посмотреть рабочее время" />
+                                             </tooltip>
+                                          </TextField>
+                                          <Button fx:id="clearProjectNumberButton" mnemonicParsing="false" onAction="#handleClearProjectNumberButton" text="X">
+                                             <tooltip>
+                                                <Tooltip text="Очистить номер проекта" />
+                                             </tooltip>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                    <Label alignment="CENTER" layoutX="164.0" layoutY="14.0" text="Время в любом проекте" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
                                     <TextArea fx:id="projectNumberTextArea" editable="false" layoutX="141.0" layoutY="44.0" prefHeight="200.0" prefWidth="200.0" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
-                                    <Button fx:id="clearProjectNumberButton" layoutX="363.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleClearProjectNumberButton" text="X" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="35.0">
-                                       <tooltip>
-                                          <Tooltip text="Очистить номер проекта" />
-                                       </tooltip>
-                                    </Button>
                                  </children>
                               </AnchorPane>
                            </items>
@@ -128,9 +143,9 @@
             </SplitPane>
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="194.0" layoutY="347.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="300.0">
+      <AnchorPane layoutX="204.0" layoutY="357.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="300.0">
          <children>
-            <Label alignment="CENTER" text="Мое время за период" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
+            <Label alignment="CENTER" text="Время за период" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
             <BarChart fx:id="workSumsBarChart" barGap="2.0" categoryGap="5.0" layoutX="63.0" layoutY="60.0" legendVisible="false" maxHeight="300.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0">
                <xAxis>
                   <CategoryAxis label="Дни или месяцы" side="BOTTOM" fx:id="xAxis" />
@@ -172,6 +187,6 @@
             </Button>
          </children>
       </AnchorPane>
-      <Button layoutX="1337.0" layoutY="495.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
+      <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

@@ -10,19 +10,24 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.*;
 
 public class CountSalaryWindowController {
 
     private ObservableList<Node> usersCheckBoxes = FXCollections.observableArrayList();
+    private Map<String, Integer> countedSalaries = new TreeMap<>();
+
 
 
     @FXML
@@ -55,6 +60,15 @@ public class CountSalaryWindowController {
     @FXML
     private TextArea textArea;
 
+    @FXML
+    private Button exportButton;
+
+    @FXML
+    private ChoiceBox<String> exportChoiceBox;
+
+    @FXML
+    private Button closeButton;
+
 
 
     @FXML
@@ -66,6 +80,7 @@ public class CountSalaryWindowController {
         designersOnlyCheckBox.setSelected(true);
 
         initUsers();
+        initExportChoiceBox();
 
     }
 
@@ -88,6 +103,18 @@ public class CountSalaryWindowController {
             }
         }
         usersFlowPane.getChildren().setAll(usersCheckBoxes);
+        sortUsers();
+    }
+
+    private void sortUsers() {
+        usersCheckBoxes.sort(new Comparator<Node>() {
+            @Override
+            public int compare(Node o1, Node o2) {
+                CheckBox ch1 = (CheckBox) o1;
+                CheckBox ch2 = (CheckBox) o2;
+                return ch1.getText().compareTo(ch2.getText());
+            }
+        });
     }
 
     /** Немножко громоздкая конструкция, чтобы не просто обновлять набор чекбоксов-юзеров внутри flowPane
@@ -155,9 +182,10 @@ public class CountSalaryWindowController {
             }
         }
         usersFlowPane.getChildren().setAll(usersCheckBoxes);
+        sortUsers();
     }
 
-    
+
 
     public void handleSelectAllButton() {
         for (Node node : usersCheckBoxes) {
@@ -180,6 +208,23 @@ public class CountSalaryWindowController {
     public void handleTillDatePicker() {
         checkDatePicker(tillDatePicker);
         onClosing();
+    }
+
+    private void initExportChoiceBox() {
+        if (exportChoiceBox.getItems().isEmpty()) {
+            exportChoiceBox.getItems().add("Время в TXT");
+            exportChoiceBox.getItems().add("Таблицу в CSV");
+            exportChoiceBox.setValue("Время в TXT");
+        }
+    }
+
+    public void handleExportButton() {
+        if (exportChoiceBox.getValue().equals("Время в TXT")) {
+            writeText();
+        }
+        else {
+            writeCSV();
+        }
     }
 
 
@@ -211,8 +256,12 @@ public class CountSalaryWindowController {
     public void countSalary() {
         handleFromDatePicker();
         handleTillDatePicker();
+        if (this.countedSalaries == null) {
+            this.countedSalaries = new TreeMap<>();
+        }
 
         if (fromDatePicker.getValue() != null && tillDatePicker.getValue() != null) {
+            this.countedSalaries.clear();
             StringBuilder salary = new StringBuilder("Расчет зарплаты за период с ");
             salary.append(AllData.formatDate(fromDatePicker.getValue())).append(" по ").append(AllData.formatDate(tillDatePicker.getValue())).append("\n\n");
             List<CheckBox> noHourPay = new ArrayList<>();
@@ -233,11 +282,13 @@ public class CountSalaryWindowController {
                         salaryPay = (int) (AllData.formatDouble(hourPay * AllData.intToDouble(workTime), 0));
                         salary.append(AllData.formatInputInteger(salaryPay));
                         salary.append(" руб.\n");
+                        this.countedSalaries.put(checkBox.getText(), salaryPay);
                     }
                     else {
                         noHourPay.add(checkBox);
                     }
                     totalSum += salaryPay;
+
                 }
             }
             salary.append("\n").append("Итого вынуть из кассы = ");
@@ -250,7 +301,16 @@ public class CountSalaryWindowController {
                 }
                 salary.append("по причине отсутствия указанной стоимости рабочего часа.\n\n");
             }
-            textArea.setText(salary.toString());
+            if (noHourPay.size() == usersCheckBoxes.size()) {
+                textArea.setText("Расчет невозможен. Укажите размер часовой зарплаты хотя бы у одного работника.");
+            }
+            else if (totalSum != 0) {
+                textArea.setText(salary.toString());
+            }
+            else {
+                textArea.setText("Выберите хотя бы одного работника, у которого указан размер часовой оплаты.");
+            }
+
         }
     }
 
@@ -268,4 +328,89 @@ public class CountSalaryWindowController {
         });
     }
 
+    public void handleCloseButton() {
+        AllData.countSalaryWindow.hide();
+    }
+
+    private void writeText() {
+
+        if (textArea.getText() != null && !textArea.getText().isEmpty()) {
+
+            FileChooser chooser = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+            chooser.getExtensionFilters().add(extFilter);
+
+            String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+            chooser.setInitialDirectory(new File(path));
+
+            String fileName = textArea.getText().split("\n")[0];
+            chooser.setInitialFileName(fileName);
+
+            File file = chooser.showSaveDialog(AllData.countSalaryWindow);
+
+            if (file != null) {
+                if (!file.getPath().endsWith(".txt")) {
+                    file = new File(file.getPath() + ".txt");
+                }
+
+                try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                    writer.write(textArea.getText());
+                    writer.flush();
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void writeCSV() {
+
+        if (textArea.getText() != null && !textArea.getText().isEmpty()) {
+            FileChooser chooser = new FileChooser();
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
+            chooser.getExtensionFilters().add(extFilter);
+
+            String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+            chooser.setInitialDirectory(new File(path));
+
+            String fileName = textArea.getText().split("\n")[0];
+            chooser.setInitialFileName(fileName);
+
+            File file = chooser.showSaveDialog(AllData.countSalaryWindow);
+
+            if (file != null) {
+                int total = 0;
+                if (!file.getPath().endsWith(".csv")) {
+                    file = new File(file.getPath() + ".csv");
+                }
+
+                StringBuilder sb = new StringBuilder("");
+
+                for (Map.Entry<String, Integer> entry : countedSalaries.entrySet()) {
+                    sb.append(entry.getKey()).append("\t");
+                }
+                sb.append("\n");
+
+                for (Map.Entry<String, Integer> entry : countedSalaries.entrySet()) {
+                    sb.append(AllData.formatInputInteger(entry.getValue())).append("\t");
+                    total += entry.getValue();
+                }
+                sb.append("\n\n");
+                sb.append("\n").append("Итого вынуть из кассы = \t");
+                sb.append(AllData.formatInputInteger(total)).append(" руб.\t\n\n");
+
+
+                try (Writer writer = new BufferedWriter(new FileWriter(file))) {
+
+                    writer.write(sb.toString());
+                    writer.flush();
+                }
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
 }

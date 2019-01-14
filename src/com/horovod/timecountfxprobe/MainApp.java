@@ -24,8 +24,6 @@ public class MainApp extends Application {
     private BorderPane rootLayout;
     private AnchorPane statisticWindow;
     private Stage statStage;
-    private TableProjectsDesignerController tableProjectsDesignerController;
-    private StatisticWindowController statisticWindowController;
 
     /** TODO Во все методы show... в блок catch вставить показ Alert'а "Не удалось загрузить..." */
 
@@ -33,6 +31,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         this.primaryStage = primaryStage;
+        AllData.primaryStage = primaryStage;
         this.primaryStage.setTitle("Time Count System Probe FX -1");
 
         /** TODO убрать эту строчку в рабочем варианте */
@@ -67,7 +66,7 @@ public class MainApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
 
-            primaryStage.setTitle("Заголовок окна");
+            primaryStage.setTitle("Time Count Probe");
 
             RootLayoutController controller = loader.getController();
             AllData.rootLayout = rootLayout;
@@ -88,8 +87,8 @@ public class MainApp extends Application {
 
             rootLayout.setCenter(tableDesigner);
 
-            tableProjectsDesignerController = loader.getController();
-            AllData.tableProjectsDesignerController = tableProjectsDesignerController;
+
+            AllData.tableProjectsDesignerController = loader.getController();;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,7 +104,6 @@ public class MainApp extends Application {
             rootLayout.setCenter(tableManager);
 
             AllData.tableProjectsManagerController = (TableProjectsManagerController) loader.getController();
-            AllData.tableProjectsManagerController.setStage(primaryStage);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -276,26 +274,26 @@ public class MainApp extends Application {
 
     public void showStatisticWindow() {
 
-        if (statisticWindow == null || statStage == null || statisticWindowController == null) {
-            try {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
-                statisticWindow = (AnchorPane) loader.load();
-                statStage = new Stage();
-                statStage.initModality(Modality.NONE);
-                //statStage.initOwner(primaryStage);
-                Scene scene = new Scene(statisticWindow);
-                statStage.setScene(scene);
-                statStage.show();
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
+            statisticWindow = (AnchorPane) loader.load();
+            statStage = new Stage();
+            statStage.initModality(Modality.NONE);
+            //statStage.initOwner(primaryStage);
+            Scene scene = new Scene(statisticWindow);
+            statStage.setScene(scene);
+            statStage.show();
 
-                statisticWindowController = loader.getController();
-                statisticWindowController.setStage(statStage);
-                AllData.statisticWindowController = statisticWindowController;
-                AllData.statisticStage = statStage;
+            AllData.statisticWindowController = loader.getController();
+            AllData.statisticStage = statStage;
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*if (statisticWindow == null || statStage == null || statisticWindowController == null) {
+
         }
         else {
             statStage.hide();
@@ -305,7 +303,7 @@ public class MainApp extends Application {
             int y = today.getYear();
             int m = today.getMonthValue();
             statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
-        }
+        }*/
     }
 
     public void closeApp() {
