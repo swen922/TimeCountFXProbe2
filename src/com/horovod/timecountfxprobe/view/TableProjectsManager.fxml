@@ -101,7 +101,7 @@
             </VBox>
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
+                  <Button fx:id="statisticButton" mnemonicParsing="false" onAction="#handleStatisticButton" prefHeight="30.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -178,7 +178,7 @@
                         <Font name="System Bold" size="15.0" />
                      </font>
                   </Button>
-                  <Button fx:id="buttonReload" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="reloadButton" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
                      <VBox.margin>
                         <Insets bottom="5.0" />
                      </VBox.margin>

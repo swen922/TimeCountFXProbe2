@@ -108,10 +108,10 @@ public class TableProjectsManagerController {
     private Label workSumLabel;
 
     @FXML
-    private Button buttonReload;
+    private Button reloadButton;
 
     @FXML
-    private Button buttonStatistic;
+    private Button statisticButton;
 
     @FXML
     private Label aboutProgramLabel;
@@ -810,12 +810,25 @@ public class TableProjectsManagerController {
         alert.showAndWait();
     }
 
+
+
     public void handleReloadButton() {
         initialize();
     }
 
     public void handleStatisticButton() {
-        AllData.mainApp.showStatisticWindow();
+        if (AllData.statisticManagerStage == null) {
+            AllData.mainApp.showStatisticManagerWindow();
+        }
+        else {
+            AllData.statisticManagerStage.hide();
+            AllData.statisticManagerStage.show();
+            AllData.statisticManagerWindowController.initialize();
+            LocalDate today = LocalDate.now();
+            int y = today.getYear();
+            int m = today.getMonthValue();
+            AllData.statisticManagerWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
+        }
     }
 
     public void handleAbout() {

@@ -22,8 +22,6 @@ import java.time.LocalDate;
 public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
-    private AnchorPane statisticWindow;
-    private Stage statStage;
 
     /** TODO Во все методы show... в блок catch вставить показ Alert'а "Не удалось загрузить..." */
 
@@ -277,10 +275,9 @@ public class MainApp extends Application {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/StatisticWindow.fxml"));
-            statisticWindow = (AnchorPane) loader.load();
-            statStage = new Stage();
+            AnchorPane statisticWindow = (AnchorPane) loader.load();
+            Stage statStage = new Stage();
             statStage.initModality(Modality.NONE);
-            //statStage.initOwner(primaryStage);
             Scene scene = new Scene(statisticWindow);
             statStage.setScene(scene);
             statStage.show();
@@ -305,6 +302,25 @@ public class MainApp extends Application {
             statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
         }*/
     }
+
+    public void showStatisticManagerWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/StatisticManagerWindow.fxml"));
+            AnchorPane stManagerWindow = (AnchorPane) loader.load();
+            Stage stManagerStage = new Stage();
+            stManagerStage.initModality(Modality.NONE);
+            Scene scene = new Scene(stManagerWindow);
+            stManagerStage.setScene(scene);
+            stManagerStage.show();
+
+            AllData.statisticManagerWindowController = loader.getController();
+            AllData.statisticManagerStage = stManagerStage;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void closeApp() {
         primaryStage.close();

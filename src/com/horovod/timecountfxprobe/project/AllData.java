@@ -178,10 +178,6 @@ public class AllData {
 
 
 
-    public static double getTodayWorkSumProperty() {
-        return todayWorkSumProperty.get();
-    }
-
     public static DoubleProperty todayWorkSumProperty() {
         return todayWorkSumProperty;
     }
@@ -193,14 +189,9 @@ public class AllData {
                 counter += p.getWorkSumForDate(LocalDate.now());
             }
         }
-        AllData.todayWorkSumProperty.set(0);
         AllData.todayWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
-
-    public static double getWeekWorkSumProperty() {
-        return weekWorkSumProperty.get();
-    }
 
     public static DoubleProperty weekWorkSumPropertyProperty() {
         return weekWorkSumProperty;
@@ -217,10 +208,6 @@ public class AllData {
     }
 
 
-    public static double getMonthWorkSumProperty() {
-        return monthWorkSumProperty.get();
-    }
-
     public static DoubleProperty monthWorkSumPropertyProperty() {
         return monthWorkSumProperty;
     }
@@ -235,10 +222,6 @@ public class AllData {
         AllData.monthWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
-
-    public static double getYearWorkSumProperty() {
-        return yearWorkSumProperty.get();
-    }
 
     public static DoubleProperty yearWorkSumPropertyProperty() {
         return yearWorkSumProperty;
@@ -256,11 +239,6 @@ public class AllData {
 
 
 
-
-    public static double getDesignerDayWorkSumProperty() {
-        return designerDayWorkSumProperty.get();
-    }
-
     public static DoubleProperty designerDayWorkSumProperty() {
         return designerDayWorkSumProperty;
     }
@@ -276,10 +254,6 @@ public class AllData {
     }
 
 
-    public static double getDesignerWeekWorkSumProperty() {
-        return designerWeekWorkSumProperty.get();
-    }
-
     public static DoubleProperty designerWeekWorkSumProperty() {
         return designerWeekWorkSumProperty;
     }
@@ -292,10 +266,6 @@ public class AllData {
             }
         }
         AllData.designerWeekWorkSumProperty.set(AllData.intToDouble(counter));
-    }
-
-    public static double getDesignerMonthWorkSumProperty() {
-        return designerMonthWorkSumProperty.get();
     }
 
     public static DoubleProperty designerMonthWorkSumProperty() {
@@ -312,9 +282,6 @@ public class AllData {
         AllData.designerMonthWorkSumProperty.set(AllData.intToDouble(counter));
     }
 
-    public static double getDesignerYearWorkSumProperty() {
-        return designerYearWorkSumProperty.get();
-    }
 
     public static DoubleProperty designerYearWorkSumProperty() {
         return designerYearWorkSumProperty;
@@ -483,6 +450,18 @@ public class AllData {
         LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getActiveProjectsForMonth(Year year, Month month) {
+        List<Project> result = new ArrayList<>();
+        LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
+        LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(fromDate, tillDate)) {
                 result.add(p);
             }
         }

@@ -128,9 +128,9 @@ public class StatisticWindowController {
                             monthChoiceBox.setDisable(false);
                             Year year = Year.from(LocalDate.of(yearChoiceBox.getValue(), 1, 1));
 
-                            Month month = null;
-                            if (!monthChoiceBox.isDisabled()) {
-                                month = monthChoiceBox.getValue();
+                            Month month = monthChoiceBox.getValue();
+                            if (month == null) {
+                                month = Month.JANUARY;
                             }
 
                             LocalDate fromDate1 = LocalDate.of(year.getValue(), month.getValue(), 1);
@@ -197,14 +197,11 @@ public class StatisticWindowController {
                 if (year != null) {
                     String modeString = fillModeChoiceBox.getValue();
                     FillChartMode mode = FillChartMode.DAILY;
-                    if (modeString.equals(daily)) {
-                        mode = FillChartMode.DAILY;
-                    }
-                    else {
+                    if (modeString.equals(monthly)) {
                         mode = FillChartMode.MONTHLY;
                     }
                     Month month = Month.JANUARY;
-                    if (!monthChoiceBox.isDisabled()) {
+                    if (!monthChoiceBox.isDisabled() && monthChoiceBox.getValue() != null) {
                         month = monthChoiceBox.getValue();
                     }
                     LocalDate fromDate = LocalDate.of(year, month.getValue(), 1);
