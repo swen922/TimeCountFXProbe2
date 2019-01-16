@@ -270,7 +270,11 @@ public class TableProjectsDesignerController {
         SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
+                int compare = compareTime(o1, o2);
+                if (compare == 0) {
+                    compare = o2.getKey().compareTo(o1.getKey());
+                }
+                return compare;
             }
         });
 
@@ -384,28 +388,24 @@ public class TableProjectsDesignerController {
                         if (role.equals(Role.DESIGNER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            initialize();
+                            //initialize();
                             AllData.mainApp.showTableProjectsDesigner();
-                            if (AllData.statisticStage != null) {
-                                if (AllData.statisticStage.isShowing()) {
-                                    AllData.mainApp.showStatisticWindow();
-                                }
-                            }
+
+                            /*if (AllData.statisticStage != null) {
+                                AllData.statisticStage.close();
+                            }*/
 
 
                         }
                         else if (role.equals(Role.MANAGER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            initialize();
+                            //initialize();
                             AllData.mainApp.showTableProjectsManager();
 
-                            // Переписать для окна статистики менеджера
-                            if (AllData.statisticStage != null) {
-                                if (AllData.statisticStage.isShowing()) {
-                                    AllData.mainApp.showStatisticWindow();
-                                }
-                            }
+                            /*if (AllData.statisticManagerStage != null) {
+                                AllData.statisticManagerStage.close();
+                            }*/
                         }
                     }
                 }
@@ -516,7 +516,11 @@ public class TableProjectsDesignerController {
         tableProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
-                return compareTime(o1, o2);
+                int compare = compareTime(o1, o2);
+                if (compare == 0) {
+                    compare = o2.getKey().compareTo(o1.getKey());
+                }
+                return compare;
             }
         });
     }

@@ -4,6 +4,8 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.user.Designer;
+import com.horovod.timecountfxprobe.user.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -19,21 +21,27 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.time.format.TextStyle;
+import java.time.temporal.WeekFields;
 import java.util.*;
 
 public class StatisticManagerWindowController {
 
+    private ObservableList<String> users;
     private ObservableList<String> datesForBarChart;
     private ObservableList<XYChart.Data<String, Double>> workTimeForBarChart;
     private XYChart.Series<String, Double> seriesBars;
 
     private static final String daily = "По дням";
     private static final String monthly = "По месяцам";
+    private static final String allUsers = "Все дизайнеры";
 
     private ObservableList<String> listFillModes;
     private ObservableList<Integer> yearsValues;
     private ObservableList<Month> monthsValues;
 
+
+    @FXML
+    private ChoiceBox<String> userForDayTextArea;
 
     @FXML
     private DatePicker selectDayDatePicker;
@@ -43,6 +51,9 @@ public class StatisticManagerWindowController {
 
     @FXML
     private TextArea selectedDayTextArea;
+
+    @FXML
+    private ChoiceBox<String> userForProjectTextArea;
 
     @FXML
     private TextField projectNumberTextField;
@@ -88,23 +99,50 @@ public class StatisticManagerWindowController {
     @FXML
     public void initialize() {
 
-        /*selectDayDatePicker.setValue(null);
-        selectedDayTextArea.setText("");
-        projectNumberTextField.setText("");
-        projectNumberTextArea.setText("");*/
-
         initializeChoiceBoxes();
 
         LocalDate now = LocalDate.now();
         Year year = Year.from(now);
         Month month = now.getMonth();
-
+        AllData.rebuildTodayWorkSumProperty();
+        AllData.rebuildWeekWorkSumProperty(year.getValue(), now.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+        AllData.rebuildMonthWorkSumProperty(year.getValue(), month.getValue());
+        AllData.rebuildYearWorkSumProperty(year.getValue());
         initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
 
+        initWorkSumLabels();
+        initUsersChoiceBoxes();
+    }
+
+    private void initWorkSumLabels() {
         todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
         weekWorkSumLabel.textProperty().bind(AllData.weekWorkSumPropertyProperty().asString());
         monthWorkSumLabel.textProperty().bind(AllData.monthWorkSumPropertyProperty().asString());
         yearWorkSumLabel.textProperty().bind(AllData.yearWorkSumPropertyProperty().asString());
+    }
+
+    private void sortUsers() {
+        users.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+    }
+
+    private void initUsersChoiceBoxes() {
+        if (users == null) {
+            users = FXCollections.observableArrayList();
+        }
+        for (User u : AllUsers.getActiveDesigners().values()) {
+            users.add(u.getFullName());
+        }
+        sortUsers();
+        users.add(0, allUsers);
+        userForDayTextArea.setItems(users);
+        userForDayTextArea.setValue(users.get(0));
+        userForProjectTextArea.setItems(users);
+        userForProjectTextArea.setValue(users.get(0));
     }
 
 
@@ -294,7 +332,7 @@ public class StatisticManagerWindowController {
         if (mode.equals(FillChartMode.DAILY)) {
             for (int i = 0; i < from.getMonth().length(Year.from(from).isLeap()); i++) {
                 LocalDate oneDay = from.plusDays(i);
-                List<Project> tmp = AllData.getActiveProjectsForPeriod(oneDay, oneDay);
+                List<Project> tmp = AllData.getAllProjectsForDate(oneDay);
                 int sum = 0;
                 for (Project p : tmp) {
                     sum += p.getWorkSumForDate(oneDay);
@@ -308,7 +346,7 @@ public class StatisticManagerWindowController {
 
             for (int i = 0; i < 12; i++) {
                 Month month = from.getMonth().plus(i);
-                List<Project> monthlyProjects = AllData.getActiveProjectsForMonth(year, month);
+                List<Project> monthlyProjects = AllData.getAllProjectsForMonth(year, month);
                 int sum = 0;
                 for (Project p : monthlyProjects) {
                     LocalDate fromdate = LocalDate.of(year.getValue(), month.getValue(), 1);
@@ -326,6 +364,15 @@ public class StatisticManagerWindowController {
         }
     }
 
+    private void initUserDateText() {
+        userForDayTextArea.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handleSelectDayDatePicker();
+            }
+        });
+    }
+
 
 
     public void handleSelectDayDatePicker() {
@@ -333,15 +380,21 @@ public class StatisticManagerWindowController {
         LocalDate localDate = selectDayDatePicker.getValue();
         List<Project> myProjects = null;
         selectedDayTextArea.clear();
+        int selectedUserID = 0;
 
         if (localDate != null) {
-            myProjects = AllData.getActiveProjectsForPeriod(localDate, localDate);
+            if (userForDayTextArea.getValue().equalsIgnoreCase(allUsers)) {
+                myProjects = AllData.getAllProjectsForDate(localDate);
+            }
+            else {
+                selectedUserID = AllUsers.getOneUserForFullName(userForDayTextArea.getValue()).getIDNumber();
+                myProjects = AllData.getAllProjectsForDesignerAndDate(selectedUserID, localDate);
+            }
         }
         if (myProjects == null || myProjects.isEmpty()) {
             selectedDayTextArea.setText("В этот день нет рабочего времени");
         }
         else {
-
             myProjects.sort(new Comparator<Project>() {
                 @Override
                 public int compare(Project o1, Project o2) {
@@ -352,15 +405,48 @@ public class StatisticManagerWindowController {
             });
 
             int sum = 0;
-            StringBuilder sb = new StringBuilder("В этот день было время в проектах:\n");
-            sb.append("-------------------\n");
-            for (Project p : myProjects) {
-                sb.append("id-").append(p.getIdNumber()).append("  —  ");
-                String hour = AllData.formatWorkTime(AllData.intToDouble(p.getWorkSumForDate(localDate)));
-                sb.append(hour);
-                sb.append(" ").append(AllData.formatHours(hour)).append("\n");
-                sum += p.getWorkSumForDate(localDate);
+
+            StringBuilder sb = new StringBuilder("В этот день ");
+            if (selectedUserID != 0) {
+                sb.append("у дизайнера ").append(AllUsers.getOneUser(selectedUserID).getFullName()).append(" ");
             }
+            sb.append("было время в проектах:\n");
+            sb.append("-------------------\n");
+
+            for (Project p : myProjects) {
+
+                sb.append("id-").append(p.getIdNumber());
+
+                if (selectedUserID == 0) {
+                    sb.append(":\n");
+
+                    int tmpSum = 0;
+
+                    for (User u : AllUsers.getDesignersPlusDeleted().values()) {
+                        if (p.containsWorkTime(u.getIDNumber(), localDate)) {
+                            System.out.println("if for id-" + p.getIdNumber());
+                            int todayWorkSum = p.getWorkSumForDesignerAndDate(u.getIDNumber(), localDate);
+                            sb.append(u.getFullName()).append(" = ").append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
+                            sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
+                            tmpSum += todayWorkSum;
+                        }
+                    }
+                    sum += p.getWorkSumForDate(localDate);
+                    
+                    System.out.println("суумма по проекту id-" + p.getIdNumber() + "согласно методу getWorkSumForDate  = " + p.getWorkSumForDate(localDate));
+                    System.out.println("суумма по проекту id-" + p.getIdNumber() + "согласно сложению = " + tmpSum);
+
+                }
+                else {
+                    int todayWorkSum = p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
+                    sb.append(" = ");
+                    sb.append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
+                    sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
+                    sum += p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
+                }
+            }
+            sb.append("\n");
+
             sb.append("-------------------\n");
             String hourSum = AllData.formatWorkTime(AllData.intToDouble(sum));
             sb.append("Итого  –  ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));

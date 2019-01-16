@@ -190,8 +190,7 @@ public class TableProjectsManagerController {
         //AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
         if (showProjects == null) {
-            showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-            sortTableProjects();
+            showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
         }
 
         if (filterData == null) {
@@ -208,6 +207,7 @@ public class TableProjectsManagerController {
             sortedList = new SortedList<>(filterDataWrapper);
         }
 
+        sortTableProjects();
         handleFilters();
 
         columnAction.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Boolean>, ObservableValue<Boolean>>() {
@@ -540,13 +540,11 @@ public class TableProjectsManagerController {
                         if (role.equals(Role.DESIGNER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            //initialize();
                             AllData.mainApp.showTableProjectsDesigner();
-                            if (AllData.statisticStage != null) {
-                                if (AllData.statisticStage.isShowing()) {
-                                    AllData.mainApp.showStatisticWindow();
-                                }
-                            }
+
+                            /*if (AllData.statisticStage != null) {
+                                AllData.statisticStage.close();
+                            }*/
                         }
                         else if (role.equals(Role.MANAGER)) {
                             AllData.rootLayout.setCenter(null);
@@ -554,12 +552,9 @@ public class TableProjectsManagerController {
                             //initialize();
                             AllData.mainApp.showTableProjectsManager();
 
-                            /** TODO Переписать для окна статистики менеджера */
-                            if (AllData.statisticStage != null) {
-                                if (AllData.statisticStage.isShowing()) {
-                                    //mainApp.showStatisticWindow();
-                                }
-                            }
+                            /*if (AllData.statisticManagerStage != null) {
+                                AllData.statisticManagerStage.close();
+                            }*/
                         }
                     }
                 }
@@ -769,7 +764,16 @@ public class TableProjectsManagerController {
 
     public void handleUsersButton() {
         initClosing();
-        AllData.mainApp.showStaffWindow();
+
+        if (AllData.staffWindowStage == null) {
+            AllData.mainApp.showStaffWindow();
+        }
+        else {
+            AllData.staffWindowStage.hide();
+            AllData.staffWindowStage.show();
+        }
+
+
     }
 
     public void handleSumButton() {
@@ -1195,15 +1199,20 @@ public class TableProjectsManagerController {
                     @Override
                     public void handle(ActionEvent event) {
 
+                        System.out.println("manageButton is clicked!");
+
                         initClosing();
 
                         if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
                             AllData.mainApp.showEditProjectWindow(entry.getKey());
+                            System.out.println("open new EditProjectWindow");
 
                         }
                         else {
                             AllData.openEditProjectStages.get(entry.getKey()).close();
                             AllData.openEditProjectStages.get(entry.getKey()).show();
+                            System.out.println("open existing EditProjectWindow");
+
                         }
                     }
                 });

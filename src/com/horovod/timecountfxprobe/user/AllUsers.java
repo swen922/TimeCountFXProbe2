@@ -156,6 +156,7 @@ public class AllUsers {
         return result;
     }
 
+
     public static Map<Integer, User> getDesignersPlusDeleted() {
         Map<Integer, User> result = new HashMap<>();
         for (User u : users.values()) {

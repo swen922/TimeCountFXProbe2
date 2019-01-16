@@ -434,6 +434,16 @@ public class AllData {
         return result;
     }
 
+    public static List<Project> getActiveProjectsForDate(LocalDate argDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : activeProjects.values()) {
+            if (p.containsWorkTime(argDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
     public static List<Project> getActiveProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
@@ -469,7 +479,17 @@ public class AllData {
     }
 
 
-
+    public static List<Project> getAllProjectsForMonth(Year year, Month month) {
+        List<Project> result = new ArrayList<>();
+        LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
+        LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
 
 
 
@@ -500,6 +520,16 @@ public class AllData {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(fromDate, tillDate)) {
+                result.add(p);
+            }
+        }
+        return result;
+    }
+
+    public static List<Project> getAllProjectsForDate(LocalDate argDate) {
+        List<Project> result = new ArrayList<>();
+        for (Project p : allProjects.values()) {
+            if (p.containsWorkTime(argDate)) {
                 result.add(p);
             }
         }

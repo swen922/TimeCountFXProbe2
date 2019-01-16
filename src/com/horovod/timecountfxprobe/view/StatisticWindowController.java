@@ -291,7 +291,7 @@ public class StatisticWindowController {
         if (mode.equals(FillChartMode.DAILY)) {
             for (int i = 0; i < from.getMonth().length(Year.from(from).isLeap()); i++) {
                 LocalDate oneDay = from.plusDays(i);
-                List<Project> tmp = AllData.getActiveProjectsForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
+                List<Project> tmp = AllData.getAllProjectsForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
                 int sum = 0;
                 for (Project p : tmp) {
                     sum += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
@@ -305,7 +305,7 @@ public class StatisticWindowController {
 
             for (int i = 0; i < 12; i++) {
                 Month month = from.getMonth().plus(i);
-                List<Project> monthlyProjects = AllData.getActiveProjectsForDesignerAndMonth(AllUsers.getCurrentUser(), year, month);
+                List<Project> monthlyProjects = AllData.getAllProjectsForDesignerAndMonth(AllUsers.getCurrentUser(), year.getValue(), month.getValue());
                 int sum = 0;
                 for (Project p : monthlyProjects) {
                     LocalDate fromdate = LocalDate.of(year.getValue(), month.getValue(), 1);
@@ -334,7 +334,7 @@ public class StatisticWindowController {
         selectedDayTextArea.clear();
 
         if (localDate != null) {
-            myProjects = AllData.getActiveProjectsForDesignerAndDate(AllUsers.getCurrentUser(), localDate);
+            myProjects = AllData.getAllProjectsForDesignerAndDate(AllUsers.getCurrentUser(), localDate);
         }
         if (myProjects == null || myProjects.isEmpty()) {
             selectedDayTextArea.setText("В этот день у меня нет рабочего времени");
