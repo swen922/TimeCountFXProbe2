@@ -112,6 +112,7 @@ public class StatisticManagerWindowController {
 
         initWorkSumLabels();
         initUsersChoiceBoxes();
+        initUserDateText();
     }
 
     private void initWorkSumLabels() {
@@ -391,6 +392,7 @@ public class StatisticManagerWindowController {
                 myProjects = AllData.getAllProjectsForDesignerAndDate(selectedUserID, localDate);
             }
         }
+
         if (myProjects == null || myProjects.isEmpty()) {
             selectedDayTextArea.setText("В этот день нет рабочего времени");
         }
@@ -418,31 +420,29 @@ public class StatisticManagerWindowController {
                 sb.append("id-").append(p.getIdNumber());
 
                 if (selectedUserID == 0) {
-                    sb.append(":\n");
-
-                    int tmpSum = 0;
+                    sb.append(":\n\n");
 
                     for (User u : AllUsers.getDesignersPlusDeleted().values()) {
                         if (p.containsWorkTime(u.getIDNumber(), localDate)) {
-                            System.out.println("if for id-" + p.getIdNumber());
                             int todayWorkSum = p.getWorkSumForDesignerAndDate(u.getIDNumber(), localDate);
                             sb.append(u.getFullName()).append(" = ").append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
                             sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
-                            tmpSum += todayWorkSum;
+                            sum += todayWorkSum;
                         }
                     }
-                    sum += p.getWorkSumForDate(localDate);
-                    
-                    System.out.println("суумма по проекту id-" + p.getIdNumber() + "согласно методу getWorkSumForDate  = " + p.getWorkSumForDate(localDate));
-                    System.out.println("суумма по проекту id-" + p.getIdNumber() + "согласно сложению = " + tmpSum);
-
+                    System.out.println("handleSelectDayDatePicker()");
+                    System.out.println("sum = " + sum);
+                    System.out.println(p.getWorkSumForDate(localDate));
+                    System.out.println("");
                 }
                 else {
-                    int todayWorkSum = p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
-                    sb.append(" = ");
-                    sb.append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
-                    sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
-                    sum += p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
+                    if (p.containsWorkTime(selectedUserID, localDate)) {
+                        int todayWorkSum = p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
+                        sb.append(" = ");
+                        sb.append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
+                        sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
+                        sum += todayWorkSum;
+                    }
                 }
             }
             sb.append("\n");

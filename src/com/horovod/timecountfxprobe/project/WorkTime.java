@@ -33,8 +33,8 @@ public class WorkTime {
         setTime(AllData.doubleToInt(time));
     }
 
-    public WorkTime() {
-    }
+    /*public WorkTime() {
+    }*/
 
     @XmlElement(name = "projectidnumber")
     public int getProjectID() {

@@ -183,13 +183,23 @@ public class AllData {
     }
 
     public static synchronized void rebuildTodayWorkSumProperty() {
+
+        System.out.println("");
+        System.out.println("rebuildTodayWorkSumProperty()");
+
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(LocalDate.now())) {
                 counter += p.getWorkSumForDate(LocalDate.now());
+                System.out.println("id-" + p.getIdNumber() + " = m" + p.getWorkSumForDate(LocalDate.now()) + " and counter = " + counter);
             }
+
         }
+        System.out.println(counter);
         AllData.todayWorkSumProperty.set(AllData.intToDouble(counter));
+        System.out.println(todayWorkSumProperty().get());
+        System.out.println("\n");
+
     }
 
 
@@ -736,12 +746,14 @@ public class AllData {
     /** методы-утилиты */
 
     public static int doubleToInt(double argument) {
-        return (int) (argument * 10);
+        double tmp = argument * 10;
+        return (int) formatDouble(tmp, 0);
     }
 
     public static double intToDouble(int argument) {
-        double tmp = (double) argument / 10;
-        BigDecimal result = new BigDecimal(Double.toString(tmp));
+        double tmp = (double) argument;
+        double tmp2 = tmp / 10;
+        BigDecimal result = new BigDecimal(Double.toString(tmp2));
         result = result.setScale(1, RoundingMode.HALF_UP);
         return result.doubleValue();
     }
