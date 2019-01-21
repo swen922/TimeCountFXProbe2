@@ -184,21 +184,13 @@ public class AllData {
 
     public static synchronized void rebuildTodayWorkSumProperty() {
 
-        System.out.println("");
-        System.out.println("rebuildTodayWorkSumProperty()");
-
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(LocalDate.now())) {
                 counter += p.getWorkSumForDate(LocalDate.now());
-                System.out.println("id-" + p.getIdNumber() + " = m" + p.getWorkSumForDate(LocalDate.now()) + " and counter = " + counter);
             }
-
         }
-        System.out.println(counter);
         AllData.todayWorkSumProperty.set(AllData.intToDouble(counter));
-        System.out.println(todayWorkSumProperty().get());
-        System.out.println("\n");
 
     }
 
@@ -320,6 +312,10 @@ public class AllData {
     /** Метод добавления и корректировки рабочего времени в проектах */
 
     public static synchronized boolean addWorkTime(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
+
+        if (!AllUsers.isUserExist(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
+            return false;
+        }
 
         if (isProjectExist(projectIDnumber) && (!isProjectArchive(projectIDnumber))) {
 

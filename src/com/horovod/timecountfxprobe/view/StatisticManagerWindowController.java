@@ -99,6 +99,8 @@ public class StatisticManagerWindowController {
     @FXML
     public void initialize() {
 
+        AllData.rebuildTodayWorkSumProperty();
+
         initializeChoiceBoxes();
 
         LocalDate now = LocalDate.now();
@@ -420,9 +422,12 @@ public class StatisticManagerWindowController {
                 sb.append("id-").append(p.getIdNumber());
 
                 if (selectedUserID == 0) {
+
                     sb.append(":\n\n");
 
+
                     for (User u : AllUsers.getDesignersPlusDeleted().values()) {
+
                         if (p.containsWorkTime(u.getIDNumber(), localDate)) {
                             int todayWorkSum = p.getWorkSumForDesignerAndDate(u.getIDNumber(), localDate);
                             sb.append(u.getFullName()).append(" = ").append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
@@ -430,10 +435,7 @@ public class StatisticManagerWindowController {
                             sum += todayWorkSum;
                         }
                     }
-                    System.out.println("handleSelectDayDatePicker()");
-                    System.out.println("sum = " + sum);
-                    System.out.println(p.getWorkSumForDate(localDate));
-                    System.out.println("");
+
                 }
                 else {
                     if (p.containsWorkTime(selectedUserID, localDate)) {
