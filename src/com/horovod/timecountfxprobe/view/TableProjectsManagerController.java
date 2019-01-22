@@ -1199,19 +1199,15 @@ public class TableProjectsManagerController {
                     @Override
                     public void handle(ActionEvent event) {
 
-                        System.out.println("manageButton is clicked!");
-
                         initClosing();
 
                         if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
                             AllData.mainApp.showEditProjectWindow(entry.getKey());
-                            System.out.println("open new EditProjectWindow");
 
                         }
                         else {
                             AllData.openEditProjectStages.get(entry.getKey()).close();
                             AllData.openEditProjectStages.get(entry.getKey()).show();
-                            System.out.println("open existing EditProjectWindow");
 
                         }
                     }

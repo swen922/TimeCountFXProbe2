@@ -41,7 +41,7 @@ public class StatisticManagerWindowController {
 
 
     @FXML
-    private ChoiceBox<String> userForDayTextArea;
+    private ChoiceBox<String> userForDayChoiceBox;
 
     @FXML
     private DatePicker selectDayDatePicker;
@@ -53,7 +53,7 @@ public class StatisticManagerWindowController {
     private TextArea selectedDayTextArea;
 
     @FXML
-    private ChoiceBox<String> userForProjectTextArea;
+    private ChoiceBox<String> userForProjectChoiceBox;
 
     @FXML
     private TextField projectNumberTextField;
@@ -115,6 +115,7 @@ public class StatisticManagerWindowController {
         initWorkSumLabels();
         initUsersChoiceBoxes();
         initUserDateText();
+        initUserProjectText();
     }
 
     private void initWorkSumLabels() {
@@ -137,15 +138,16 @@ public class StatisticManagerWindowController {
         if (users == null) {
             users = FXCollections.observableArrayList();
         }
+        users.clear();
         for (User u : AllUsers.getActiveDesigners().values()) {
             users.add(u.getFullName());
         }
         sortUsers();
         users.add(0, allUsers);
-        userForDayTextArea.setItems(users);
-        userForDayTextArea.setValue(users.get(0));
-        userForProjectTextArea.setItems(users);
-        userForProjectTextArea.setValue(users.get(0));
+        userForDayChoiceBox.setItems(users);
+        userForDayChoiceBox.setValue(users.get(0));
+        userForProjectChoiceBox.setItems(users);
+        userForProjectChoiceBox.setValue(users.get(0));
     }
 
 
@@ -275,14 +277,14 @@ public class StatisticManagerWindowController {
     }
 
 
-    public void initializeBarChart(FillChartMode mode, LocalDate from) {
+    public void initializeBarChart(FillChartMode mode, LocalDate selectedDate) {
 
         if (datesForBarChart == null) {
             datesForBarChart = FXCollections.observableArrayList();
             xAxis.setCategories(datesForBarChart);
         }
 
-        fillDatesBarChart(mode, from);
+        fillDatesBarChart(mode, selectedDate);
 
         if (workTimeForBarChart == null) {
             workTimeForBarChart = FXCollections.observableArrayList();
@@ -295,16 +297,16 @@ public class StatisticManagerWindowController {
             workSumsBarChart.getData().add(seriesBars);
         }
 
-        fillXYBarChartSeries(mode, from);
+        fillXYBarChartSeries(mode, selectedDate);
     }
 
 
-    private void fillDatesBarChart(FillChartMode mode, LocalDate from) {
+    private void fillDatesBarChart(FillChartMode mode, LocalDate selectedDate) {
 
         datesForBarChart.clear();
 
         if (mode.equals(FillChartMode.DAILY)) {
-            int max = from.getMonth().length(Year.from(from).isLeap());
+            int max = selectedDate.getMonth().length(Year.from(selectedDate).isLeap());
             for (int i = 1; i <= max; i++) {
                 datesForBarChart.add(String.valueOf(i));
             }
@@ -368,7 +370,7 @@ public class StatisticManagerWindowController {
     }
 
     private void initUserDateText() {
-        userForDayTextArea.setOnAction(new EventHandler<ActionEvent>() {
+        userForDayChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 handleSelectDayDatePicker();
@@ -386,73 +388,78 @@ public class StatisticManagerWindowController {
         int selectedUserID = 0;
 
         if (localDate != null) {
-            if (userForDayTextArea.getValue().equalsIgnoreCase(allUsers)) {
+            if (userForDayChoiceBox.getValue().equalsIgnoreCase(allUsers)) {
                 myProjects = AllData.getAllProjectsForDate(localDate);
             }
             else {
-                selectedUserID = AllUsers.getOneUserForFullName(userForDayTextArea.getValue()).getIDNumber();
+                selectedUserID = AllUsers.getOneUserForFullName(userForDayChoiceBox.getValue()).getIDNumber();
                 myProjects = AllData.getAllProjectsForDesignerAndDate(selectedUserID, localDate);
             }
-        }
 
-        if (myProjects == null || myProjects.isEmpty()) {
-            selectedDayTextArea.setText("В этот день нет рабочего времени");
-        }
-        else {
-            myProjects.sort(new Comparator<Project>() {
-                @Override
-                public int compare(Project o1, Project o2) {
-                    int o1WorkSum = o1.getWorkSumForDate(localDate);
-                    int o2WorkSum = o2.getWorkSumForDate(localDate);
-                    return Integer.compare(o2WorkSum, o1WorkSum);
-                }
-            });
-
-            int sum = 0;
-
-            StringBuilder sb = new StringBuilder("В этот день ");
-            if (selectedUserID != 0) {
-                sb.append("у дизайнера ").append(AllUsers.getOneUser(selectedUserID).getFullName()).append(" ");
-            }
-            sb.append("было время в проектах:\n");
-            sb.append("-------------------\n");
-
-            for (Project p : myProjects) {
-
-                sb.append("id-").append(p.getIdNumber());
-
+            if (myProjects == null || myProjects.isEmpty()) {
+                StringBuilder empty = new StringBuilder("В этот день ");
                 if (selectedUserID == 0) {
+                    empty.append("ни у кого нет рабочего времени");
+                }
+                else {
+                    empty.append("у дизайнера ").append(userForDayChoiceBox.getValue()).append(" нет рабочего времени\n");
+                }
 
-                    sb.append(":\n\n");
+                selectedDayTextArea.setText(empty.toString());
+            }
+            else {
+                myProjects.sort(new Comparator<Project>() {
+                    @Override
+                    public int compare(Project o1, Project o2) {
+                        /*int o1WorkSum = o1.getWorkSumForDate(localDate);
+                        int o2WorkSum = o2.getWorkSumForDate(localDate);
+                        return Integer.compare(o2WorkSum, o1WorkSum);*/
+                        return Integer.compare(o2.getIdNumber(), o1.getIdNumber());
+                    }
+                });
 
+                int sum = 0;
 
-                    for (User u : AllUsers.getDesignersPlusDeleted().values()) {
+                StringBuilder sb = new StringBuilder("В этот день ");
+                if (selectedUserID != 0) {
+                    sb.append("у дизайнера ").append(userForDayChoiceBox.getValue()).append(" ");
+                }
+                sb.append("было время в проектах:\n\n");
+                sb.append("-------------------");
 
-                        if (p.containsWorkTime(u.getIDNumber(), localDate)) {
-                            int todayWorkSum = p.getWorkSumForDesignerAndDate(u.getIDNumber(), localDate);
-                            sb.append(u.getFullName()).append(" = ").append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
+                for (Project p : myProjects) {
+
+                    sb.append("\n");
+                    sb.append("id-").append(p.getIdNumber());
+
+                    if (selectedUserID == 0) {
+                        sb.append(":\n");
+                        for (User u : AllUsers.getDesignersPlusDeleted().values()) {
+                            if (p.containsWorkTime(u.getIDNumber(), localDate)) {
+                                int todayWorkSum = p.getWorkSumForDesignerAndDate(u.getIDNumber(), localDate);
+                                sb.append(u.getFullName()).append(" = ").append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
+                                sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
+                                sum += todayWorkSum;
+                            }
+                        }
+                    }
+                    else {
+                        if (p.containsWorkTime(selectedUserID, localDate)) {
+                            int todayWorkSum = p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
+                            sb.append(" = ");
+                            sb.append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
                             sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
                             sum += todayWorkSum;
                         }
                     }
+                }
 
-                }
-                else {
-                    if (p.containsWorkTime(selectedUserID, localDate)) {
-                        int todayWorkSum = p.getWorkSumForDesignerAndDate(selectedUserID, localDate);
-                        sb.append(" = ");
-                        sb.append(AllData.formatWorkTime(AllData.intToDouble(todayWorkSum)));
-                        sb.append(" ").append(AllData.formatHours(String.valueOf(AllData.intToDouble(todayWorkSum)))).append("\n");
-                        sum += todayWorkSum;
-                    }
-                }
+                sb.append("-------------------\n");
+                String hourSum = AllData.formatWorkTime(AllData.intToDouble(sum));
+                sb.append("\nИтого = ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));
+                selectedDayTextArea.setText(sb.toString());
             }
-            sb.append("\n");
 
-            sb.append("-------------------\n");
-            String hourSum = AllData.formatWorkTime(AllData.intToDouble(sum));
-            sb.append("Итого  –  ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));
-            selectedDayTextArea.setText(sb.toString());
         }
     }
 
@@ -461,11 +468,23 @@ public class StatisticManagerWindowController {
         selectedDayTextArea.clear();
     }
 
+    private void initUserProjectText() {
+        userForProjectChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                handleProjectNumberTextField();
+            }
+        });
+    }
+
+
     public void handleProjectNumberTextField() {
 
         projectNumberTextArea.clear();
+
         String projectString = projectNumberTextField.getText();
         Integer projectIDnumber;
+
         if (projectString != null && !projectString.isEmpty()) {
             try {
                 projectIDnumber = Integer.parseInt(projectString);
@@ -475,18 +494,30 @@ public class StatisticManagerWindowController {
             }
 
             if (!AllData.isProjectExist(projectIDnumber)) {
-                projectNumberTextArea.setText("Такого проекта не существует, либо он удален в архив");
+                projectNumberTextArea.setText("Такого проекта не существует,\nвведите корректный номер проекта");
             }
             else {
-
                 List<WorkTime> allWorks = new ArrayList<>();
-                allWorks.addAll(AllData.getOneActiveProject(projectIDnumber).getWork());
 
-                if (allWorks.isEmpty()) {
-                    projectNumberTextArea.setText("В этом проекте пока нет рабочего времени");
+                if (userForProjectChoiceBox.getValue().equals(allUsers)) {
+                    allWorks.addAll(AllData.getOneProject(projectIDnumber).getWork());
                 }
                 else {
+                    int designerID = AllUsers.getOneUserForFullName(userForProjectChoiceBox.getValue()).getIDNumber();
+                    allWorks.addAll(AllData.getOneProject(projectIDnumber).getWorkTimeForDesigner(designerID));
+                }
 
+                if (allWorks.isEmpty()) {
+                    StringBuilder empty = new StringBuilder("В этот день ");
+                    if (userForProjectChoiceBox.getValue().equals(allUsers)) {
+                        empty.append("ни у кого нет рабочего времени");
+                    }
+                    else {
+                        empty.append("у дизайнера ").append(userForProjectChoiceBox.getValue()).append(" нет рабочего времени\n");
+                    }
+                    projectNumberTextArea.setText(empty.toString());
+                }
+                else {
                     allWorks.sort(new Comparator<WorkTime>() {
                         @Override
                         public int compare(WorkTime o1, WorkTime o2) {
@@ -495,17 +526,36 @@ public class StatisticManagerWindowController {
                     });
 
                     int sum = 0;
-                    StringBuilder sb = new StringBuilder("В этом проекте было следуюшее рабочее время:\n");
-                    sb.append("-------------------\n");
-                    for (WorkTime wt : allWorks) {
-                        sb.append(wt.getDateString()).append("  —  ");
-                        String hour = AllData.formatWorkTime(AllData.intToDouble(wt.getTime()));
-                        sb.append(hour).append(" ").append(AllData.formatHours(hour)).append("\n");
-                        sum += wt.getTime();
+                    StringBuilder sb = new StringBuilder("В этом проекте ");
+                    if (!userForProjectChoiceBox.getValue().equals(allUsers)) {
+                        sb.append("у дизайнера ").append(userForProjectChoiceBox.getValue()).append("\n");
                     }
+                    sb.append("было следуюшее рабочее время:\n\n");
+
+                    sb.append("-------------------");
+
+                    if (userForProjectChoiceBox.getValue().equals(allUsers)) {
+                        for (WorkTime wt : allWorks) {
+                            sb.append("\n").append(wt.getDateString()).append(":\n");
+                            sb.append(AllUsers.getOneUser(wt.getDesignerID()).getFullName()).append(" = ");
+                            String hour = AllData.formatWorkTime(wt.getTimeDouble());
+                            sb.append(hour).append(" ").append(AllData.formatHours(hour)).append("\n");
+                            sum += wt.getTime();
+                        }
+                    }
+                    else {
+                        for (WorkTime wt : allWorks) {
+                            sb.append("\n").append(wt.getDateString()).append(" = ");
+                            String hour = AllData.formatWorkTime(wt.getTimeDouble());
+                            sb.append(hour).append(" ").append(AllData.formatHours(hour)).append("\n");
+                            sum += wt.getTime();
+                        }
+                    }
+
+
                     sb.append("-------------------\n");
                     String hourSum = AllData.formatWorkTime(AllData.intToDouble(sum));
-                    sb.append("Итого  –  ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));
+                    sb.append("\nИтого  –  ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));
                     projectNumberTextArea.setText(sb.toString());
 
                 }

@@ -394,6 +394,13 @@ public class AllData {
         return null;
     }
 
+    public static Project getOneProject(int idProject) {
+        if (isProjectExist(idProject)) {
+            return allProjects.get(idProject);
+        }
+        return null;
+    }
+
     public static Project getAnyProject(int idProject) {
         if (isProjectExist(idProject)) {
             return allProjects.get(idProject);
