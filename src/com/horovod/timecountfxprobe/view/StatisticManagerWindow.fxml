@@ -201,6 +201,6 @@
             </Button>
          </children>
       </AnchorPane>
-      <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
+      <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

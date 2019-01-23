@@ -6,6 +6,7 @@ import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.User;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -99,8 +100,6 @@ public class StatisticManagerWindowController {
     @FXML
     public void initialize() {
 
-        AllData.rebuildTodayWorkSumProperty();
-
         initializeChoiceBoxes();
 
         LocalDate now = LocalDate.now();
@@ -110,8 +109,8 @@ public class StatisticManagerWindowController {
         AllData.rebuildWeekWorkSumProperty(year.getValue(), now.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
         AllData.rebuildMonthWorkSumProperty(year.getValue(), month.getValue());
         AllData.rebuildYearWorkSumProperty(year.getValue());
-        initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
 
+        initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
         initWorkSumLabels();
         initUsersChoiceBoxes();
         initUserDateText();
@@ -456,7 +455,7 @@ public class StatisticManagerWindowController {
 
                 sb.append("-------------------\n");
                 String hourSum = AllData.formatWorkTime(AllData.intToDouble(sum));
-                sb.append("\nИтого = ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));
+                sb.append("\nИтого = ").append(hourSum).append(" ").append(AllData.formatHours(hourSum)).append("\n");
                 selectedDayTextArea.setText(sb.toString());
             }
 
@@ -555,7 +554,7 @@ public class StatisticManagerWindowController {
 
                     sb.append("-------------------\n");
                     String hourSum = AllData.formatWorkTime(AllData.intToDouble(sum));
-                    sb.append("\nИтого  –  ").append(hourSum).append(" ").append(AllData.formatHours(hourSum));
+                    sb.append("\nИтого  –  ").append(hourSum).append(" ").append(AllData.formatHours(hourSum)).append("\n");
                     projectNumberTextArea.setText(sb.toString());
 
                 }
@@ -583,7 +582,7 @@ public class StatisticManagerWindowController {
     }
 
     public void handleCloseButton() {
-        AllData.statisticStage.close();
+        AllData.statisticManagerStage.close();
     }
 
 }

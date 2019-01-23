@@ -321,6 +321,26 @@ public class MainApp extends Application {
         }
     }
 
+    public void showCreateProjectWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/CreateProjectWindow.fxml"));
+            AnchorPane createProjectPane = (AnchorPane) loader.load();
+            Stage stage = new Stage();
+            stage.initModality(Modality.NONE);
+            stage.initOwner(AllData.primaryStage);
+            Scene scene = new Scene(createProjectPane);
+            stage.setScene(scene);
+
+            CreateProjectWindowController controller = loader.getController();
+            controller.setMyStage(stage);
+
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void closeApp() {
         primaryStage.close();

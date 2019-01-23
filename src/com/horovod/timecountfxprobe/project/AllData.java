@@ -702,8 +702,7 @@ public class AllData {
     }
 
     public static synchronized void computeProjectsProperties() {
-        Collection<Project> coll = activeProjects.values();
-        for (Project p : coll) {
+        for (Project p : activeProjects.values()) {
             p.setIdNumberProperty(p.getIdNumber());
             p.setCompanyProperty(p.getCompany());
             p.setManagerProperty(p.getManager());

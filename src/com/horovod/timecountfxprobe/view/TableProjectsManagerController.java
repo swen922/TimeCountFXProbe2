@@ -412,6 +412,7 @@ public class TableProjectsManagerController {
                         ec.handleCloseButton();
                     }
 
+
                     if (!AllData.editProjectWindowControllers.isEmpty()) {
                         event.consume();
                     }
@@ -815,6 +816,9 @@ public class TableProjectsManagerController {
     }
 
 
+    public void handleNewProjectButton() {
+        AllData.mainApp.showCreateProjectWindow();
+    }
 
     public void handleReloadButton() {
         initialize();

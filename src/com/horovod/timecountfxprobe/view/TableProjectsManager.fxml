@@ -173,7 +173,7 @@
             </VBox>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0" spacing="10.0">
                <children>
-                  <Button fx:id="newProjectButton" alignment="CENTER" mnemonicParsing="false" prefHeight="50.0" prefWidth="100.0" text="Новый проект" textAlignment="CENTER" wrapText="true">
+                  <Button fx:id="newProjectButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleNewProjectButton" prefHeight="50.0" prefWidth="100.0" text="Новый проект" textAlignment="CENTER" wrapText="true">
                      <font>
                         <Font name="System Bold" size="15.0" />
                      </font>
