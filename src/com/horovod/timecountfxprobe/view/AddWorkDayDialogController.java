@@ -101,6 +101,16 @@ public class AddWorkDayDialogController {
             alert.setHeaderText("Укажите корректную дату,\nдизайнера и рабочее время");
             alert.showAndWait();
         }
+        else if (date.compareTo(AllData.parseDate(AllData.getOneProject(projectIDnumber).getDateCreationString())) < 0) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Неправильная дата");
+            alert.setHeaderText("Дата не может быть раньше даты создания проекта");
+            StringBuilder text = new StringBuilder("Дата создания проекта id-");
+            text.append(projectIDnumber).append(" – ").append(AllData.getOneProject(projectIDnumber).getDateCreationString());
+            text.append("\nУказанная вами дата должна быть равна или позже даты создания проекта");
+            alert.setContentText(text.toString());
+            alert.showAndWait();
+        }
         else {
             AllData.addWorkTime(projectIDnumber, datePicker.getValue(), AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber(), time);
             AllData.tableProjectsManagerController.initialize();

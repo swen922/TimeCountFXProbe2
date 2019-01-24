@@ -56,6 +56,9 @@ public class EditProjectWindowController {
     private boolean isChanged = false;
     private Map<Node, String> textAreas = new HashMap<>();
 
+    private final String exportToTXT = "в Текст";
+    private final String exportToCSV = "в CSV";
+
 
     @FXML
     private AnchorPane topColoredPane;
@@ -63,8 +66,8 @@ public class EditProjectWindowController {
     @FXML
     private Label idNumberLabel;
 
-    /*@FXML
-    private TextArea projectNameTextArea;*/
+    @FXML
+    private Label dateCreationLabel;
 
     @FXML
     private Button openFolderButton;
@@ -152,6 +155,8 @@ public class EditProjectWindowController {
 
         // id-номер проекта
         idNumberLabel.setText(String.valueOf(myProject.getIdNumber()));
+
+        dateCreationLabel.setText(myProject.getDateCreationString());
 
         descriptionTextArea.setText(myProject.getDescription());
         textAreas.put(descriptionTextArea, descriptionTextArea.getText());
@@ -475,19 +480,19 @@ public class EditProjectWindowController {
 
     private void initSelectFormatChoiceBox() {
         if (selectFormatChoiceBox.getItems().isEmpty()) {
-            selectFormatChoiceBox.getItems().add("в CSV");
-            selectFormatChoiceBox.getItems().add("в Текст");
-            selectFormatChoiceBox.setValue("в CSV");
+            selectFormatChoiceBox.getItems().add(exportToCSV);
+            selectFormatChoiceBox.getItems().add(exportToTXT);
+            selectFormatChoiceBox.setValue(exportToTXT);
 
         }
     }
 
     public void handleExport() {
 
-        if (selectFormatChoiceBox.getValue().equalsIgnoreCase("в CSV")) {
+        if (selectFormatChoiceBox.getValue().equalsIgnoreCase(exportToCSV)) {
             writeCSV();
         }
-        else if (selectFormatChoiceBox.getValue().equalsIgnoreCase("в Текст")) {
+        else if (selectFormatChoiceBox.getValue().equalsIgnoreCase(exportToTXT)) {
             writeText();
         }
     }

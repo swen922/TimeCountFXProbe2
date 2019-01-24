@@ -15,31 +15,37 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.EditProjectWindowController">
    <children>
-      <AnchorPane fx:id="topColoredPane" layoutX="138.0" layoutY="14.0" prefHeight="55.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="topColoredPane" layoutX="138.0" layoutY="14.0" prefHeight="65.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <AnchorPane prefHeight="55.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane prefHeight="65.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label fx:id="idNumberLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+                  <Label fx:id="idNumberLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="3.0">
                      <font>
-                        <Font name="System Bold" size="22.0" />
+                        <Font name="System Bold" size="20.0" />
                      </font>
                   </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" text="Создано:" textAlignment="CENTER" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="dateCreationLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" text="дата" textAlignment="CENTER" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
                </children>
             </AnchorPane>
             <CheckBox fx:id="archiveCheckBox" layoutX="696.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleArchiveCheckBox" text="Архивный" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></CheckBox>
-            <TextArea fx:id="descriptionTextArea" editable="false" layoutX="207.0" layoutY="-75.0" onKeyTyped="#listenChanges" prefHeight="40.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="5.0" />
-            <Button fx:id="openFolderButton" alignment="CENTER" contentDisplay="CENTER" layoutX="562.0" layoutY="15.0" mnemonicParsing="false" onAction="#initOpenFolderButton" prefHeight="40.0" prefWidth="70.0" text="Открыть папку" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="5.0">
+            <TextArea fx:id="descriptionTextArea" editable="false" layoutX="207.0" layoutY="-75.0" onKeyTyped="#listenChanges" prefHeight="50.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="5.0" />
+            <Button fx:id="openFolderButton" alignment="CENTER" contentDisplay="CENTER" layoutX="562.0" layoutY="15.0" mnemonicParsing="false" onAction="#initOpenFolderButton" prefHeight="40.0" prefWidth="70.0" text="Открыть папку" textAlignment="CENTER" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="10.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Button>
          </children>
       </AnchorPane>
-      <Separator prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0" />
-      <AnchorPane layoutX="98.0" layoutY="100.0" prefHeight="190.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+      <Separator prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0" />
+      <AnchorPane layoutX="98.0" layoutY="100.0" prefHeight="190.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
          <children>
             <Label text="Компания" AnchorPane.leftAnchor="32.0" AnchorPane.topAnchor="17.0">
                <font>
@@ -89,8 +95,8 @@
             </TextField>
          </children>
       </AnchorPane>
-      <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="260.0" />
-      <AnchorPane layoutX="200.0" layoutY="337.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="265.0">
+      <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="270.0" />
+      <AnchorPane layoutX="200.0" layoutY="337.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="275.0">
          <children>
             <Button fx:id="addWorkDayButton" layoutX="21.0" layoutY="1.0" mnemonicParsing="false" onAction="#handleAddWorkDayButton" prefHeight="15.0" text="Добавить рабочий день" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="4.0">
                <font>

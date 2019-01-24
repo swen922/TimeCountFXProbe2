@@ -61,7 +61,10 @@ public class StaffWindowController {
     private Map<Integer, Number> sumMap = new HashMap<>();
     private Map<Integer, Map<Integer, Number>> allValuesMaps = new HashMap<>();
 
+    private final String exportToTXT = "в Текст";
+    private final String exportToCSV = "в CSV";
     private String logString = "";
+
 
 
 
@@ -147,14 +150,14 @@ public class StaffWindowController {
 
     private void initExportChoiceBox() {
         if (exportChoiceBox.getItems().isEmpty()) {
-            exportChoiceBox.getItems().add("Время в TXT");
-            exportChoiceBox.getItems().add("Таблицу в CSV");
-            exportChoiceBox.setValue("Время в TXT");
+            exportChoiceBox.getItems().add(exportToTXT);
+            exportChoiceBox.getItems().add(exportToCSV);
+            exportChoiceBox.setValue(exportToTXT);
         }
     }
 
     public void handleExportButton() {
-        if (exportChoiceBox.getValue().equals("Время в TXT")) {
+        if (exportChoiceBox.getValue().equals(exportToTXT)) {
             writeText();
         }
         else {

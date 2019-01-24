@@ -197,7 +197,7 @@ public class Generator {
 
         for (int i = 251; i >=1; i--) {
             String descr = "project-" + i;
-            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
+            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
             project.setBudget((int) (Math.random() * 90000));
             if (i == 5) {
                 project.setPONumber("PO 2345676");
@@ -206,7 +206,6 @@ public class Generator {
                 project.setPONumber("PO 8798755");
             }
             AllData.addNewProject(project);
-
         }
 
         int minusDays = 0;

@@ -825,7 +825,9 @@ public class TableProjectsManagerController {
     }
 
     public void handleStatisticButton() {
-        if (AllData.statisticManagerStage == null) {
+        AllData.mainApp.showStatisticManagerWindow();
+
+        /*if (AllData.statisticManagerStage == null) {
             AllData.mainApp.showStatisticManagerWindow();
         }
         else {
@@ -836,7 +838,7 @@ public class TableProjectsManagerController {
             int y = today.getYear();
             int m = today.getMonthValue();
             AllData.statisticManagerWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
-        }
+        }*/
     }
 
     public void handleAbout() {

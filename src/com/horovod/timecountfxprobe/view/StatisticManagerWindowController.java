@@ -27,7 +27,7 @@ import java.util.*;
 
 public class StatisticManagerWindowController {
 
-    private ObservableList<String> users;
+    private ObservableList<String> users = FXCollections.observableArrayList();
     private ObservableList<String> datesForBarChart;
     private ObservableList<XYChart.Data<String, Double>> workTimeForBarChart;
     private XYChart.Series<String, Double> seriesBars;
@@ -507,7 +507,7 @@ public class StatisticManagerWindowController {
                 }
 
                 if (allWorks.isEmpty()) {
-                    StringBuilder empty = new StringBuilder("В этот день ");
+                    StringBuilder empty = new StringBuilder("В этом проекте ");
                     if (userForProjectChoiceBox.getValue().equals(allUsers)) {
                         empty.append("ни у кого нет рабочего времени");
                     }

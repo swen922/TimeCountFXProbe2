@@ -153,7 +153,7 @@ public class CreateProjectWindowController {
 
     public void handleCreateButton() {
 
-        if (existingDescription.equalsIgnoreCase(descriptionTextArea.getText())) {
+        if (!existingDescription.isEmpty() && existingDescription.equalsIgnoreCase(descriptionTextArea.getText())) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Попытка создать копию проекта");
             alert.setHeaderText("Нельзя оставлять описание\nиз прежнего проекта без изменений");

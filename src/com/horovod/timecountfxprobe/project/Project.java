@@ -15,7 +15,6 @@ import java.util.*;
 public class Project {
 
     private int idNumber;
-    //private StringProperty idNumberProperty;
     private IntegerProperty idNumberProperty;
     private String company;
     private StringProperty companyProperty;
@@ -39,7 +38,6 @@ public class Project {
 
     public Project(String comp, String manager, String description) {
         this.idNumber = AllData.incrementIdNumberAndGet();
-        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);
@@ -54,7 +52,6 @@ public class Project {
 
     public Project(String comp, String manager, String description, LocalDate newDate) {
         this.idNumber = AllData.incrementIdNumberAndGet();
-        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);

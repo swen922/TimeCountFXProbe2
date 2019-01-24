@@ -317,6 +317,10 @@ public class AllData {
             return false;
         }
 
+        if (correctDate.compareTo(AllData.parseDate(AllData.getOneProject(projectIDnumber).getDateCreationString())) < 0) {
+            return false;
+        }
+
         if (isProjectExist(projectIDnumber) && (!isProjectArchive(projectIDnumber))) {
 
             Project project = getOneActiveProject(projectIDnumber);
@@ -1008,6 +1012,5 @@ public class AllData {
     }
 
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MM", Locale.getDefault());
-
 
 }
