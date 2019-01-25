@@ -80,6 +80,9 @@ public class AllData {
     public static StaffWindowController staffWindowController;
     public static Stage countSalaryWindow;
     public static CountSalaryWindowController countSalaryWindowController;
+    public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
+    public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
+
 
     private static volatile double limitTimeForStaffWindow = 6;
     private static volatile int limitMoneyForStaffWindow = 6000;
@@ -659,6 +662,9 @@ public class AllData {
             }
             else if (!projectIsArchive) {
                 activeProjects.put(changedProject, chProject);
+            }
+            if (editProjectWindowControllers.containsKey(changedProject)) {
+                editProjectWindowControllers.get(changedProject).initializeArchiveCheckBox();
             }
         }
     }

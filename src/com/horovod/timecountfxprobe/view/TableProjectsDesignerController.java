@@ -8,6 +8,7 @@ import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -20,22 +21,31 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
+import java.awt.*;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
@@ -111,6 +121,9 @@ public class TableProjectsDesignerController {
     private TableView<Map.Entry<Integer, Project>> projectsTable;
 
     @FXML
+    private TableColumn<Map.Entry<Integer, Project>, Boolean> columnAction;
+
+    @FXML
     private TableColumn<Map.Entry<Integer, Project>, Integer> columnID;
 
     @FXML
@@ -161,6 +174,34 @@ public class TableProjectsDesignerController {
         handleFilters();
 
         sortTableProjects();
+
+        initializeTable();
+
+        dayWorkSumLabel.textProperty().bind(AllData.designerDayWorkSumProperty().asString());
+        ratingPositionLabel.textProperty().bind(AllData.designerRatingPositionProperty().asString());
+        AllData.rebuildDesignerRatingPosition();
+
+        initializeChart();
+        initLoggedUsersChoiceBox();
+
+    }
+
+    public void initializeTable() {
+
+        columnAction.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Boolean>, ObservableValue<Boolean>>() {
+            @Override
+            public ObservableValue<Boolean> call(TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Boolean> param) {
+                ObservableValue<Boolean> result = new SimpleBooleanProperty(param.getValue().getValue().isArchive());
+                return result;
+            }
+        });
+
+        columnAction.setCellFactory(new Callback<TableColumn<Map.Entry<Integer, Project>, Boolean>, TableCell<Map.Entry<Integer, Project>, Boolean>>() {
+            @Override
+            public TableCell<Map.Entry<Integer, Project>, Boolean> call(TableColumn<Map.Entry<Integer, Project>, Boolean> param) {
+                return new DesignerCell();
+            }
+        });
 
         columnID.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Integer>, ObservableValue<Integer>>() {
             @Override
@@ -280,13 +321,6 @@ public class TableProjectsDesignerController {
 
         projectsTable.setItems(sortedList);
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
-
-        dayWorkSumLabel.textProperty().bind(AllData.designerDayWorkSumProperty().asString());
-        ratingPositionLabel.textProperty().bind(AllData.designerRatingPositionProperty().asString());
-        AllData.rebuildDesignerRatingPosition();
-
-        initializeChart();
-        initLoggedUsersChoiceBox();
 
     }
 
@@ -733,5 +767,123 @@ public class TableProjectsDesignerController {
         Platform.exit();
         System.exit(0);
     }
+
+
+
+    private synchronized void initClosing() {
+
+        if (AllData.primaryStage != null) {
+
+            AllData.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+
+                    /*AllData.rebuildEditProjectsControllers();
+
+                    for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
+                        ec.handleCloseButton();
+                    }
+
+                    if (!AllData.editProjectWindowControllers.isEmpty()) {
+                        event.consume();
+                    }*/
+                    else {
+                        Platform.exit();
+                        System.exit(0);
+                    }
+
+                }
+            });
+        }
+    }
+
+
+
+    class DesignerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
+
+        private final Button openFolderButton = new Button("Туда");
+        private final Button infoButton = new Button("Инфо");
+        String startPath = "/Volumes/design/";
+
+        @Override
+        protected void updateItem(Boolean item, boolean empty) {
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+
+                Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
+
+                openFolderButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+
+                        String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
+                        String path = startPath + entry.getValue().getCompany() + "/" + projectName;
+
+                        if (entry.getValue().getFolderPath() != null) {
+
+                            try {
+                                Desktop.getDesktop().browseFileDirectory(new File(entry.getValue().getFolderPath()));
+                            } catch (Exception e) {
+                                try {
+                                    browsDir(path);
+                                } catch (Exception e1) {
+                                    showAlertOpenFolder(entry.getKey());
+                                }
+                            }
+                        }
+                        else {
+                            try {
+                                browsDir(path);
+                            } catch (Exception e) {
+                                showAlertOpenFolder(entry.getKey());
+                            }
+                        }
+                    }
+                });
+
+                infoButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        //initClosing();
+                        //AllData.mainApp.showEditProjectWindow(entry.getKey());
+                        AllData.mainApp.showInfoProjectWindow(entry.getKey());
+                    }
+                });
+
+                HBox hbox = new HBox();
+                hbox.getChildren().addAll(openFolderButton, infoButton);
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(20);
+                setGraphic(hbox);
+            }
+        }
+
+
+
+        private void browsDir(String path) throws Exception {
+            Desktop.getDesktop().browseFileDirectory(new File(path));
+        }
+
+        private void showAlertOpenFolder(int projectID) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Не удалось открыть папку");
+            alert.setHeaderText("Не удалось открыть папку");
+            alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + projectID);
+            alert.showAndWait();
+        }
+
+        {
+            openFolderButton.setMinHeight(20);
+            openFolderButton.setMaxHeight(20);
+            openFolderButton.setStyle("-fx-font-size:10");
+
+            infoButton.setMinHeight(20);
+            infoButton.setMaxHeight(20);
+            infoButton.setStyle("-fx-font-size:10");
+        }
+
+    } // Конец класса DesignerCell
 
 }

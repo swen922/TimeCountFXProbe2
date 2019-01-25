@@ -107,7 +107,7 @@ public class MainApp extends Application {
         }
     }
 
-    public synchronized void showEditProjectWindow(int projectIDnumber) {
+    public void showEditProjectWindow(int projectIDnumber) {
         try {
             AllData.IDnumberForEdit = projectIDnumber;
             FXMLLoader loader = new FXMLLoader();
@@ -127,6 +127,30 @@ public class MainApp extends Application {
 
             editProjectStage.show();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showInfoProjectWindow(int projectIDnumber) {
+        try {
+            AllData.IDnumberForEdit = projectIDnumber;
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/InfoProjectWindow.fxml"));
+            AnchorPane infoWindow = (AnchorPane) loader.load();
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.NONE);
+            Scene scene = new Scene(infoWindow);
+            stage.setScene(scene);
+
+            InfoProjectWindowController controller = (InfoProjectWindowController) loader.getController();
+            controller.setMyStage(stage);
+
+            AllData.infoProjectWindowControllers.put(projectIDnumber, controller);
+            AllData.openInfoProjectStages.put(projectIDnumber, stage);
+
+            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -309,6 +333,7 @@ public class MainApp extends Application {
             loader.setLocation(MainApp.class.getResource("view/StatisticManagerWindow.fxml"));
             AnchorPane stManagerWindow = (AnchorPane) loader.load();
             Stage stManagerStage = new Stage();
+            stManagerStage.setTitle("Статистика");
             stManagerStage.initModality(Modality.NONE);
             Scene scene = new Scene(stManagerWindow);
             stManagerStage.setScene(scene);

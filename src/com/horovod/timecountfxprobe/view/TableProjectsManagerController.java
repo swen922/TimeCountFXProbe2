@@ -412,7 +412,6 @@ public class TableProjectsManagerController {
                         ec.handleCloseButton();
                     }
 
-
                     if (!AllData.editProjectWindowControllers.isEmpty()) {
                         event.consume();
                     }
@@ -1164,38 +1163,26 @@ public class TableProjectsManagerController {
                     @Override
                     public void handle(ActionEvent event) {
 
-                        String path;
+                        String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
+                        String path = startPath + entry.getValue().getCompany() + "/" + projectName;
+
                         if (entry.getValue().getFolderPath() != null) {
-                            path = entry.getValue().getFolderPath();
 
                             try {
-                                Desktop.getDesktop().browseFileDirectory(new File(path));
+                                Desktop.getDesktop().browseFileDirectory(new File(entry.getValue().getFolderPath()));
                             } catch (Exception e) {
-                                String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
-                                path = startPath + entry.getValue().getCompany() + "/" + projectName;
                                 try {
-                                    Desktop.getDesktop().browseFileDirectory(new File(path));
+                                    browsDir(path);
                                 } catch (Exception e1) {
-                                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                                    alert.setTitle("Не удалось открыть папку");
-                                    alert.setHeaderText("Не удалось открыть папку");
-                                    alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + entry.getKey());
-                                    alert.showAndWait();
+                                    showAlertOpenFolder(entry.getKey());
                                 }
                             }
-
                         }
                         else {
-                            String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
-                            path = startPath + entry.getValue().getCompany() + "/" + projectName;
                             try {
-                                Desktop.getDesktop().browseFileDirectory(new File(path));
-                            } catch (Exception e1) {
-                                Alert alert = new Alert(Alert.AlertType.WARNING);
-                                alert.setTitle("Не удалось открыть папку");
-                                alert.setHeaderText("Не удалось открыть папку");
-                                alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + entry.getKey());
-                                alert.showAndWait();
+                                browsDir(path);
+                            } catch (Exception e) {
+                                showAlertOpenFolder(entry.getKey());
                             }
                         }
                     }
@@ -1204,18 +1191,8 @@ public class TableProjectsManagerController {
                 manageButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-
                         initClosing();
-
-                        if (!AllData.openEditProjectStages.containsKey(entry.getKey())) {
-                            AllData.mainApp.showEditProjectWindow(entry.getKey());
-
-                        }
-                        else {
-                            AllData.openEditProjectStages.get(entry.getKey()).close();
-                            AllData.openEditProjectStages.get(entry.getKey()).show();
-
-                        }
+                        AllData.mainApp.showEditProjectWindow(entry.getKey());
                     }
                 });
 
@@ -1310,7 +1287,19 @@ public class TableProjectsManagerController {
             deleteButton.setStyle("-fx-font-size:10");
         }
 
-    }
+        private void browsDir(String path) throws Exception {
+            Desktop.getDesktop().browseFileDirectory(new File(path));
+        }
+
+        private void showAlertOpenFolder(int projectID) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Не удалось открыть папку");
+            alert.setHeaderText("Не удалось открыть папку");
+            alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + projectID);
+            alert.showAndWait();
+        }
+
+    } // Конец класса ManagrtCell
 
 
     /*class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {

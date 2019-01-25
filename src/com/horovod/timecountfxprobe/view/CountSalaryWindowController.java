@@ -28,6 +28,8 @@ public class CountSalaryWindowController {
     private ObservableList<Node> usersCheckBoxes = FXCollections.observableArrayList();
     private Map<String, Integer> countedSalaries = new TreeMap<>();
 
+    private final String exportToTXT = "в Текст";
+    private final String exportToCSV = "в CSV";
 
 
     @FXML
@@ -212,14 +214,14 @@ public class CountSalaryWindowController {
 
     private void initExportChoiceBox() {
         if (exportChoiceBox.getItems().isEmpty()) {
-            exportChoiceBox.getItems().add("Время в TXT");
-            exportChoiceBox.getItems().add("Таблицу в CSV");
-            exportChoiceBox.setValue("Время в TXT");
+            exportChoiceBox.getItems().add(exportToTXT);
+            exportChoiceBox.getItems().add(exportToCSV);
+            exportChoiceBox.setValue(exportToTXT);
         }
     }
 
     public void handleExportButton() {
-        if (exportChoiceBox.getValue().equals("Время в TXT")) {
+        if (exportChoiceBox.getValue().equals(exportToTXT)) {
             writeText();
         }
         else {

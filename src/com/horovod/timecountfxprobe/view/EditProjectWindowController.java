@@ -136,11 +136,6 @@ public class EditProjectWindowController {
     @FXML
     private TableView<WorkDay> workTimeTableView;
 
-
-    public void setMyProject(Project myProject) {
-        this.myProject = myProject;
-    }
-
     public void setMyStage(Stage myStage) {
         this.myStage = myStage;
     }
@@ -300,6 +295,9 @@ public class EditProjectWindowController {
                     if (AllData.staffWindowController != null) {
                         AllData.staffWindowController.initializeTable();
                     }
+                    if (AllData.statisticManagerWindowController != null) {
+                        AllData.statisticManagerWindowController.handleButtonReloadBarChart();
+                    }
                     initializeTable();
                 }
             });
@@ -412,7 +410,7 @@ public class EditProjectWindowController {
 
 
 
-    private void initializeArchiveCheckBox() {
+    public void initializeArchiveCheckBox() {
         if (myProject.isArchive()) {
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
             openFolderButton.setDisable(true);
@@ -424,6 +422,7 @@ public class EditProjectWindowController {
             budgetTextField.setEditable(false);
             POnumberTextField.setEditable(false);
             pathToFolderTextField.setEditable(false);
+            addWorkDayButton.setDisable(true);
             //workTimeTableView.setEditable(false);
         }
         else {
@@ -437,6 +436,7 @@ public class EditProjectWindowController {
             budgetTextField.setEditable(true);
             POnumberTextField.setEditable(true);
             pathToFolderTextField.setEditable(true);
+            addWorkDayButton.setDisable(false);
             //workTimeTableView.setEditable(true);
         }
     }
@@ -534,7 +534,8 @@ public class EditProjectWindowController {
 
                 //sb.append("Описание: ").append(myProject.getDescription()).append("\n");
 
-                sb.append("\nСтатус: ").append(myProject.isArchive() ? "Архивный\n" : "Активный\n");
+                sb.append("\nСоздан: ").append(myProject.getDateCreationString()).append("\n");
+                sb.append("Статус: ").append(myProject.isArchive() ? "Архивный\n" : "Активный\n");
                 sb.append("Компания: ").append(myProject.getCompany()).append("\n");
                 sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
                 sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
@@ -662,7 +663,8 @@ public class EditProjectWindowController {
                     sb.append(s).append("\n");
                 }
 
-                sb.append("\nСтатус: ").append(myProject.isArchive() ? "Архивный\n" : "Активный\n");
+                sb.append("\nСоздан: ").append(myProject.getDateCreationString()).append("\n");
+                sb.append("Статус: ").append(myProject.isArchive() ? "Архивный\n" : "Активный\n");
                 sb.append("Компания: ").append(myProject.getCompany()).append("\n");
                 sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
                 sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
@@ -884,20 +886,29 @@ public class EditProjectWindowController {
 
     public void handleSaveAndCloseButton() {
         handleSaveButton();
+        if (AllData.openEditProjectStages.containsKey(myProject.getIdNumber())) {
+            AllData.openEditProjectStages.remove(myProject.getIdNumber());
+        }
+        if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
+            AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+
+        }
         myStage.close();
-        AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
-        AllData.openEditProjectStages.remove(myProject.getIdNumber());
     }
 
     public void handleCloseButton() {
 
         if (!isChanged) {
+            if (AllData.openEditProjectStages.containsKey(myProject.getIdNumber())) {
+                AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            }
+            if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
+                AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+
+            }
             myStage.close();
-            AllData.openEditProjectStages.remove(myProject.getIdNumber());
-            AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
         }
         else {
-            //mainApp.showSaveProjectChangesDialog(myStage, this, myProject.getIdNumber());
             handleAlerts();
         }
     }
@@ -922,8 +933,13 @@ public class EditProjectWindowController {
         }
         else if (option.get() == dontSaveButton) {
             handleRevertButton();
-            AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
-            AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            if (AllData.openEditProjectStages.containsKey(myProject.getIdNumber())) {
+                AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            }
+            if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
+                AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+
+            }
             alert.close();
             myStage.close();
         }

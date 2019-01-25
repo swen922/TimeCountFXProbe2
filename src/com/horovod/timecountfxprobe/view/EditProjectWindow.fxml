@@ -58,13 +58,13 @@
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextArea fx:id="managerTextArea" onKeyTyped="#listenChanges" prefHeight="40.0" prefWidth="300.0" wrapText="true" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0" />
+            <TextArea fx:id="managerTextArea" onKeyTyped="#listenChanges" prefHeight="40.0" prefWidth="300.0" wrapText="true" AnchorPane.leftAnchor="450.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="5.0" />
             <Label layoutX="26.0" layoutY="122.0" text="Комментарий" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="85.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextArea fx:id="commentTextArea" layoutX="63.0" layoutY="16.0" onKeyTyped="#listenChanges" prefHeight="85.0" promptText="Впишите любой комментарий по этому проекту, например где брать исходник. Комментарий будет виден всем дизайнерам и менеджерам." wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0" />
+            <TextArea fx:id="commentTextArea" layoutX="63.0" layoutY="16.0" onKeyTyped="#listenChanges" prefHeight="85.0" promptText="Впишите любой комментарий по этому проекту, например где брать исходник. Комментарий будет виден всем дизайнерам и менеджерам." wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
             <Label layoutX="20.0" layoutY="173.0" prefWidth="70.0" text="Связанные проекты" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="140.0">
                <font>
                   <Font size="11.0" />
@@ -82,13 +82,13 @@
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextField fx:id="POnumberTextField" layoutX="450.0" layoutY="160.0" onKeyTyped="#listenChanges" prefWidth="150.0" promptText="Внесите номер PO" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="140.0" />
+            <TextField fx:id="POnumberTextField" layoutX="450.0" layoutY="160.0" onKeyTyped="#listenChanges" prefWidth="155.0" promptText="Внесите номер PO" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0" />
             <Label layoutX="38.0" layoutY="194.0" text="Путь к папке" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="175.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextField fx:id="pathToFolderTextField" layoutX="100.0" layoutY="200.0" onKeyTyped="#listenChanges" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="170.0">
+            <TextField fx:id="pathToFolderTextField" layoutX="100.0" layoutY="200.0" onKeyTyped="#listenChanges" prefWidth="250.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="170.0">
                <font>
                   <Font size="10.0" />
                </font>

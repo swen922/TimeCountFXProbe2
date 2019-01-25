@@ -120,6 +120,9 @@ public class AddWorkDayDialogController {
             if (AllData.staffWindowController != null) {
                 AllData.staffWindowController.initializeTable();
             }
+            if (AllData.statisticManagerWindowController != null) {
+                AllData.statisticManagerWindowController.handleButtonReloadBarChart();
+            }
             myStage.close();
         }
     }
