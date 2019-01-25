@@ -786,11 +786,11 @@ public class TableProjectsDesignerController {
 
                     if (!AllData.editProjectWindowControllers.isEmpty()) {
                         event.consume();
-                    }*/
+                    }
                     else {
                         Platform.exit();
                         System.exit(0);
-                    }
+                    }*/
 
                 }
             });
