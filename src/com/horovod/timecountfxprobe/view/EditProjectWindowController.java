@@ -140,7 +140,6 @@ public class EditProjectWindowController {
         this.myStage = myStage;
     }
 
-
     @FXML
     private void initialize() {
 
@@ -369,43 +368,40 @@ public class EditProjectWindowController {
 
     public void initOpenFolderButton() {
         String startPath = "/Volumes/design/";
-        String path;
+        String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProject.getIdNumber();
+        String path = startPath + myProject.getCompany() + "/" + projectName;
+
         if (myProject.getFolderPath() != null) {
-            path = "/Volumes/" + myProject.getFolderPath();
 
             try {
-                Desktop.getDesktop().browseFileDirectory(new File(path));
+                browsDir(myProject.getFolderPath());
             } catch (Exception e) {
-                String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProject.getIdNumber();
-                path = startPath + myProject.getCompany() + "/" + projectName;
-
                 try {
-                    Desktop.getDesktop().browseFileDirectory(new File(path));
+                    browsDir(path);
                 } catch (Exception e1) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Не удалось открыть папку");
-                    alert.setHeaderText("Не удалось открыть папку");
-                    alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + myProject.getIdNumber());
-                    alert.showAndWait();
+                    showAlertOpenFolder(myProject.getIdNumber());
                 }
             }
-
         }
         else {
-            String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProject.getIdNumber();
-            path = startPath + myProject.getCompany() + "/" + projectName;
-
             try {
-                Desktop.getDesktop().browseFileDirectory(new File(path));
-            } catch (Exception e1) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Не удалось открыть папку");
-                alert.setHeaderText("Не удалось открыть папку");
-                alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + myProject.getIdNumber());
-                alert.showAndWait();
+                browsDir(path);
+            } catch (Exception e) {
+                showAlertOpenFolder(myProject.getIdNumber());
             }
         }
+    }
 
+    private void browsDir(String path) throws Exception {
+        Desktop.getDesktop().browseFileDirectory(new File(path));
+    }
+
+    private void showAlertOpenFolder(int projectID) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Не удалось открыть папку");
+        alert.setHeaderText("Не удалось открыть папку");
+        alert.setContentText("Не удалось найти и открыть\nпапку проекта id-" + projectID);
+        alert.showAndWait();
     }
 
 
@@ -886,14 +882,7 @@ public class EditProjectWindowController {
 
     public void handleSaveAndCloseButton() {
         handleSaveButton();
-        if (AllData.openEditProjectStages.containsKey(myProject.getIdNumber())) {
-            AllData.openEditProjectStages.remove(myProject.getIdNumber());
-        }
-        if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
-            AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
-
-        }
-        myStage.close();
+        handleCloseButton();
     }
 
     public void handleCloseButton() {

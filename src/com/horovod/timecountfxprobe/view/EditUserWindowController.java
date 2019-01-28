@@ -37,6 +37,7 @@ public class EditUserWindowController {
         this.myStage = myStage;
     }
 
+
     @FXML
     private Label todayWorkSumLabel;
 

@@ -825,19 +825,6 @@ public class TableProjectsManagerController {
 
     public void handleStatisticButton() {
         AllData.mainApp.showStatisticManagerWindow();
-
-        /*if (AllData.statisticManagerStage == null) {
-            AllData.mainApp.showStatisticManagerWindow();
-        }
-        else {
-            AllData.statisticManagerStage.hide();
-            AllData.statisticManagerStage.show();
-            AllData.statisticManagerWindowController.initialize();
-            LocalDate today = LocalDate.now();
-            int y = today.getYear();
-            int m = today.getMonthValue();
-            AllData.statisticManagerWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
-        }*/
     }
 
     public void handleAbout() {
@@ -1169,7 +1156,7 @@ public class TableProjectsManagerController {
                         if (entry.getValue().getFolderPath() != null) {
 
                             try {
-                                Desktop.getDesktop().browseFileDirectory(new File(entry.getValue().getFolderPath()));
+                                browsDir(entry.getValue().getFolderPath());
                             } catch (Exception e) {
                                 try {
                                     browsDir(path);
@@ -1300,25 +1287,6 @@ public class TableProjectsManagerController {
         }
 
     } // Конец класса ManagrtCell
-
-
-    /*class ArchiveRow extends TableRow<Map.Entry<Integer, Project>> {
-        @Override
-        protected void updateItem(Map.Entry<Integer, Project> item, boolean empty) {
-            if (item == null) {
-                //setStyle("-fx-background-color: transparent;");
-                setStyle(null);
-                return;
-            }
-            if (item.getValue().isArchive()) {
-                setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-            }
-            else {
-                //setStyle("-fx-background-color: transparent;");
-                setStyle(null);
-            }
-        }
-    }*/
 
 
 

@@ -320,7 +320,7 @@ public class AllData {
             return false;
         }
 
-        if (correctDate.compareTo(AllData.parseDate(AllData.getOneProject(projectIDnumber).getDateCreationString())) < 0) {
+        if (correctDate.compareTo(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString())) < 0) {
             return false;
         }
 
@@ -358,10 +358,6 @@ public class AllData {
 
 
 
-    public static int getDesignerRatingPosition() {
-        return designerRatingPosition.get();
-    }
-
     public static IntegerProperty designerRatingPositionProperty() {
         return designerRatingPosition;
     }
@@ -373,7 +369,7 @@ public class AllData {
 
         for (User u : AllUsers.getUsers().values()) {
             int sum = 0;
-            if(u.getRole().equals(Role.DESIGNER)) {
+            if (u.getRole().equals(Role.DESIGNER)) {
                 for (Project p : allProjects.values()) {
                     sum += p.getWorkSumForDesignerAndPeriod(u.getIDNumber(), LocalDate.now().minusDays(31), LocalDate.now().minusDays(1));
                 }
@@ -397,13 +393,6 @@ public class AllData {
     public static Project getOneActiveProject(int idActiveProject) {
         if (isProjectExist(idActiveProject)) {
             return activeProjects.get(idActiveProject);
-        }
-        return null;
-    }
-
-    public static Project getOneProject(int idProject) {
-        if (isProjectExist(idProject)) {
-            return allProjects.get(idProject);
         }
         return null;
     }

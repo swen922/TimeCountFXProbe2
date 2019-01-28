@@ -334,7 +334,15 @@ public class StatisticWindowController {
         selectedDayTextArea.clear();
 
         if (localDate != null) {
-            myProjects = AllData.getAllProjectsForDesignerAndDate(AllUsers.getCurrentUser(), localDate);
+
+            if (localDate.compareTo(LocalDate.now()) > 0) {
+                selectDayDatePicker.setValue(null);
+                selectedDayTextArea.setText("");
+                return;
+            }
+            else {
+                myProjects = AllData.getAllProjectsForDesignerAndDate(AllUsers.getCurrentUser(), localDate);
+            }
         }
         if (myProjects == null || myProjects.isEmpty()) {
             selectedDayTextArea.setText("В этот день у меня нет рабочего времени");

@@ -114,7 +114,7 @@ public class CreateProjectWindowController {
             }
             if (projectID != null) {
                 if (AllData.isProjectExist(projectID)) {
-                    Project existingProject = AllData.getOneProject(projectID);
+                    Project existingProject = AllData.getAnyProject(projectID);
                     companyTextField.setText(existingProject.getCompany());
                     managerTextArea.setText(existingProject.getManager());
                     descriptionTextArea.setText(existingProject.getDescription());

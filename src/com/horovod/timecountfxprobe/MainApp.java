@@ -149,6 +149,7 @@ public class MainApp extends Application {
 
             AllData.infoProjectWindowControllers.put(projectIDnumber, controller);
             AllData.openInfoProjectStages.put(projectIDnumber, stage);
+            AllData.infoProjectWindowControllers.get(projectIDnumber).initClosing();
 
             stage.show();
         } catch (IOException e) {

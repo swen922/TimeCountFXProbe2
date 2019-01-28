@@ -387,6 +387,13 @@ public class StatisticManagerWindowController {
         int selectedUserID = 0;
 
         if (localDate != null) {
+
+            if (localDate.compareTo(LocalDate.now()) > 0) {
+                selectDayDatePicker.setValue(null);
+                selectedDayTextArea.setText("");
+                return;
+            }
+
             if (userForDayChoiceBox.getValue().equalsIgnoreCase(allUsers)) {
                 myProjects = AllData.getAllProjectsForDate(localDate);
             }
@@ -499,11 +506,11 @@ public class StatisticManagerWindowController {
                 List<WorkTime> allWorks = new ArrayList<>();
 
                 if (userForProjectChoiceBox.getValue().equals(allUsers)) {
-                    allWorks.addAll(AllData.getOneProject(projectIDnumber).getWork());
+                    allWorks.addAll(AllData.getAnyProject(projectIDnumber).getWork());
                 }
                 else {
                     int designerID = AllUsers.getOneUserForFullName(userForProjectChoiceBox.getValue()).getIDNumber();
-                    allWorks.addAll(AllData.getOneProject(projectIDnumber).getWorkTimeForDesigner(designerID));
+                    allWorks.addAll(AllData.getAnyProject(projectIDnumber).getWorkTimeForDesigner(designerID));
                 }
 
                 if (allWorks.isEmpty()) {

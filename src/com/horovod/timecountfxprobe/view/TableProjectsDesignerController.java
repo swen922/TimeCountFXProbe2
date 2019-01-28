@@ -183,6 +183,7 @@ public class TableProjectsDesignerController {
 
         initializeChart();
         initLoggedUsersChoiceBox();
+        initClosing();
 
     }
 
@@ -764,8 +765,24 @@ public class TableProjectsDesignerController {
 
 
     public void handleExitButton() {
-        Platform.exit();
-        System.exit(0);
+        /*for (Stage infoStage : AllData.openInfoProjectStages.values()) {
+            infoStage.close();
+        }*/
+
+        for (InfoProjectWindowController iowController : AllData.infoProjectWindowControllers.values()) {
+            iowController.handleCloseButton();
+        }
+
+        if (AllData.openInfoProjectStages.isEmpty()) {
+            Platform.exit();
+            System.exit(0);
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Не удалось выйти из программы");
+            alert.setHeaderText("Ошибка выхода из программы.\nПопробуйте еще раз.");
+            alert.showAndWait();
+        }
     }
 
 
@@ -778,20 +795,18 @@ public class TableProjectsDesignerController {
                 @Override
                 public void handle(WindowEvent event) {
 
-                    /*AllData.rebuildEditProjectsControllers();
-
-                    for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
-                        ec.handleCloseButton();
-                    }
-
-                    if (!AllData.editProjectWindowControllers.isEmpty()) {
-                        event.consume();
-                    }
-                    else {
-                        Platform.exit();
-                        System.exit(0);
+                    /*for (Stage infoStage : AllData.openInfoProjectStages.values()) {
+                        infoStage.close();
                     }*/
 
+                    for (InfoProjectWindowController iowController : AllData.infoProjectWindowControllers.values()) {
+                        iowController.handleCloseButton();
+                    }
+
+                    if (AllData.openInfoProjectStages.isEmpty()) {
+                        Platform.exit();
+                        System.exit(0);
+                    }
                 }
             });
         }
@@ -824,7 +839,7 @@ public class TableProjectsDesignerController {
                         if (entry.getValue().getFolderPath() != null) {
 
                             try {
-                                Desktop.getDesktop().browseFileDirectory(new File(entry.getValue().getFolderPath()));
+                                browsDir(entry.getValue().getFolderPath());
                             } catch (Exception e) {
                                 try {
                                     browsDir(path);
@@ -855,11 +870,10 @@ public class TableProjectsDesignerController {
                 HBox hbox = new HBox();
                 hbox.getChildren().addAll(openFolderButton, infoButton);
                 hbox.setAlignment(Pos.CENTER);
-                hbox.setSpacing(20);
+                hbox.setSpacing(10);
                 setGraphic(hbox);
             }
         }
-
 
 
         private void browsDir(String path) throws Exception {
