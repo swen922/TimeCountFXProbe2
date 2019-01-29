@@ -1,5 +1,6 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.horovod.timecountfxprobe.exceptions.WrongArgumentException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -116,6 +117,9 @@ public class AllUsers {
     }
 
     public static User getOneUser(String userNameLogin) {
+        if (userNameLogin == null || userNameLogin.isEmpty()) {
+            return null;
+        }
         if (isNameLoginExist(userNameLogin)) {
             for (User u : users.values()) {
                 if (u.getNameLogin().equals(userNameLogin)) {
@@ -174,6 +178,19 @@ public class AllUsers {
     /** @return null !!!
      * */
     public static synchronized User createUser(String login, String password, Role role) {
+
+        if (login == null || login.isEmpty()) {
+            return null;
+        }
+
+        if (password == null || password.isEmpty()) {
+            return null;
+        }
+
+        if (role == null || role.equals("")) {
+            return null;
+        }
+
         User result = null;
         if (!isNameLoginExist(login)) {
             if (role.equals(Role.DESIGNER)) {
@@ -236,14 +253,11 @@ public class AllUsers {
     }
 
     public static boolean isNameLoginExist(String nameLog) {
-        if (nameLog == null || nameLog.isEmpty()) {
-            return true;
-        }
 
         Collection<User> tmpUsers = users.values();
 
         for (User u : tmpUsers) {
-            if (nameLog.equals(u.getNameLogin())) {
+            if (nameLog.equalsIgnoreCase(u.getNameLogin())) {
                 return true;
             }
         }

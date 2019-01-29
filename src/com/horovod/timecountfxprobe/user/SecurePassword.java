@@ -1,5 +1,9 @@
 package com.horovod.timecountfxprobe.user;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "securepassword")
 public class SecurePassword {
 
     private String securePass;
@@ -22,6 +26,7 @@ public class SecurePassword {
         return result;
     }
 
+    @XmlElement(name = "securepassstring")
     public String getSecurePass() {
         return securePass;
     }
@@ -30,6 +35,7 @@ public class SecurePassword {
         this.securePass = newSecurePass;
     }
 
+    @XmlElement(name = "securesaltstring")
     public String getSalt() {
         return salt;
     }

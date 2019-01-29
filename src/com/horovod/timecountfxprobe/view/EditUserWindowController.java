@@ -131,6 +131,8 @@ public class EditUserWindowController {
         initRoleLabel();
         initSaveButtons();
 
+        System.out.println("inside EditUserWindow" + AllUsers.getOneUser(userID).getFullName());
+
     }
 
     private void initWorkSum() {

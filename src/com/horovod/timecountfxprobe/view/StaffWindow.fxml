@@ -130,7 +130,7 @@
                   <Insets left="10.0" />
                </HBox.margin>
             </VBox>
-            <VBox alignment="CENTER_LEFT" prefWidth="120.0">
+            <VBox alignment="CENTER" prefWidth="100.0">
                <children>
                   <Button fx:id="countSalary" mnemonicParsing="false" onAction="#handleCountSalaryButton" prefHeight="40.0" prefWidth="90.0" text="Рассчитать зарплату" textAlignment="CENTER" wrapText="true">
                      <font>
@@ -138,11 +138,8 @@
                      </font>
                   </Button>
                </children>
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
             </VBox>
-            <VBox alignment="CENTER_LEFT" prefWidth="120.0">
+            <VBox alignment="CENTER" prefWidth="100.0">
                <children>
                   <Button fx:id="reloadButton" mnemonicParsing="false" onAction="#initializeTable" prefHeight="40.0" prefWidth="80.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
                      <font>
@@ -150,9 +147,15 @@
                      </font>
                   </Button>
                </children>
-               <padding>
-                  <Insets left="20.0" />
-               </padding>
+            </VBox>
+            <VBox alignment="CENTER" prefWidth="100.0">
+               <children>
+                  <Button fx:id="createUser" mnemonicParsing="false" onAction="#handleCreateUserButton" prefHeight="40.0" prefWidth="80.0" text="Создать юзера" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Button>
+               </children>
             </VBox>
          </children>
       </HBox>

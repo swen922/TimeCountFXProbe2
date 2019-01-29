@@ -105,6 +105,9 @@ public class StaffWindowController {
     private Button reloadButton;
 
     @FXML
+    private Button createUser;
+
+    @FXML
     private TableView tableUsers;
 
     @FXML
@@ -172,6 +175,11 @@ public class StaffWindowController {
         else {
             AllData.countSalaryWindow.show();
         }
+    }
+
+
+    public void handleCreateUserButton() {
+        AllData.mainApp.showCreateUserWindow();
     }
 
 

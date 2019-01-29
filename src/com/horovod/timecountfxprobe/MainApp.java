@@ -223,10 +223,33 @@ public class MainApp extends Application {
             EditUserWindowController controller = loader.getController();
             controller.setMyStage(editUserStage);
 
-            editUserStage.showAndWait();
+            editUserStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showCreateUserWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/CreateUserWindow.fxml"));
+            AnchorPane createUser = (AnchorPane) loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Создать нового пользователя");
+            stage.initOwner(AllData.staffWindowStage);
+            stage.initModality(Modality.WINDOW_MODAL);
+            Scene scene = new Scene(createUser);
+            stage.setScene(scene);
+
+            CreateUserWindowController controller = loader.getController();
+            controller.setMyStage(stage);
+
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void showCountSalaryWindow() {
