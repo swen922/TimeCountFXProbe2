@@ -15,7 +15,7 @@ import javafx.util.StringConverter;
 
 public class CreateUserWindowController {
     private Stage myStage;
-
+    String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz@.-_";
 
     @FXML
     private TextField loginTextField;
@@ -77,25 +77,78 @@ public class CreateUserWindowController {
 
     public void handleCreateUserButton() {
 
-        if (!isTextEmpty()) {
-            String login = loginTextField.getText();
-            String pass = passTextField.getText();
+        if (isTextEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Заполните поля логина и пароля");
+            alert.setHeaderText("Поля логина и пароля должны быть заполнены");
+            alert.showAndWait();
+            return;
+        }
+        else {
+            String login = loginTextField.getText().trim();
+            loginTextField.setText(login);
+            String pass = passTextField.getText().trim();
+            passTextField.setText(pass);
             Role role = roleChoiceBox.getValue();
 
-            if (AllUsers.isNameLoginExist(login)) {
+
+
+            if (login.length() < 1 || hasOtherSymbols(login)) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Логин недопустим");
-                alert.setHeaderText("Такой логин уже существует\nВведите другой логин.");
+                alert.setTitle("Неправильный логин");
+                StringBuilder sb = new StringBuilder("Указанный вами логин не соответствует\n");
+                sb.append("правилам создания логинов.\n");
+                sb.append("Логин должен состоять не менее, чем из 1 символа\n");
+                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
+                sb.append("Укажите другой логин, состоящий только\nиз латинских букв, цифр, дефисов, подчеркиваний");
+
+                alert.setHeaderText(sb.toString());
+
                 alert.showAndWait();
                 return;
             }
 
-            User user = AllUsers.createUser(login, pass, role);
 
-            System.out.println(user.getNameLogin());
-            System.out.println(user.getIDNumber());
-            System.out.println(user.getRole());
-            System.out.println(user.getFullName());
+            if (AllUsers.isNameLoginExist(login)) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Логин недопустим");
+                alert.setHeaderText("Такой логин уже существует.\nВведите другой логин!");
+                alert.showAndWait();
+                return;
+            }
+
+            if (pass.length() < 12 || hasOtherSymbols(pass)) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Неправильный пароль");
+                alert.setHeaderText("Указанный вами пароль не соответствует\nправилам создания паролей.");
+
+                StringBuilder sb = new StringBuilder("Пароль должен состоять не менее, чем из 12 символов\n");
+                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
+                sb.append("Укажите другой пароль, состоящий только из латинских букв и цифр.");
+
+                alert.setContentText(sb.toString());
+
+                alert.showAndWait();
+                return;
+            }
+
+            if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
+                String fullName = fullNameTextField.getText().trim();
+                if (AllUsers.isFullNameExist(fullName)) {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Дублирующееся имя");
+                    StringBuilder sb = new StringBuilder("Указанное вами имя\n");
+                    sb.append(fullName).append("\nсовпадает с именем другого пользователя.\n");
+                    sb.append("Укажите другое имя!");
+
+                    alert.setHeaderText(sb.toString());
+
+                    alert.showAndWait();
+                    return;
+                }
+            }
+
+            User user = AllUsers.createUser(login, pass, role);
 
             if (user == null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -105,13 +158,14 @@ public class CreateUserWindowController {
                 return;
             }
 
-            if (fullNameTextField.getText() != null || !fullNameTextField.getText().isEmpty()) {
+            if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
                 user.setFullName(fullNameTextField.getText());
             }
 
             AllData.staffWindowController.initializeTable();
             myStage.close();
         }
+
     }
 
     private boolean isTextEmpty() {
@@ -122,6 +176,31 @@ public class CreateUserWindowController {
             return true;
         }
         return false;
+    }
+
+    private boolean hasOtherSymbols(String input) {
+        boolean result = false;
+        char[] newLoginArray = input.toLowerCase().toCharArray();
+        for (Character ch : newLoginArray) {
+            if (!latinForPass.contains(ch.toString())) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
+
+    public void handleClearLoginButton() {
+        loginTextField.clear();
+    }
+
+    public void handleClearPassButton() {
+        loginTextField.clear();
+    }
+
+    public void handleClearFullNameButton() {
+        loginTextField.clear();
     }
 
 }

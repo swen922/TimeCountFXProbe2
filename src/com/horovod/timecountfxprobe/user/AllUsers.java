@@ -74,34 +74,26 @@ public class AllUsers {
     }
 
 
-    public static synchronized void addLoggedUserByIDnumber(int newLoggedUser) {
-        if (!usersLogged.contains(AllUsers.getOneUser(newLoggedUser).getFullName())) {
-            AllUsers.usersLogged.add(AllUsers.getOneUser(newLoggedUser).getFullName());
-        }
-    }
-
-    public static synchronized void addLoggedUser(String newLoggedUser) {
+    public static synchronized boolean addLoggedUser(String newLoggedUser) {
         if (!usersLogged.contains(newLoggedUser)) {
             AllUsers.usersLogged.add(newLoggedUser);
+            return true;
         }
+        return false;
     }
 
-    public static synchronized void deleteLoggedUserbyIDnumber(int deletedUser) {
-        String oldFullName = AllUsers.getOneUser(deletedUser).getFullName();
-        if (usersLogged.contains(oldFullName)) {
-            AllUsers.usersLogged.remove(oldFullName);
-        }
-    }
 
-    public static synchronized void deleteLoggedUser(String deletedUser) {
+    public static synchronized boolean deleteLoggedUser(String deletedUser) {
         if (usersLogged.contains(deletedUser)) {
             AllUsers.usersLogged.remove(deletedUser);
+            return true;
         }
+        return false;
     }
 
 
-    public static boolean isUsersLoggedContainsUser(int loggedUser) {
-        return AllUsers.usersLogged.contains(AllUsers.getOneUser(loggedUser).getFullName());
+    public static boolean isUsersLoggedContainsUser(String fullName) {
+        return AllUsers.usersLogged.contains(fullName);
     }
 
 
@@ -155,6 +147,7 @@ public class AllUsers {
         for (User u : users.values()) {
             if (u.getRole().equals(Role.DESIGNER) && !u.isRetired()) {
                 result.put(u.getIDNumber(), u);
+
             }
         }
         return result;
@@ -177,7 +170,7 @@ public class AllUsers {
 
     /** @return null !!!
      * */
-    public static synchronized User createUser(String login, String password, Role role) {
+    public static User createUser(String login, String password, Role role) {
 
         if (login == null || login.isEmpty()) {
             return null;
@@ -198,7 +191,12 @@ public class AllUsers {
             }
             else if (role.equals(Role.MANAGER)) {
                 result = new Manager(login);
-
+            }
+            else if (role.equals(Role.ADMIN)) {
+                result = new Admin(login);
+            }
+            else if (role.equals(Role.SURVEYOR)) {
+                result = new Surveyor(login);
             }
 
             if (result == null) {
@@ -257,7 +255,20 @@ public class AllUsers {
         Collection<User> tmpUsers = users.values();
 
         for (User u : tmpUsers) {
-            if (nameLog.equalsIgnoreCase(u.getNameLogin())) {
+            if (u.getNameLogin().equalsIgnoreCase(nameLog)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isFullNameExist(String fName) {
+
+        Collection<User> tmpUsers = users.values();
+
+        for (User u : tmpUsers) {
+            if (u.getFullName().equalsIgnoreCase(fName)) {
                 return true;
             }
         }

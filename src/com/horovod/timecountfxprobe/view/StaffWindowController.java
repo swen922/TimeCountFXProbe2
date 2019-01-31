@@ -123,8 +123,6 @@ public class StaffWindowController {
     private Button closeButton;
 
 
-
-
     @FXML
     public void initialize() {
 
@@ -310,6 +308,7 @@ public class StaffWindowController {
 
 
     public void initializeTable() {
+
         if (userBaseList == null) {
             userBaseList = FXCollections.observableArrayList();
         }
@@ -364,8 +363,9 @@ public class StaffWindowController {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<UserBase, String> param) {
                 UserBase ub = param.getValue();
-                String name = AllUsers.getOneUser(ub.getUserID()).getFullName();
-                return new SimpleStringProperty(name);
+                String fullName = AllUsers.getOneUser(ub.getUserID()).getFullName();
+
+                return new SimpleStringProperty(fullName);
             }
         });
 

@@ -7,9 +7,9 @@ import java.util.Objects;
 @XmlRootElement(name = "designer")
 public class Designer implements User {
     private int IDNumber;
-    private String nameLogin;
+    private String nameLogin = "";
     private Role role = Role.DESIGNER;
-    private String fullName;
+    private String fullName = "";
     private String email;
     private int workHourValue = 0;
     private boolean isRetired = false;
@@ -38,7 +38,7 @@ public class Designer implements User {
         this.IDNumber = newIDNumber;
     }
 
-    @XmlElement(name = "desigernamelogin")
+    @XmlElement(name = "designernamelogin")
     public String getNameLogin() {
         return nameLogin;
     }
@@ -62,11 +62,12 @@ public class Designer implements User {
     }
 
     public void setFullName(String newFullName) {
+
         String oldFullName = this.fullName;
 
         this.fullName = newFullName;
 
-        if (AllUsers.isUsersLoggedContainsUser(this.IDNumber)) {
+        if (AllUsers.isUsersLoggedContainsUser(oldFullName)) {
             AllUsers.deleteLoggedUser(oldFullName);
             AllUsers.addLoggedUser(newFullName);
         }
@@ -114,12 +115,16 @@ public class Designer implements User {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(IDNumber, nameLogin, role);
     }
 
     @Override
     public String toString() {
-        return this.fullName;
+        return "Designer{" +
+                "IDNumber=" + IDNumber +
+                ", nameLogin='" + nameLogin + '\'' +
+                ", role=" + role +
+                ", fullName='" + fullName + '\'' +
+                '}' + "\n";
     }
 }

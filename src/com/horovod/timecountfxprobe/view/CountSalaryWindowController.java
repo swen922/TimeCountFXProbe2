@@ -258,6 +258,7 @@ public class CountSalaryWindowController {
     public void countSalary() {
         handleFromDatePicker();
         handleTillDatePicker();
+
         if (this.countedSalaries == null) {
             this.countedSalaries = new TreeMap<>();
         }

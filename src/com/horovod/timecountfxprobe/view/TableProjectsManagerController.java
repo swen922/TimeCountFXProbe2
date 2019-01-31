@@ -64,7 +64,6 @@ public class TableProjectsManagerController {
     private XYChart.Series<String, Integer> series;
 
 
-
     @FXML
     private TextField filterField;
 
@@ -537,6 +536,7 @@ public class TableProjectsManagerController {
                         User user = AllUsers.getOneUserForFullName(selectUser);
 
                         Role role = user.getRole();
+
                         if (role.equals(Role.DESIGNER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());

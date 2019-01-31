@@ -15,4 +15,5 @@ public interface User {
     void setWorkHourValue(int workHourValue);
     boolean isRetired();
     void setRetired(boolean retired);
+    String toString();
 }

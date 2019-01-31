@@ -7,24 +7,16 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="200.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CreateUserWindowController">
+<AnchorPane prefHeight="200.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CreateUserWindowController">
    <children>
-      <AnchorPane layoutX="-20.0" layoutY="-23.0" prefWidth="100.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <Label text="Логин" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0" />
-            <Label text="Пароль" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0" />
-            <Label text="Полное имя" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="95.0" />
-            <Label layoutX="10.0" layoutY="10.0" text="Роль" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="135.0" />
-         </children>
-      </AnchorPane>
-      <AnchorPane layoutX="160.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane layoutX="160.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <TextField fx:id="loginTextField" alignment="CENTER" promptText="Логин" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="10.0" />
-            <Button fx:id="clearLoginButton" mnemonicParsing="false" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Button fx:id="clearLoginButton" mnemonicParsing="false" onAction="#handleClearLoginButton" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
             <TextField fx:id="passTextField" alignment="CENTER" promptText="Пароль" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="50.0" />
-            <Button fx:id="clearPassButton" mnemonicParsing="false" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <Button fx:id="clearPassButton" mnemonicParsing="false" onAction="#handleClearPassButton" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
             <TextField fx:id="fullNameTextField" alignment="CENTER" promptText="Полное имя (необязательно)" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="90.0" />
-            <Button fx:id="clearFullNameButton" mnemonicParsing="false" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0" />
+            <Button fx:id="clearFullNameButton" mnemonicParsing="false" onAction="#handleClearFullNameButton" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0" />
             <ChoiceBox fx:id="roleChoiceBox" layoutX="62.0" layoutY="150.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="130.0" />
          </children>
       </AnchorPane>

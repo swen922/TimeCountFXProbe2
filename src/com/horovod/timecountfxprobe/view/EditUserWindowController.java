@@ -73,7 +73,7 @@ public class EditUserWindowController {
     private TextArea loginTextArea;
 
     @FXML
-    private PasswordField passwordField;
+    private TextField passwordField;
 
     @FXML
     private TextArea fullNameTextArea;
@@ -266,7 +266,8 @@ public class EditUserWindowController {
     }
 
     private void initRoleLabel() {
-        roleLabel.textProperty().bind(new SimpleStringProperty(AllUsers.getOneUser(userID).getRole().toString()));
+        //roleLabel.textProperty().bind(new SimpleStringProperty(AllUsers.getOneUser(userID).getRole().toString()));
+        roleLabel.setText(AllUsers.getOneUser(userID).getRole().getTextRole());
     }
 
     private void initHourPayTextField() {
@@ -326,26 +327,25 @@ public class EditUserWindowController {
                 return;
             }
 
-            for (User u : AllUsers.getUsers().values()) {
-                if (u.getNameLogin().equalsIgnoreCase(loginTextArea.getText().trim())) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Дублирующийся логин");
-                    StringBuilder sb = new StringBuilder("Указанный вами новый логин \"");
-                    sb.append(loginTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
-                    sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
-                    sb.append("совпадает с существующим логином пользователя id-").append(u.getIDNumber());
-                    sb.append("\n").append(u.getFullName()).append("\n");
-                    sb.append("Укажите другой логин!");
 
-                    alert.setHeaderText(sb.toString());
 
-                    alert.showAndWait();
-                    return;
-                }
+            if (AllUsers.isNameLoginExist(loginTextArea.getText().trim())) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Дублирующийся логин");
+                StringBuilder sb = new StringBuilder("Указанный вами новый логин \"");
+                sb.append(loginTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append("совпадает с логином другого пользователя\n");
+                sb.append("Укажите другой логин!");
+
+                alert.setHeaderText(sb.toString());
+
+                alert.showAndWait();
+                return;
             }
 
             boolean hasOtherSymbols = false;
-            char[] newLoginArray = loginTextArea.getText().trim().toCharArray();
+            char[] newLoginArray = loginTextArea.getText().trim().toLowerCase().toCharArray();
             for (Character ch : newLoginArray) {
                 if (!latinForPass.contains(ch.toString())) {
                     hasOtherSymbols = true;
@@ -386,16 +386,19 @@ public class EditUserWindowController {
             if (passwordField.getText().trim().length() < 12 || hasOtherSymbols) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Неправильный пароль");
-                StringBuilder sb = new StringBuilder("Указанный вами новый пароль\n");
-                sb.append("для пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
-                sb.append("не соответствует правилам создания паролей.\n");
-                sb.append("Пароль должен состоять не менее, чем из 12 символов\n");
+
+                StringBuilder header = new StringBuilder("Указанный вами пароль\nдля пользователя id-");
+                header.append(userID).append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                header.append("не соответствует правилам создания паролей!\n");
+
+                alert.setHeaderText(header.toString());
+
+                StringBuilder sb = new StringBuilder("Пароль должен состоять не менее, чем из 12 символов ");
                 sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
-                sb.append("Укажите другой пароль, состоящий только из латинских букв и цифр\n");
+                sb.append("Укажите другой пароль, состоящий только из латинских букв и цифр, ");
                 sb.append("либо очистите поле пароля, чтобы оставить пароль прежним.");
 
-                alert.setHeaderText(sb.toString());
+                alert.setContentText(sb.toString());
 
                 alert.showAndWait();
                 return;
@@ -425,22 +428,19 @@ public class EditUserWindowController {
                 return;
             }
 
-            for (User u : AllUsers.getUsers().values()) {
-                if (u.getFullName().equalsIgnoreCase(fullNameTextArea.getText())) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Дублирующееся имя");
-                    StringBuilder sb = new StringBuilder("Указанное вами новое имя \"");
-                    sb.append(fullNameTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
-                    sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
-                    sb.append("совпадает с существующим именем пользователя id-").append(u.getIDNumber());
-                    sb.append(" ").append(u.getFullName()).append("\n");
-                    sb.append("Укажите другое имя!");
+            if (AllUsers.isFullNameExist(fullNameTextArea.getText().trim())) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Дублирующееся имя");
+                StringBuilder sb = new StringBuilder("Указанное вами новое имя \"");
+                sb.append(fullNameTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
+                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append("совпадает с именем другого пользователя.\n");
+                sb.append("Укажите другое имя!");
 
-                    alert.setHeaderText(sb.toString());
+                alert.setHeaderText(sb.toString());
 
-                    alert.showAndWait();
-                    return;
-                }
+                alert.showAndWait();
+                return;
             }
 
             AllUsers.getOneUser(userID).setFullName(fullNameTextArea.getText());

@@ -1,35 +1,34 @@
 package com.horovod.timecountfxprobe.user;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
-@XmlRootElement(name = "manager")
-public class Manager implements User {
+public class Surveyor implements User {
+
     private int IDNumber;
     private String nameLogin;
-    private Role role = Role.MANAGER;
+    private Role role = Role.SURVEYOR;
     private String fullName;
     private String email;
     private int workHourValue = 0;
     private boolean isRetired = false;
 
-    public Manager(String nameLogin) {
+    public Surveyor(String nameLogin) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
     }
 
-    @XmlElement(name = "manageridnumber")
+    @XmlElement(name = "surveyoridnumber")
     public int getIDNumber() {
         return IDNumber;
     }
 
-    public void setIDNumber(int IDNumber) {
-        this.IDNumber = IDNumber;
+    public void setIDNumber(int newIDNumber) {
+        this.IDNumber = newIDNumber;
     }
 
-    @XmlElement(name = "managernamelogin")
+    @XmlElement(name = "surveyornamelogin")
     public String getNameLogin() {
         return nameLogin;
     }
@@ -38,7 +37,7 @@ public class Manager implements User {
         this.nameLogin = newNameLogin;
     }
 
-    @XmlElement(name = "managerrole")
+    @XmlElement(name = "surveyorrole")
     public Role getRole() {
         return role;
     }
@@ -47,7 +46,7 @@ public class Manager implements User {
         this.role = newrole;
     }
 
-    @XmlElement(name = "managerfullname")
+    @XmlElement(name = "surveyorfullname")
     public String getFullName() {
         return fullName;
     }
@@ -64,7 +63,7 @@ public class Manager implements User {
         }
     }
 
-    @XmlElement(name = "manageremail")
+    @XmlElement(name = "surveyoremail")
     public String getEmail() {
         return email;
     }
@@ -73,7 +72,7 @@ public class Manager implements User {
         this.email = newEmail;
     }
 
-    @XmlElement(name = "managerworkhourvalue")
+    @XmlElement(name = "surveyorworkhourvalue")
     public int getWorkHourValue() {
         return workHourValue;
     }
@@ -82,7 +81,7 @@ public class Manager implements User {
         this.workHourValue = workHourValue;
     }
 
-    @XmlElement(name = "managerisretired")
+    @XmlElement(name = "surveyorisretired")
     public boolean isRetired() {
         return isRetired;
     }
@@ -91,25 +90,30 @@ public class Manager implements User {
         isRetired = retired;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Manager manager = (Manager) o;
-        return IDNumber == manager.IDNumber &&
-                Objects.equals(nameLogin, manager.nameLogin) &&
-                role == manager.role;
+        Surveyor surveyor = (Surveyor) o;
+        return IDNumber == surveyor.IDNumber &&
+                Objects.equals(nameLogin, surveyor.nameLogin) &&
+                role == surveyor.role &&
+                Objects.equals(fullName, surveyor.fullName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(IDNumber, nameLogin, role);
+        return Objects.hash(IDNumber, nameLogin, role, fullName);
     }
 
     @Override
     public String toString() {
-        return this.fullName;
+        return "Surveyor{" +
+                "IDNumber=" + IDNumber +
+                ", nameLogin='" + nameLogin + '\'' +
+                ", role=" + role +
+                ", fullName='" + fullName + '\'' +
+                '}' + "\n";
     }
 }

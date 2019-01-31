@@ -150,12 +150,8 @@ public class Generator {
         AllUsers.createUser("man2", "pass", Role.MANAGER);
         AllUsers.getOneUser("man2").setFullName("Анисимов Сергей-админ");
 
-
-
-
-        AllUsers.addLoggedUserByIDnumber(2);
-        AllUsers.addLoggedUserByIDnumber(3);
-        //AllUsers.addLoggedUserByIDnumber(13);
+        AllUsers.addLoggedUser(AllUsers.getOneUser(2).getFullName());
+        AllUsers.addLoggedUser(AllUsers.getOneUser(3).getFullName());
     }
 
 

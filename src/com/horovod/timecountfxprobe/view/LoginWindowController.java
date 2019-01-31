@@ -95,25 +95,21 @@ public class LoginWindowController {
             }
             else {
                 AllUsers.setCurrentUser(user.getIDNumber());
-                if (!AllUsers.isUsersLoggedContainsUser(user.getIDNumber())) {
-                    AllUsers.addLoggedUserByIDnumber(user.getIDNumber());
+                String fullName = user.getFullName();
+
+                if (!AllUsers.isUsersLoggedContainsUser(fullName)) {
+                    AllUsers.addLoggedUser(fullName);
                 }
 
                 Role role = user.getRole();
                 if (role.equals(Role.DESIGNER)) {
                     this.stage.close();
-                    /** TODO убрать эту строчку в рабочем варианте */
-                    //Generator.generateProjects();
                     AllData.mainApp.showTableProjectsDesigner();
                 }
                 else if (role.equals(Role.MANAGER)) {
                     this.stage.close();
-                    // TODO аписать класс таблицы для менеджера
-                    //this.mainApp.showTableProjectsDesigner();
                     AllData.mainApp.showTableProjectsManager();
                 }
-
-                break;
             }
         }
     }
