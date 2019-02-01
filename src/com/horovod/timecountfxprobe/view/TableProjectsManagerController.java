@@ -526,13 +526,18 @@ public class TableProjectsManagerController {
 
                 String selectUser = usersLoggedChoiceBox.getValue();
 
-                if (selectUser != null) {
+                if (selectUser != null && !selectUser.isEmpty()) {
                     if (selectUser.equalsIgnoreCase(toLoginWindow)) {
+
+                        closeAllWindows();
 
                         AllData.rootLayout.setCenter(null);
                         AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
+
+                        closeAllWindows();
+
                         User user = AllUsers.getOneUserForFullName(selectUser);
 
                         Role role = user.getRole();
@@ -541,25 +546,51 @@ public class TableProjectsManagerController {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
                             AllData.mainApp.showTableProjectsDesigner();
-
-                            /*if (AllData.statisticStage != null) {
-                                AllData.statisticStage.close();
-                            }*/
                         }
                         else if (role.equals(Role.MANAGER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            //initialize();
                             AllData.mainApp.showTableProjectsManager();
-
-                            /*if (AllData.statisticManagerStage != null) {
-                                AllData.statisticManagerStage.close();
-                            }*/
+                        }
+                        else if (role.equals(Role.ADMIN)) {
+                            AllData.rootLayout.setCenter(null);
+                            AllUsers.setCurrentUser(user.getIDNumber());
+                            AllData.mainApp.showAdminWindow();
                         }
                     }
                 }
             }
         });
+    }
+
+    private void closeAllWindows() {
+        if (AllData.statisticManagerStage != null && AllData.statisticManagerStage.isShowing()) {
+            AllData.statisticManagerStage.close();
+        }
+
+        if (AllData.createUserWindow != null && AllData.createUserWindow.isShowing()) {
+            AllData.createUserWindowController.handleCancelButton();
+            AllData.staffWindowController.handleCloseButton();
+        }
+        if (AllData.staffWindowStage != null && AllData.staffWindowStage.isShowing()) {
+            AllData.staffWindowStage.close();
+        }
+        if (AllData.countSalaryWindow != null && AllData.countSalaryWindow.isShowing()) {
+            AllData.countSalaryWindow.close();
+        }
+
+        if (AllData.countSalaryWindow != null && AllData.countSalaryWindow.isShowing()) {
+            AllData.countSalaryWindowController.handleCloseButton();
+        }
+        if (AllData.createProjectWindow != null && AllData.createProjectWindow.isShowing()) {
+            AllData.createProjectWindowController.handleCancelButton();
+        }
+        if (!AllData.editProjectWindowControllers.isEmpty()) {
+            for (EditProjectWindowController controller : AllData.editProjectWindowControllers.values()) {
+                controller.handleRevertButton();
+                controller.handleCloseButton();
+            }
+        }
     }
 
 

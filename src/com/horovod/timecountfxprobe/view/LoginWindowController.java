@@ -110,16 +110,27 @@ public class LoginWindowController {
                     this.stage.close();
                     AllData.mainApp.showTableProjectsManager();
                 }
+                else if (role.equals(Role.ADMIN)) {
+                    this.stage.close();
+                    AllData.mainApp.showAdminWindow();
+                }
+                break;
             }
         }
     }
 
     public void handleCancel() {
-        //this.mainApp.closeApp();
         this.stage.close();
-        AllData.mainApp.showTableProjectsDesigner();
-        //AllData.getRootLayout().setCenter(AllData.getTableDesigner());
-        //AllData.getTableProjectsDesignerController().initLoggedUsersChoiceBox();
+        User us = AllUsers.getOneUser(AllUsers.getCurrentUser());
+        if (us.getRole().equals(Role.DESIGNER)) {
+            AllData.mainApp.showTableProjectsDesigner();
+        }
+        else if (us.getRole().equals(Role.MANAGER)) {
+            AllData.mainApp.showTableProjectsManager();
+        }
+        else if (us.getRole().equals(Role.ADMIN)) {
+            AllData.mainApp.showAdminWindow();
+        }
     }
 
 }

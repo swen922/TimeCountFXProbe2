@@ -118,7 +118,14 @@ public class LoginWindowOnStartController {
                     this.stage.close();
                     this.mainApp.showTableProjectsManager();
                 }
-
+                else if (role.equals(Role.ADMIN)) {
+                    this.stage.close();
+                    try {
+                        AllData.mainApp.showAdminWindow();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             }
         }

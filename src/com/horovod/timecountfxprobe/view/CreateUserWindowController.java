@@ -72,7 +72,7 @@ public class CreateUserWindowController {
     }
 
     public void handleCancelButton() {
-        myStage.close();
+        AllData.createUserWindow.close();
     }
 
     public void handleCreateUserButton() {

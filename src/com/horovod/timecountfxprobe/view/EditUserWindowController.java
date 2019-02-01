@@ -443,8 +443,14 @@ public class EditUserWindowController {
                 return;
             }
 
-            AllUsers.getOneUser(userID).setFullName(fullNameTextArea.getText());
+            if (AllUsers.isUsersLoggedContainsUser(AllUsers.getOneUser(userID).getFullName())) {
+                AllUsers.deleteLoggedUser(AllUsers.getOneUser(userID).getFullName());
+                AllUsers.addLoggedUser(fullNameTextArea.getText().trim());
+            }
+            AllUsers.getOneUser(userID).setFullName(fullNameTextArea.getText().trim());
             textAreas.put(fullNameTextArea, fullNameTextArea.getText());
+
+
         }
 
 

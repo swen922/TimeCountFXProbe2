@@ -149,6 +149,8 @@ public class Generator {
         AllUsers.getOneUser("man1").setFullName("Анисимова Инесса");
         AllUsers.createUser("man2", "pass", Role.MANAGER);
         AllUsers.getOneUser("man2").setFullName("Анисимов Сергей-админ");
+        AllUsers.createUser("admin ", "pass", Role.ADMIN);
+        AllUsers.getOneUser("admin").setFullName("Админ ващета");
 
         AllUsers.addLoggedUser(AllUsers.getOneUser(2).getFullName());
         AllUsers.addLoggedUser(AllUsers.getOneUser(3).getFullName());

@@ -49,6 +49,9 @@ public class MainApp extends Application {
             else if (role.equals(Role.MANAGER)) {
                 showTableProjectsManager();
             }
+            else if (role.equals(Role.ADMIN)) {
+                showAdminWindow();
+            }
         }
         AllData.mainApp = this;
 
@@ -106,6 +109,23 @@ public class MainApp extends Application {
             e.printStackTrace();
         }
     }
+
+
+    public void showAdminWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/AdminWindow.fxml"));
+            AnchorPane adminWindow = (AnchorPane) loader.load();
+
+            rootLayout.setCenter(adminWindow);
+
+            AllData.adminWindowController = (AdminWindowController) loader.getController();
+        } catch (IOException e) {
+            System.out.println("exception!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            e.printStackTrace();
+        }
+    }
+
 
     public void showEditProjectWindow(int projectIDnumber) {
         try {
@@ -175,7 +195,7 @@ public class MainApp extends Application {
             controller.setMyStage(addWorkStage);
             //controller.setEditProjectWindowController(editProjectWindowController);
 
-            addWorkStage.showAndWait();
+            addWorkStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -200,7 +220,7 @@ public class MainApp extends Application {
             AllData.staffWindowController = controller;
             AllData.staffWindowStage = staffStage;
 
-            staffStage.showAndWait();
+            staffStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -242,9 +262,8 @@ public class MainApp extends Application {
             Scene scene = new Scene(createUser);
             stage.setScene(scene);
 
-            CreateUserWindowController controller = loader.getController();
-            controller.setMyStage(stage);
-
+            AllData.createUserWindowController = loader.getController();
+            AllData.createUserWindow = stage;
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -264,11 +283,9 @@ public class MainApp extends Application {
             Scene scene = new Scene(salaryPane);
             salaryStage.setScene(scene);
             AllData.countSalaryWindow = salaryStage;
+            AllData.countSalaryWindowController = loader.getController();
 
-            CountSalaryWindowController controller = loader.getController();
-            AllData.countSalaryWindowController = controller;
-
-            salaryStage.showAndWait();
+            salaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -289,7 +306,7 @@ public class MainApp extends Application {
             LoginWindowController loginWindowController = loaderLoginWindow.getController();
             loginWindowController.setStage(logWinStage);
 
-            logWinStage.showAndWait();
+            logWinStage.show();
         } catch (IOException e) {
             e.printStackTrace();
 
@@ -312,7 +329,7 @@ public class MainApp extends Application {
             loginWindowOnStartController.setMainApp(this);
 
             loginWindowOnStartController.setStage(logWinStage);
-            logWinStage.showAndWait();
+            logWinStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -328,10 +345,11 @@ public class MainApp extends Application {
             statStage.initModality(Modality.NONE);
             Scene scene = new Scene(statisticWindow);
             statStage.setScene(scene);
-            statStage.show();
 
             AllData.statisticWindowController = loader.getController();
             AllData.statisticStage = statStage;
+
+            statStage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -381,8 +399,8 @@ public class MainApp extends Application {
             Scene scene = new Scene(createProjectPane);
             stage.setScene(scene);
 
-            CreateProjectWindowController controller = loader.getController();
-            controller.setMyStage(stage);
+            AllData.createProjectWindowController = loader.getController();
+            AllData.createProjectWindow = stage;
 
             stage.show();
         } catch (IOException e) {
@@ -419,7 +437,7 @@ public class MainApp extends Application {
             aboutWindowController.getJavaRushHyperlink().setVisited(false);
             aboutWindowController.setAboutStage(aboutStage);
 
-            aboutStage.showAndWait();
+            aboutStage.show();
         } catch (IOException e) {
             e.printStackTrace();
         }

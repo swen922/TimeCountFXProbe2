@@ -413,39 +413,51 @@ public class TableProjectsDesignerController {
                 if (selectUser != null) {
                     if (selectUser.equalsIgnoreCase(toLoginWindow)) {
 
+                        closeAllWindows();
+
                         AllData.rootLayout.setCenter(null);
                         AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
+
+                        closeAllWindows();
+
                         User user = AllUsers.getOneUserForFullName(selectUser);
 
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            //initialize();
                             AllData.mainApp.showTableProjectsDesigner();
-
-                            /*if (AllData.statisticStage != null) {
-                                AllData.statisticStage.close();
-                            }*/
-
-
                         }
                         else if (role.equals(Role.MANAGER)) {
                             AllData.rootLayout.setCenter(null);
                             AllUsers.setCurrentUser(user.getIDNumber());
-                            //initialize();
                             AllData.mainApp.showTableProjectsManager();
 
-                            /*if (AllData.statisticManagerStage != null) {
-                                AllData.statisticManagerStage.close();
-                            }*/
+                        }
+                        else if (role.equals(Role.ADMIN)) {
+                            AllData.rootLayout.setCenter(null);
+                            AllUsers.setCurrentUser(user.getIDNumber());
+                            AllData.mainApp.showAdminWindow();
                         }
                     }
                 }
             }
         });
+    }
+
+    private void closeAllWindows() {
+
+        if (AllData.statisticStage != null && AllData.statisticStage.isShowing()) {
+            AllData.statisticStage.close();
+        }
+        if (!AllData.infoProjectWindowControllers.isEmpty()) {
+            for (InfoProjectWindowController controller : AllData.infoProjectWindowControllers.values()) {
+                controller.handleRevertButton();
+                controller.handleCloseButton();
+            }
+        }
     }
 
 

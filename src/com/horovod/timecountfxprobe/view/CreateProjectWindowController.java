@@ -19,12 +19,7 @@ import java.util.Optional;
 
 public class CreateProjectWindowController {
 
-    private Stage myStage;
     private String existingDescription = "";
-
-    public void setMyStage(Stage myStage) {
-        this.myStage = myStage;
-    }
 
     @FXML
     private TextField existingProjectTextField;
@@ -147,7 +142,7 @@ public class CreateProjectWindowController {
     }
 
     public void handleCancelButton() {
-        myStage.close();
+        AllData.createProjectWindow.close();
         //myStage = null;
     }
 
@@ -184,7 +179,7 @@ public class CreateProjectWindowController {
             if (AllData.staffWindowController != null) {
                 AllData.staffWindowController.initializeTable();
             }
-            myStage.close();
+            AllData.createProjectWindow.close();
         }
     }
 }

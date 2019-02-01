@@ -184,6 +184,9 @@ public class AllUsers {
             return null;
         }
 
+        login = login.trim();
+        password = password.trim();
+
         User result = null;
         if (!isNameLoginExist(login)) {
             if (role.equals(Role.DESIGNER)) {
@@ -210,6 +213,9 @@ public class AllUsers {
 
             users.put(result.getIDNumber(), result);
             usersPass.put(result.getIDNumber(), sp);
+            if (result.getRole().equals(Role.ADMIN)) {
+                System.out.println("created Admin id-" + result.getIDNumber() + " " + result.getNameLogin() + " " + result.getFullName());
+            }
         }
         return result;
     }

@@ -893,7 +893,6 @@ public class EditProjectWindowController {
             }
             if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
                 AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
-
             }
             myStage.close();
         }

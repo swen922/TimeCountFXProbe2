@@ -171,6 +171,7 @@ public class StaffWindowController {
             AllData.mainApp.showCountSalaryWindow();
         }
         else {
+            AllData.countSalaryWindow.hide();
             AllData.countSalaryWindow.show();
         }
     }

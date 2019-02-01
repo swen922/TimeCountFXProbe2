@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.MainApp;
+import com.horovod.timecountfxprobe.user.Admin;
 import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -80,6 +81,12 @@ public class AllData {
     public static StaffWindowController staffWindowController;
     public static Stage countSalaryWindow;
     public static CountSalaryWindowController countSalaryWindowController;
+    public static AdminWindowController adminWindowController;
+    public static Stage createUserWindow;
+    public static CreateUserWindowController createUserWindowController;
+    public static Stage createProjectWindow;
+    public static CreateProjectWindowController createProjectWindowController;
+
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
 
