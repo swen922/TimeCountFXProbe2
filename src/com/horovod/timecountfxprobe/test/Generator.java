@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 public class Generator {
 
-    public static void generate() {
+    /*public static void generate() {
         for (int i = 1; i <= 10; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
         }
@@ -76,9 +76,9 @@ public class Generator {
             }
 
         }
-    }
+    }*/
 
-    public static void generate2() {
+    /*public static void generate2() {
         for (int i = 1; i <= 10; i++) {
             AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
         }
@@ -101,12 +101,8 @@ public class Generator {
 
         }
 
-        /*for (int k = 1; k <=12; k+=3) {
-            int tmp2 = (int) ((Math.random() * 1000) / 30);
-            double newtime2 = AllData.intToDouble(tmp2);
-            AllData.addWorkTime(k, LocalDate.now(), 5, newtime2);
-        }*/
-    }
+
+    }*/
 
 
     public static void generateUsers() {
@@ -161,8 +157,11 @@ public class Generator {
 
         for (int i = 100; i >=1; i--) {
             String descr = "project-" + i;
-            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
-            AllData.addNewProject(project);
+
+            AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
+
+            /*Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
+            AllData.addNewProject(project);*/
         }
 
         int minusDays = 0;
@@ -195,7 +194,8 @@ public class Generator {
 
         for (int i = 251; i >=1; i--) {
             String descr = "project-" + i;
-            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
+            //Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
+            Project project = AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
             project.setBudget((int) (Math.random() * 90000));
             if (i == 5) {
                 project.setPONumber("PO 2345676");
@@ -203,7 +203,6 @@ public class Generator {
             if (i == 7) {
                 project.setPONumber("PO 8798755");
             }
-            AllData.addNewProject(project);
         }
 
         int minusDays = 0;
@@ -240,21 +239,15 @@ public class Generator {
         String descr03 = "Nescafe Gold label doypack 150g 250g 2018_12 - мейл от Климовой 06.12.2018 в 12.52 - корректировка текстов упаковок Нескафе Голд дойпак 150 г и 250 г";
         String descr04 = "Rossia leaflet NEW";
 
-        Project p12 = new Project("Nestle", "Сидоренко Юлия", descr01);
+        Project p12 = AllData.createProject("Nestle", "Сидоренко Юлия", descr01, null);
         p12.setBudget((int) (Math.random() * 90000));
-        AllData.addNewProject(p12);
-        Project p13 = new Project("Nestle", "Гладченко Наталья, Елагина Мария", descr02);
+        Project p13 = AllData.createProject("Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
         p13.setBudget((int) (Math.random() * 90000));
-        AllData.addNewProject(p13);
-        Project p14 = new Project("Nestle", "Климова Дарья", descr03);
+        Project p14 = AllData.createProject("Nestle", "Климова Дарья", descr03, null);
         p14.setBudget((int) (Math.random() * 90000));
-        AllData.addNewProject(p14);
-        Project p15 = new Project("Nestle", "Сидоренко Юлия, Климова Дарья", descr04);
+        Project p15 = AllData.createProject("Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
         p15.setBudget((int) (Math.random() * 90000));
-        AllData.addNewProject(p15);
 
-        //AllData.addWorkTime(12, LocalDate.now().minusDays(3), 3, 2.0);
-        //AllData.addWorkTime(12, LocalDate.now().minusDays(4), 2, 2.0);
     }
 
 }

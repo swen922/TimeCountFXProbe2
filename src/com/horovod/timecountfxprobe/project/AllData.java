@@ -32,9 +32,7 @@ public class AllData {
     private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
 
     private static ObservableMap<Integer, Project> allProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
-    //public static ObservableList<Map.Entry<Integer, Project>> allProjectsList = FXCollections.observableArrayList(allProjects.entrySet());
     private static ObservableMap<Integer, Project> activeProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
-    //public static ObservableList<Project> activeProjectsList = FXCollections.emptyObservableList();
 
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile DoubleProperty workSumProjectsProperty = new SimpleDoubleProperty(AllData.intToDouble(workSumProjects.get()));
@@ -51,6 +49,9 @@ public class AllData {
     private static DoubleProperty designerWeekWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerMonthWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerYearWorkSumProperty = new SimpleDoubleProperty(0);
+
+    private static String meUser = System.getProperty("user.name");
+    public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX/";
 
 
 
@@ -76,7 +77,7 @@ public class AllData {
     public static StatisticManagerWindowController statisticManagerWindowController;
     public static Map<Integer, Stage> openEditProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, EditProjectWindowController> editProjectWindowControllers = new ConcurrentHashMap<>();
-    public static volatile int IDnumberForEdit;
+    public static volatile int IDnumberForEdit = 0;
     public static Stage staffWindowStage;
     public static StaffWindowController staffWindowController;
     public static Stage countSalaryWindow;
@@ -601,7 +602,18 @@ public class AllData {
 
     /** Методы добавления, удаления проектов */
 
-    public synchronized static void createProject(String company, String manager, String description, LocalDate newDate) {
+    public synchronized static Project createProject(String company, String manager, String description, LocalDate newDate) {
+
+        if (company == null || company.isEmpty()) {
+            return null;
+        }
+        if (manager == null || manager.isEmpty()) {
+            return null;
+        }
+        if (description == null || description.isEmpty()) {
+            return null;
+        }
+
         Project project = null;
         if (newDate == null) {
             project = new Project(company, manager, description);
@@ -611,22 +623,17 @@ public class AllData {
         }
         allProjects.put(project.getIdNumber(), project);
         activeProjects.put(project.getIdNumber(), project);
+        return project;
     }
 
-    public synchronized static boolean addNewProject(Project newProject) {
+    /*public synchronized static boolean addNewProject(Project newProject) {
         if (!isProjectExist(newProject.getIdNumber())) {
             allProjects.put(newProject.getIdNumber(), newProject);
             activeProjects.put(newProject.getIdNumber(), newProject);
-
-            /*// Добавляем время в общее суммарное
-            int tmp = workSumProjects.get();
-            tmp += newProject.getWorkSum();
-            workSumProjects.set(tmp);*/
-
             return true;
         }
         return false;
-    }
+    }*/
 
     public synchronized static boolean deleteProject(int deadProject) {
         if (isProjectExist(deadProject)) {

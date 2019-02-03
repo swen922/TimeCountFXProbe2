@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 public class CreateUserWindowController {
-    private Stage myStage;
+
     String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz@.-_";
 
     @FXML
@@ -45,13 +45,11 @@ public class CreateUserWindowController {
     private Button createButton;
 
 
-    public void setMyStage(Stage myStage) {
-        this.myStage = myStage;
-    }
-
     @FXML
     public void initialize() {
         initRoleChoiceBox();
+        initButtons();
+        handleButtons();
     }
 
 
@@ -71,111 +69,115 @@ public class CreateUserWindowController {
         });
     }
 
+    private void initButtons() {
+
+        cancelButton.setCancelButton(true);
+        createButton.setDefaultButton(true);
+    }
+
+    public void handleButtons() {
+        if (loginTextField.getText() == null || loginTextField.getText().isEmpty()) {
+            createButton.setDisable(true);
+            return;
+        }
+        if (passTextField.getText() == null || passTextField.getText().isEmpty()) {
+            createButton.setDisable(true);
+            return;
+        }
+        createButton.setDisable(false);
+    }
+
     public void handleCancelButton() {
         AllData.createUserWindow.close();
     }
 
     public void handleCreateUserButton() {
 
-        if (isTextEmpty()) {
+        String login = loginTextField.getText().trim();
+        loginTextField.setText(login);
+        String pass = passTextField.getText().trim();
+        passTextField.setText(pass);
+        Role role = roleChoiceBox.getValue();
+
+        if (login.length() < 1 || hasOtherSymbols(login)) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Заполните поля логина и пароля");
-            alert.setHeaderText("Поля логина и пароля должны быть заполнены");
+            alert.setTitle("Неправильный логин");
+            StringBuilder sb = new StringBuilder("Указанный вами логин не соответствует\n");
+            sb.append("правилам создания логинов.");
+            alert.setHeaderText(sb.toString());
+
+            StringBuilder text = new StringBuilder("Логин должен состоять не менее, чем из 1 латинского символа. ");
+            text.append("и не должен включать символы пробела и иные посторонние символы.\n");
+            text.append("Укажите другой логин, состоящий только из латинских букв, цифр, дефисов, подчеркиваний");
+
+            alert.setHeaderText(sb.toString());
+
             alert.showAndWait();
             return;
         }
-        else {
-            String login = loginTextField.getText().trim();
-            loginTextField.setText(login);
-            String pass = passTextField.getText().trim();
-            passTextField.setText(pass);
-            Role role = roleChoiceBox.getValue();
 
 
+        if (AllUsers.isNameLoginExist(login)) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Логин недопустим");
+            alert.setHeaderText("Такой логин уже существует.\nВведите другой логин!");
+            alert.showAndWait();
+            return;
+        }
 
-            if (login.length() < 1 || hasOtherSymbols(login)) {
+        if (pass.length() < 12 || hasOtherSymbols(pass)) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Неправильный пароль");
+            alert.setHeaderText("Указанный вами пароль не соответствует\nправилам создания паролей.");
+
+            StringBuilder sb = new StringBuilder("Пароль должен состоять не менее, чем из 12 символов\n");
+            sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
+            sb.append("Укажите другой пароль, состоящий только из латинских букв и цифр.");
+
+            alert.setContentText(sb.toString());
+
+            alert.showAndWait();
+            return;
+        }
+
+        if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
+            String fullName = fullNameTextField.getText().trim();
+            if (AllUsers.isFullNameExist(fullName)) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Неправильный логин");
-                StringBuilder sb = new StringBuilder("Указанный вами логин не соответствует\n");
-                sb.append("правилам создания логинов.\n");
-                sb.append("Логин должен состоять не менее, чем из 1 символа\n");
-                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
-                sb.append("Укажите другой логин, состоящий только\nиз латинских букв, цифр, дефисов, подчеркиваний");
+                alert.setTitle("Дублирующееся имя");
+                StringBuilder sb = new StringBuilder("Указанное вами имя\n");
+                sb.append(fullName).append("\nсовпадает с именем другого пользователя.\n");
+                sb.append("Укажите другое имя!");
 
                 alert.setHeaderText(sb.toString());
 
                 alert.showAndWait();
                 return;
             }
-
-
-            if (AllUsers.isNameLoginExist(login)) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Логин недопустим");
-                alert.setHeaderText("Такой логин уже существует.\nВведите другой логин!");
-                alert.showAndWait();
-                return;
-            }
-
-            if (pass.length() < 12 || hasOtherSymbols(pass)) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Неправильный пароль");
-                alert.setHeaderText("Указанный вами пароль не соответствует\nправилам создания паролей.");
-
-                StringBuilder sb = new StringBuilder("Пароль должен состоять не менее, чем из 12 символов\n");
-                sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
-                sb.append("Укажите другой пароль, состоящий только из латинских букв и цифр.");
-
-                alert.setContentText(sb.toString());
-
-                alert.showAndWait();
-                return;
-            }
-
-            if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
-                String fullName = fullNameTextField.getText().trim();
-                if (AllUsers.isFullNameExist(fullName)) {
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Дублирующееся имя");
-                    StringBuilder sb = new StringBuilder("Указанное вами имя\n");
-                    sb.append(fullName).append("\nсовпадает с именем другого пользователя.\n");
-                    sb.append("Укажите другое имя!");
-
-                    alert.setHeaderText(sb.toString());
-
-                    alert.showAndWait();
-                    return;
-                }
-            }
-
-            User user = AllUsers.createUser(login, pass, role);
-
-            if (user == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Ошибка создания пользователя");
-                alert.setHeaderText("Не удалось создать пользователя.\nОбратитесь к Анисимову");
-                alert.showAndWait();
-                return;
-            }
-
-            if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
-                user.setFullName(fullNameTextField.getText());
-            }
-
-            AllData.staffWindowController.initializeTable();
-            myStage.close();
         }
 
-    }
+        User user = AllUsers.createUser(login, pass, role);
 
-    private boolean isTextEmpty() {
-        if (loginTextField.getText() == null || loginTextField.getText().isEmpty()) {
-            return true;
+        if (user == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Ошибка создания пользователя");
+            alert.setHeaderText("Не удалось создать пользователя.\nОбратитесь к Анисимову");
+            alert.showAndWait();
+            return;
         }
-        if (passTextField.getText() == null || passTextField.getText().isEmpty()) {
-            return true;
+
+        if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
+            user.setFullName(fullNameTextField.getText());
         }
-        return false;
+
+        AllData.staffWindowController.initializeTable();
+
+        AllData.createUserWindow.close();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Создан пользователь id-" + user.getIDNumber());
+        alert.setHeaderText("Создан пользователь id-" + user.getIDNumber() + "\nлогин = " + user.getNameLogin() + "\nимя = " + user.getFullName());
+        alert.show();
     }
 
     private boolean hasOtherSymbols(String input) {

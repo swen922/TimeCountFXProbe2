@@ -67,7 +67,7 @@ public class MainApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
 
-            primaryStage.setTitle("Time Count Probe");
+            primaryStage.setTitle("Time Count FX Probe");
 
             RootLayoutController controller = loader.getController();
             AllData.rootLayout = rootLayout;

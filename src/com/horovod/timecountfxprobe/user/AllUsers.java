@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,8 +70,9 @@ public class AllUsers {
         return usersLogged;
     }
 
-    public static synchronized void setUsersLogged(ObservableList<String> newUsersLogged) {
-        AllUsers.usersLogged = newUsersLogged;
+    public static synchronized void setUsersLogged(List<String> newUsersLogged) {
+        AllUsers.usersLogged.clear();
+        AllUsers.usersLogged.addAll(newUsersLogged);
     }
 
 

@@ -47,7 +47,7 @@ public class CreateProjectWindowController {
     public void initialize() {
         initButtons();
         initTextFields();
-
+        handleButtons();
     }
 
 
@@ -141,9 +141,24 @@ public class CreateProjectWindowController {
         descriptionTextArea.setFocusTraversable(true);
     }
 
+    public void handleButtons() {
+        if (companyTextField.getText() == null || companyTextField.getText().isEmpty()) {
+            createButton.setDisable(true);
+            return;
+        }
+        if (managerTextArea.getText() == null || managerTextArea.getText().isEmpty()) {
+            createButton.setDisable(true);
+            return;
+        }
+        if (descriptionTextArea.getText() == null || descriptionTextArea.getText().isEmpty()) {
+            createButton.setDisable(true);
+            return;
+        }
+        createButton.setDisable(false);
+    }
+
     public void handleCancelButton() {
         AllData.createProjectWindow.close();
-        //myStage = null;
     }
 
     public void handleCreateButton() {
@@ -174,12 +189,17 @@ public class CreateProjectWindowController {
                 alert.showAndWait();
                 return;
             }
-            AllData.createProject(companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
+            Project result = AllData.createProject(companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
             AllData.tableProjectsManagerController.initialize();
             if (AllData.staffWindowController != null) {
                 AllData.staffWindowController.initializeTable();
             }
             AllData.createProjectWindow.close();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Создан проект id-" + result.getIdNumber());
+            alert.setHeaderText("Создан проект id-" + result.getIdNumber());
+            alert.show();
         }
     }
 }

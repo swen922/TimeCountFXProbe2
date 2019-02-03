@@ -5,6 +5,7 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -39,10 +40,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+import javax.xml.bind.JAXBException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -395,7 +394,6 @@ public class TableProjectsManagerController {
 
     }
 
-    /** TODO добавить сюда закрытие окон со свойствами персонала, если там можно внести изменения */
 
     private synchronized void initClosing() {
 
@@ -405,11 +403,9 @@ public class TableProjectsManagerController {
                 @Override
                 public void handle(WindowEvent event) {
 
-                    AllData.rebuildEditProjectsControllers();
+                    saveBase();
 
-                    for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
-                        ec.handleCloseButton();
-                    }
+                    closeAllWindows();
 
                     if (!AllData.editProjectWindowControllers.isEmpty()) {
                         event.consume();
@@ -564,6 +560,9 @@ public class TableProjectsManagerController {
     }
 
     private void closeAllWindows() {
+
+        AllData.rebuildEditProjectsControllers();
+
         if (AllData.statisticManagerStage != null && AllData.statisticManagerStage.isShowing()) {
             AllData.statisticManagerStage.close();
         }
@@ -922,11 +921,10 @@ public class TableProjectsManagerController {
     }
 
     public void handleExitButton() {
-        AllData.rebuildEditProjectsControllers();
 
-        for (EditProjectWindowController ec : AllData.editProjectWindowControllers.values()) {
-            ec.handleCloseButton();
-        }
+        saveBase();
+
+        closeAllWindows();
 
         if (AllData.editProjectWindowControllers.isEmpty()) {
             Platform.exit();
@@ -937,6 +935,19 @@ public class TableProjectsManagerController {
             alert.setTitle("Не удалось выйти из программы");
             alert.setHeaderText("Ошибка выхода из программы.\nПопробуйте еще раз.");
             alert.showAndWait();
+        }
+    }
+
+    private void saveBase() {
+        Loader loader = new Loader();
+        try {
+            loader.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+            updateStatus("Не удалось записать базу в файл: IOException");
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            updateStatus("Ошибка сериализации в XML: JAXBException");
         }
     }
 

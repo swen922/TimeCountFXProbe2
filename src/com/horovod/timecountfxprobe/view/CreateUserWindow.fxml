@@ -11,9 +11,9 @@
    <children>
       <AnchorPane layoutX="160.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <TextField fx:id="loginTextField" alignment="CENTER" promptText="Логин" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="10.0" />
+            <TextField fx:id="loginTextField" alignment="CENTER" onAction="#handleButtons" onKeyTyped="#handleButtons" promptText="Логин" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="10.0" />
             <Button fx:id="clearLoginButton" mnemonicParsing="false" onAction="#handleClearLoginButton" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <TextField fx:id="passTextField" alignment="CENTER" promptText="Пароль" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="50.0" />
+            <TextField fx:id="passTextField" alignment="CENTER" onAction="#handleButtons" onKeyTyped="#handleButtons" promptText="Пароль" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="50.0" />
             <Button fx:id="clearPassButton" mnemonicParsing="false" onAction="#handleClearPassButton" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
             <TextField fx:id="fullNameTextField" alignment="CENTER" promptText="Полное имя (необязательно)" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="90.0" />
             <Button fx:id="clearFullNameButton" mnemonicParsing="false" onAction="#handleClearFullNameButton" text="X" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0" />
