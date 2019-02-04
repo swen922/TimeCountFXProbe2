@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -40,8 +41,10 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
+import javax.xml.bind.JAXBException;
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -777,13 +780,10 @@ public class TableProjectsDesignerController {
 
 
     public void handleExitButton() {
-        /*for (Stage infoStage : AllData.openInfoProjectStages.values()) {
-            infoStage.close();
-        }*/
 
-        for (InfoProjectWindowController iowController : AllData.infoProjectWindowControllers.values()) {
-            iowController.handleCloseButton();
-        }
+        saveBase();
+
+        closeAllWindows();
 
         if (AllData.openInfoProjectStages.isEmpty()) {
             Platform.exit();
@@ -807,21 +807,42 @@ public class TableProjectsDesignerController {
                 @Override
                 public void handle(WindowEvent event) {
 
-                    /*for (Stage infoStage : AllData.openInfoProjectStages.values()) {
-                        infoStage.close();
-                    }*/
+                    saveBase();
 
-                    for (InfoProjectWindowController iowController : AllData.infoProjectWindowControllers.values()) {
-                        iowController.handleCloseButton();
+                    closeAllWindows();
+
+                    if (!AllData.openInfoProjectStages.isEmpty()) {
+                        event.consume();
                     }
-
-                    if (AllData.openInfoProjectStages.isEmpty()) {
+                    else {
                         Platform.exit();
                         System.exit(0);
                     }
                 }
             });
         }
+    }
+
+    private void saveBase() {
+        Loader loader = new Loader();
+        try {
+            loader.save();
+        } catch (IOException e) {
+            e.printStackTrace();
+            updateStatus("Не удалось записать базу в файл: IOException");
+            alertSerialize(e.toString());
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            updateStatus("Ошибка сериализации в XML: JAXBException");
+            alertSerialize(e.toString());
+        }
+    }
+
+    private void alertSerialize(String exceptionName) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Ошибка записи в файл");
+        alert.setHeaderText("Не удалось записать базу в файл: " + exceptionName);
+        alert.showAndWait();
     }
 
 

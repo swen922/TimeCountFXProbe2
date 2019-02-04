@@ -20,6 +20,9 @@ public class Manager implements User {
         this.fullName = nameLogin;
     }
 
+    public Manager() {
+    }
+
     @XmlElement(name = "manageridnumber")
     public int getIDNumber() {
         return IDNumber;

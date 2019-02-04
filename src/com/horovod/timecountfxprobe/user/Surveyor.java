@@ -19,6 +19,9 @@ public class Surveyor implements User {
         this.fullName = nameLogin;
     }
 
+    public Surveyor() {
+    }
+
     @XmlElement(name = "surveyoridnumber")
     public int getIDNumber() {
         return IDNumber;

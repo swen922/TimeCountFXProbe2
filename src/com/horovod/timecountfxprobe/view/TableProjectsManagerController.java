@@ -945,10 +945,19 @@ public class TableProjectsManagerController {
         } catch (IOException e) {
             e.printStackTrace();
             updateStatus("Не удалось записать базу в файл: IOException");
+            alertSerialize(e.toString());
         } catch (JAXBException e) {
             e.printStackTrace();
             updateStatus("Ошибка сериализации в XML: JAXBException");
+            alertSerialize(e.toString());
         }
+    }
+
+    private void alertSerialize(String exceptionName) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Ошибка записи в файл");
+        alert.setHeaderText("Не удалось записать базу в файл: " + exceptionName);
+        alert.showAndWait();
     }
 
 

@@ -5,6 +5,8 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.user.*;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
@@ -16,11 +18,14 @@ import java.util.*;
  * Поскольку JAXB не поддерживает сохранение интерфейсов,
  * сохраняем юзеров в индивидуальные списки согласно классам-имплементаторам */
 
+
 @XmlRootElement(name = "alldatawrapper")
 public class AllDataWrapper {
 
     //поля класса AllData
+    @XmlElement(name = "allprojectsidnumber")
     private int allProjectsIdNumber;
+
     private Map<Integer, Project> allProjects = new HashMap<>();
 
 
@@ -67,7 +72,7 @@ public class AllDataWrapper {
     }
 
 
-    @XmlElement(name = "allprojectsidnumber")
+    //@XmlElement(name = "allprojectsidnumber")
     public int getAllProjectsIdNumber() {
         return allProjectsIdNumber;
     }

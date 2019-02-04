@@ -29,6 +29,9 @@ public class Designer implements User {
         this.fullName = nameLogin;
     }
 
+    public Designer() {
+    }
+
     @XmlElement(name = "designeridnumber")
     public int getIDNumber() {
         return IDNumber;

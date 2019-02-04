@@ -88,12 +88,12 @@ public class Project {
         this.idNumberProperty.set(newIdNumber);
     }
 
-    @XmlTransient
+    //@XmlTransient
     public int getIdNumberProperty() {
         return idNumberProperty.get();
     }
 
-    @XmlTransient
+    //@XmlTransient
     public IntegerProperty idNumberProperty() {
         return idNumberProperty;
     }
@@ -112,12 +112,12 @@ public class Project {
         this.companyProperty.set(newCompany);
     }
 
-    @XmlTransient
+    //@XmlTransient
     public String getCompanyProperty() {
         return companyProperty.get();
     }
 
-    @XmlTransient
+    //@XmlTransient
     public StringProperty companyProperty() {
         return companyProperty;
     }
@@ -137,12 +137,12 @@ public class Project {
         this.managerProperty.set(manager);
     }
 
-    @XmlTransient
+    //@XmlTransient
     public String getManagerProperty() {
         return managerProperty.get();
     }
 
-    @XmlTransient
+    //@XmlTransient
     public StringProperty managerProperty() {
         return managerProperty;
     }
@@ -162,12 +162,12 @@ public class Project {
         this.descriptionProperty.set(newDescription);
     }
 
-    @XmlTransient
+    //@XmlTransient
     public String getDescriptionProperty() {
         return descriptionProperty.get();
     }
 
-    @XmlTransient
+    //@XmlTransient
     public StringProperty descriptionProperty() {
         return descriptionProperty;
     }
@@ -229,7 +229,7 @@ public class Project {
         return PONumber;
     }
 
-    @XmlTransient
+    //@XmlTransient
     public StringProperty PONumberProperty() {
         return PONumberProperty;
     }
@@ -251,7 +251,7 @@ public class Project {
         this.workSum = newWorkSum >= 0 ? newWorkSum : 0;
     }
 
-    @XmlTransient
+    //@XmlTransient
     public double getWorkSumDouble() {
         return AllData.intToDouble(workSum);
     }
@@ -265,12 +265,12 @@ public class Project {
         }
     }
 
-    @XmlTransient
+    //@XmlTransient
     public String getWorkSumProperty() {
         return workSumProperty.get();
     }
 
-    @XmlTransient
+    //@XmlTransient
     public StringProperty workSumProperty() {
         return workSumProperty;
     }

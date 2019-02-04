@@ -51,7 +51,7 @@ public class AllData {
     private static DoubleProperty designerYearWorkSumProperty = new SimpleDoubleProperty(0);
 
     private static String meUser = System.getProperty("user.name");
-    public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX/";
+    public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX";
 
 
 
@@ -145,6 +145,10 @@ public class AllData {
 
     public static int getWorkSumProjects() {
         return workSumProjects.get();
+    }
+
+    public static void setWorkSumProjects(int newWorkSum) {
+        AllData.workSumProjects.set(newWorkSum);
     }
 
     private static synchronized void addWorkSumProjects(int addTime) {

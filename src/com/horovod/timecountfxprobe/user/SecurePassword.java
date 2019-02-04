@@ -14,6 +14,9 @@ public class SecurePassword {
         this.salt = newSalt;
     }
 
+    public SecurePassword() {
+    }
+
     public static SecurePassword getInstance(String newPass) {
         SecurePassword result = null;
         try {

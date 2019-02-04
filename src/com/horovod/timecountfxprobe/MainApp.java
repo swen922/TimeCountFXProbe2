@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe;
 
 
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -33,8 +34,10 @@ public class MainApp extends Application {
         this.primaryStage.setTitle("Time Count System Probe FX -1");
 
         /** TODO убрать эту строчку в рабочем варианте */
-        Generator.generateUsers();
-        Generator.generateProjects2();
+        //Generator.generateUsers();
+        //Generator.generateProjects2();
+        Loader loader = new Loader();
+        loader.load();
 
         initRootLayut();
 

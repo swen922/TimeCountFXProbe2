@@ -7,16 +7,17 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.AdminWindowController">
    <children>
       <AnchorPane layoutX="156.0" layoutY="97.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label alignment="CENTER" layoutX="34.0" layoutY="14.0" prefWidth="150.0" text="Текущий ID-номер проектов" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <TextField fx:id="currentIDprojectsTextField" layoutX="35.0" layoutY="25.0" prefWidth="150.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <TextField fx:id="currentIDprojectsTextField" alignment="CENTER" layoutX="35.0" layoutY="25.0" prefWidth="150.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="50.0" />
             <Button fx:id="setCurrentIDProjectsButton" layoutX="10.0" layoutY="84.0" mnemonicParsing="false" prefWidth="150.0" text="Установить новый" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="90.0" />
             <Label alignment="CENTER" layoutX="189.0" layoutY="45.0" prefWidth="150.0" text="Текущий ID-номер юзеров" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
-            <TextField fx:id="currentIDUsersTextField" layoutX="190.0" layoutY="56.0" prefWidth="150.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="50.0" />
+            <TextField fx:id="currentIDUsersTextField" alignment="CENTER" layoutX="190.0" layoutY="56.0" prefWidth="150.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="50.0" />
             <Label alignment="CENTER" contentDisplay="CENTER" layoutX="386.0" layoutY="14.0" prefWidth="140.0" text="Список проектов" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="20.0" />
             <Button fx:id="saveProjectsListButton" layoutX="416.0" layoutY="37.0" mnemonicParsing="false" prefWidth="140.0" text="Сохранить в XML" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="50.0" />
             <Button fx:id="loadProjectsListButton" layoutX="400.0" layoutY="90.0" mnemonicParsing="false" prefWidth="140.0" text="Загрузить новый" AnchorPane.leftAnchor="400.0" AnchorPane.topAnchor="90.0" />
@@ -27,15 +28,14 @@
             <Separator layoutX="375.0" layoutY="4.0" orientation="VERTICAL" prefHeight="120.0" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="10.0" />
             <Separator layoutX="385.0" layoutY="14.0" orientation="VERTICAL" prefHeight="120.0" AnchorPane.leftAnchor="565.0" AnchorPane.topAnchor="10.0" />
             <Separator layoutX="217.0" layoutY="168.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0" />
+            <Button fx:id="setHomeFolderButton" layoutX="20.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleSetHomeFolderButton" prefWidth="150.0" text="Назначить папку" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="180.0" />
+            <TextField fx:id="homeFolderTextField" editable="false" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="180.0" />
             <Label layoutX="42.0" layoutY="152.0" text="Папка для сохранения настроек, баз, отчетов и логов" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="155.0" />
-            <TextField layoutX="117.0" layoutY="221.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="180.0" />
-            <Button layoutX="1036.0" layoutY="180.0" mnemonicParsing="false" text="Выбрать другую папку" AnchorPane.leftAnchor="10.0" />
             <Separator layoutX="227.0" layoutY="178.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0" />
-            <Button layoutX="819.0" layoutY="52.0" mnemonicParsing="false" prefWidth="120.0" text="Loader.save" AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="52.0" />
+            <Button fx:id="loaderSave" layoutX="819.0" layoutY="52.0" mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="120.0" text="Loader.save" AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="52.0" />
             <Label layoutX="819.0" layoutY="22.0" text="Автоматическое сохранение и загрузка" AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="22.0" />
-            <Button layoutX="988.0" layoutY="52.0" mnemonicParsing="false" prefWidth="120.0" text="Loader.load" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="52.0" />
+            <Button fx:id="loaderLoad" layoutX="988.0" layoutY="52.0" mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="120.0" text="Loader.load" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="52.0" />
             <Separator layoutX="395.0" layoutY="24.0" orientation="VERTICAL" prefHeight="120.0" AnchorPane.leftAnchor="785.0" AnchorPane.topAnchor="10.0" />
-            <Button layoutX="184.0" layoutY="180.0" mnemonicParsing="false" text="X" AnchorPane.leftAnchor="190.0" AnchorPane.topAnchor="180.0" />
          </children>
       </AnchorPane>
       <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1046.0" layoutY="783.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0">
@@ -44,5 +44,14 @@
          </padding>
       </ChoiceBox>
       <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
+      <AnchorPane layoutX="-12.0" layoutY="757.0" prefHeight="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="350.0">
+         <children>
+            <Label fx:id="statusLabel" alignment="TOP_LEFT" prefHeight="30.0" text="Статус: все системы работают нормально" textFill="#666666" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
+               <font>
+                  <Font size="9.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

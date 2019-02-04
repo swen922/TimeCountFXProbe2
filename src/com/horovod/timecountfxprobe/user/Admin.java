@@ -21,6 +21,9 @@ public class Admin implements User {
         this.fullName = nameLogin;
     }
 
+    public Admin() {
+    }
+
     @XmlElement(name = "adminidnumber")
     public int getIDNumber() {
         return IDNumber;
