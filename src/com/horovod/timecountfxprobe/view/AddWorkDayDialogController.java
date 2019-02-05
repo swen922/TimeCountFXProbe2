@@ -2,10 +2,12 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -55,35 +57,69 @@ public class AddWorkDayDialogController {
     @FXML
     private void initialize() {
 
+        initButtons();
+        checkButtons();
+
         if (designers == null) {
             designers = FXCollections.observableArrayList();
         }
 
-        for (User u : AllUsers.getUsers().values()) {
-            if (u.getRole().equals(Role.DESIGNER)) {
-                designers.add(u.getFullName());
-            }
+        for (User u : AllUsers.getActiveDesigners().values()) {
+            designers.add(u.getFullName());
         }
         designersChoiceBox.setItems(designers);
+
+        designersChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                checkButtons();
+            }
+        });
 
         workTimeTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 KeyCode keyCode = event.getCode();
                 if (keyCode == KeyCode.ENTER) {
-                    handleOKButton();
+                    Double result = checkWorkTime();
+                    if (result == null) {
+                        workTimeTextField.setText("");
+                    }
+                    else {
+                        workTimeTextField.setText(AllData.formatWorkTime(result));
+                    }
                 }
             }
         });
     }
 
+    private void initButtons() {
+        cancelButton.setCancelButton(true);
+        okButton.setDefaultButton(true);
+    }
+
+    public void checkButtons() {
+        LocalDate date = getCorrectDate();
+        Double time = checkWorkTime();
+        User u = AllUsers.getOneUserForFullName(designersChoiceBox.getValue());
+
+        if (date == null || time == null || u == null) {
+            okButton.setDisable(true);
+        }
+        else {
+            okButton.setDisable(false);
+        }
+    }
+
 
     public void handleClearDatePicker() {
         datePicker.setValue(null);
+        checkButtons();
     }
 
     public void handleClearChoiceBox() {
         designersChoiceBox.setValue(null);
+        checkButtons();
     }
 
     public void handleCancelButton() {
@@ -91,28 +127,14 @@ public class AddWorkDayDialogController {
     }
 
     public void handleOKButton() {
-
-        LocalDate date = checkDatePicker();
+        LocalDate date = getCorrectDate();
         Double time = checkWorkTime();
+        User user = AllUsers.getOneUserForFullName(designersChoiceBox.getValue());
 
-        if (date == null || designersChoiceBox.getValue() == null || time == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Укажите все данные");
-            alert.setHeaderText("Укажите корректную дату,\nдизайнера и рабочее время");
-            alert.showAndWait();
-        }
-        else if (date.compareTo(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString())) < 0) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Неправильная дата");
-            alert.setHeaderText("Дата не может быть раньше даты создания проекта");
-            StringBuilder text = new StringBuilder("Дата создания проекта id-");
-            text.append(projectIDnumber).append(" – ").append(AllData.getAnyProject(projectIDnumber).getDateCreationString());
-            text.append("\nУказанная вами дата должна быть равна или позже даты создания проекта");
-            alert.setContentText(text.toString());
-            alert.showAndWait();
-        }
-        else {
-            AllData.addWorkTime(projectIDnumber, datePicker.getValue(), AllUsers.getOneUserForFullName(designersChoiceBox.getValue()).getIDNumber(), time);
+        if (date != null && time != null && user != null) {
+
+            AllData.addWorkTime(projectIDnumber, date, user.getIDNumber(), time);
+
             AllData.tableProjectsManagerController.initialize();
             if (AllData.editProjectWindowControllers.get(projectIDnumber) != null) {
                 AllData.editProjectWindowControllers.get(projectIDnumber).initializeTable();
@@ -127,36 +149,50 @@ public class AddWorkDayDialogController {
         }
     }
 
-    private LocalDate checkDatePicker() {
+    public LocalDate getCorrectDate() {
 
         if (datePicker.getValue() == null) {
             return null;
         }
 
         if (datePicker.getValue().isAfter(LocalDate.now())) {
-            datePicker.setValue(null);
-            return null;
+            datePicker.setValue(LocalDate.now());
+        }
+
+        if (datePicker.getValue().isBefore(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()))) {
+            datePicker.setValue(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()));
         }
 
         return datePicker.getValue();
     }
 
-    private Double checkWorkTime() {
-
-        String newText = workTimeTextField.getText().replaceAll(" ", ".");
-        newText = newText.replaceAll("-", ".");
-        newText = newText.replaceAll(",", ".");
-        newText = newText.replaceAll("=", ".");
-
-        Double result = null;
-        try {
-            result = Double.parseDouble(newText);
-        } catch (NumberFormatException e) {
-            workTimeTextField.setText(null);
+    public void checkDatePicker() {
+        if (datePicker.getValue() != null) {
+            if (datePicker.getValue().isAfter(LocalDate.now())) {
+                datePicker.setValue(LocalDate.now());
+            }
         }
-        return result;
+
+        if (datePicker.getValue().isBefore(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()))) {
+            datePicker.setValue(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()));
+        }
+
+        checkButtons();
     }
 
 
+
+    private Double checkWorkTime() {
+
+        if (workTimeTextField.getText() == null || workTimeTextField.getText().isEmpty()) {
+            return null;
+        }
+
+        Double result = AllData.getDoubleFromText(0, workTimeTextField.getText(), 1);
+        if (result == 0) {
+            return null;
+        }
+        return result;
+    }
 
 }

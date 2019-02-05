@@ -236,12 +236,19 @@ public class CountSalaryWindowController {
 
         if (fromDate != null && tillDate != null) {
 
+            if (fromDate.compareTo(LocalDate.now()) > 0) {
+                fromDatePicker.setValue(LocalDate.now());
+            }
+            if (tillDate.compareTo(LocalDate.now()) > 0) {
+                tillDatePicker.setValue(LocalDate.now());
+            }
+
             if (fromDate.compareTo(tillDate) > 0) {
                 if (node == fromDatePicker) {
-                    fromDatePicker.setValue(null);
+                    fromDatePicker.setValue(tillDatePicker.getValue());
                 }
                 else {
-                    tillDatePicker.setValue(null);
+                    tillDatePicker.setValue(fromDatePicker.getValue());
                 }
             }
         }
@@ -272,12 +279,11 @@ public class CountSalaryWindowController {
             for (Node node : usersCheckBoxes) {
                 CheckBox checkBox = (CheckBox) node;
                 if (checkBox.isSelected()) {
-                    int workTime = 0;
-                    int hourPay = AllUsers.getOneUserForFullName(checkBox.getText()).getWorkHourValue();
+                    int userID = AllUsers.getOneUserForFullName(checkBox.getText()).getIDNumber();
+                    int hourPay = AllUsers.getOneUser(userID).getWorkHourValue();
                     int salaryPay = 0;
-                    if (hourPay > 0) {
-                        int userID = AllUsers.getOneUserForFullName(checkBox.getText()).getIDNumber();
-                        workTime += AllData.getWorkSumForDesignerAndPeriod(userID, fromDatePicker.getValue(), tillDatePicker.getValue());
+                    int workTime = AllData.getWorkSumForDesignerAndPeriod(userID, fromDatePicker.getValue(), tillDatePicker.getValue());
+                    if (hourPay > 0 && workTime > 0) {
                         salary.append(checkBox.getText()).append(" = ");
                         salary.append(AllData.formatWorkTime(AllData.intToDouble(workTime))).append(" ");
                         salary.append(AllData.formatHours(String.valueOf(AllData.intToDouble(workTime))));
@@ -291,7 +297,6 @@ public class CountSalaryWindowController {
                         noHourPay.add(checkBox);
                     }
                     totalSum += salaryPay;
-
                 }
             }
             salary.append("\n").append("Итого вынуть из кассы = ");
@@ -302,16 +307,19 @@ public class CountSalaryWindowController {
                 for (CheckBox noCh : noHourPay) {
                     salary.append(noCh.getText()).append("\n");
                 }
-                salary.append("по причине отсутствия указанной стоимости рабочего часа.\n\n");
+                salary.append("по причине отсутствия указанной стоимости рабочего часа.\n");
+                salary.append("либо из-за отсутствия времени у этого дизайнера за указанный период.\n\n");
             }
             if (noHourPay.size() == usersCheckBoxes.size()) {
-                textArea.setText("Расчет невозможен. Укажите размер часовой зарплаты хотя бы у одного работника.");
+                textArea.setText("Расчет невозможен.\nВыберите для расчета работников, у которых указан размер часовой оплаты " +
+                        "и есть рабочее время за указаный период");
             }
             else if (totalSum != 0) {
                 textArea.setText(salary.toString());
             }
             else {
-                textArea.setText("Выберите хотя бы одного работника, у которого указан размер часовой оплаты.");
+                textArea.setText("Расчет невозможен.\nВыберите для расчета работников, у которых указан размер часовой оплаты " +
+                        "и есть рабочее время за указаный период");
             }
 
         }

@@ -49,7 +49,7 @@ public class CreateUserWindowController {
     public void initialize() {
         initRoleChoiceBox();
         initButtons();
-        handleButtons();
+        checkButtons();
     }
 
 
@@ -70,12 +70,11 @@ public class CreateUserWindowController {
     }
 
     private void initButtons() {
-
         cancelButton.setCancelButton(true);
         createButton.setDefaultButton(true);
     }
 
-    public void handleButtons() {
+    public void checkButtons() {
         if (loginTextField.getText() == null || loginTextField.getText().isEmpty()) {
             createButton.setDisable(true);
             return;

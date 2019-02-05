@@ -30,14 +30,19 @@ public class AllDataWrapper {
 
 
     //поля класса AllUsers
+    @XmlElement(name = "allusersidcounter")
     private int IDCounterAllUsers;
+
     private Map<Integer, Designer> saveDesigners = new HashMap<>();
     private Map<Integer, Manager> saveManagers = new HashMap<>();
     private Map<Integer, Admin> saveAdmins = new HashMap<>();
     private Map<Integer, Surveyor> saveSurveyors = new HashMap<>();
 
     private Map<Integer, SecurePassword> saveUsersPass = new HashMap<>();
+
+    @XmlElement(name = "currentuser")
     private int currentUser;
+
     private List<String> saveUsersLogged = new ArrayList<>();
 
 
@@ -82,7 +87,7 @@ public class AllDataWrapper {
         return allProjects;
     }
 
-    @XmlElement(name = "allusersidcounter")
+    //@XmlElement(name = "allusersidcounter")
     public int getIDCounterAllUsers() {
         return IDCounterAllUsers;
     }
@@ -112,7 +117,7 @@ public class AllDataWrapper {
         return saveUsersPass;
     }
 
-    @XmlElement(name = "currentuser")
+    //@XmlElement(name = "currentuser")
     public int getCurrentUser() {
         return currentUser;
     }

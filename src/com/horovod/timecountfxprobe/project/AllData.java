@@ -329,10 +329,12 @@ public class AllData {
     public static synchronized boolean addWorkTime(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
 
         if (!AllUsers.isUserExist(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
+            System.out.println("1");
             return false;
         }
 
         if (correctDate.compareTo(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString())) < 0) {
+            System.out.println("2");
             return false;
         }
 
@@ -357,6 +359,7 @@ public class AllData {
 
             return true;
         }
+        System.out.println("3");
         return false;
     }
 

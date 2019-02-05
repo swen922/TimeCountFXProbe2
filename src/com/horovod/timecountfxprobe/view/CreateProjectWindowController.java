@@ -47,7 +47,7 @@ public class CreateProjectWindowController {
     public void initialize() {
         initButtons();
         initTextFields();
-        handleButtons();
+        checkButtons();
     }
 
 
@@ -134,14 +134,9 @@ public class CreateProjectWindowController {
     private void initButtons() {
         cancelButton.setCancelButton(true);
         createButton.setDefaultButton(true);
-
-        existingProjectTextField.setFocusTraversable(true);
-        companyTextField.setFocusTraversable(true);
-        managerTextArea.setFocusTraversable(true);
-        descriptionTextArea.setFocusTraversable(true);
     }
 
-    public void handleButtons() {
+    public void checkButtons() {
         if (companyTextField.getText() == null || companyTextField.getText().isEmpty()) {
             createButton.setDisable(true);
             return;

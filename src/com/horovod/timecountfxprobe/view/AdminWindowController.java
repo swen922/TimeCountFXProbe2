@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.WindowEvent;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
@@ -60,6 +61,7 @@ public class AdminWindowController {
         currentIDUsersTextField.setText(String.valueOf(AllUsers.getIDCounterAllUsers()));
         initLoggedUsersChoiceBox();
         initPathToHomeFolder();
+        initClosing();
     }
 
     private void initPathToHomeFolder() {
@@ -97,9 +99,25 @@ public class AdminWindowController {
         }*/
     }
 
+    private synchronized void initClosing() {
+
+        if (AllData.primaryStage != null) {
+
+            AllData.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    saveBase();
+                    Platform.exit();
+                    System.exit(0);
+                }
+            });
+        }
+    }
+
 
 
     public void handleExitButton() {
+        saveBase();
         Platform.exit();
         System.exit(0);
     }
@@ -211,5 +229,7 @@ public class AdminWindowController {
     public void updateStatus(String message) {
         statusLabel.setText("Статус: " + message);
     }
+
+
 
 }

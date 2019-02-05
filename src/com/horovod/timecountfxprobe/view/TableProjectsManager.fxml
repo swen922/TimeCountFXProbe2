@@ -251,5 +251,6 @@
          </padding>
       </ChoiceBox>
       <Button layoutX="1337.0" layoutY="495.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
+      <Button layoutX="803.0" layoutY="769.0" mnemonicParsing="false" text="x" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="340.0" />
    </children>
 </AnchorPane>

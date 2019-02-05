@@ -121,6 +121,9 @@ public class TableProjectsManagerController {
     private ChoiceBox<String> exportChoiceBox;
 
     @FXML
+    private Button clearLoggedUsers;
+
+    @FXML
     private ChoiceBox<String> usersLoggedChoiceBox;
 
     @FXML
@@ -918,6 +921,10 @@ public class TableProjectsManagerController {
         else {
             writeCSV();
         }
+    }
+
+    public void handleClearLoggedUsersButton() {
+
     }
 
     public void handleExitButton() {
