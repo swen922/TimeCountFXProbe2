@@ -294,6 +294,27 @@ public class MainApp extends Application {
         }
     }
 
+    public void showDeleteLoggedUserWindow() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/DeleteLoggedUsersWindow.fxml"));
+            AnchorPane deleteUsersPane = (AnchorPane) loader.load();
+
+            AllData.deleteLoggedUserStage = new Stage();
+            AllData.deleteLoggedUserStage.setTitle("Удаление залогиненных имен");
+            AllData.deleteLoggedUserStage.initModality(Modality.WINDOW_MODAL);
+            AllData.deleteLoggedUserStage.initOwner(AllData.primaryStage);
+            Scene scene = new Scene(deleteUsersPane);
+            AllData.deleteLoggedUserStage.setScene(scene);
+            AllData.deleteLoggedUsersWindowController = loader.getController();
+
+            AllData.deleteLoggedUserStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void showLoginWindow() {
         try {
             FXMLLoader loaderLoginWindow = new FXMLLoader();

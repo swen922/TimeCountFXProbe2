@@ -26,7 +26,14 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public class AllData {
+
+    // TODO Заменить на log4j от апача, чтоьбы записвал в файл
+    private static final Logger logger = LoggerFactory.getLogger(AllData.class);
 
     private static volatile AtomicInteger idNumber = new AtomicInteger(0);
     private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
@@ -87,6 +94,8 @@ public class AllData {
     public static CreateUserWindowController createUserWindowController;
     public static Stage createProjectWindow;
     public static CreateProjectWindowController createProjectWindowController;
+    public static Stage deleteLoggedUserStage;
+    public static DeleteLoggedUsersWindowController deleteLoggedUsersWindowController;
 
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
@@ -94,6 +103,7 @@ public class AllData {
 
     private static volatile double limitTimeForStaffWindow = 6;
     private static volatile int limitMoneyForStaffWindow = 6000;
+    public static final String toLoginWindow = "Выйти в окно логина";
 
 
     /** Стандартные геттеры и сеттеры */
@@ -333,10 +343,9 @@ public class AllData {
             return false;
         }
 
-        if (correctDate.compareTo(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString())) < 0) {
-            System.out.println("2");
+        /*if (correctDate.compareTo(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString())) < 0) {
             return false;
-        }
+        }*/
 
         if (isProjectExist(projectIDnumber) && (!isProjectArchive(projectIDnumber))) {
 
@@ -359,7 +368,6 @@ public class AllData {
 
             return true;
         }
-        System.out.println("3");
         return false;
     }
 
@@ -371,12 +379,9 @@ public class AllData {
         return false;
     }
 
-
-
     public static IntegerProperty designerRatingPositionProperty() {
         return designerRatingPosition;
     }
-
 
     public static void rebuildDesignerRatingPosition() {
 

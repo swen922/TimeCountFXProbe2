@@ -509,12 +509,11 @@ public class TableProjectsManagerController {
     // Может, перенести весь метод в AllData или в другой общий класс?
     public void initLoggedUsersChoiceBox() {
 
-        String toLoginWindow = "Выйти в окно логина";
 
         usersLoggedChoiceBox.setItems(AllUsers.getUsersLogged());
 
-        if (!usersLoggedChoiceBox.getItems().contains(toLoginWindow)) {
-            usersLoggedChoiceBox.getItems().add(toLoginWindow);
+        if (!usersLoggedChoiceBox.getItems().contains(AllData.toLoginWindow)) {
+            usersLoggedChoiceBox.getItems().add(AllData.toLoginWindow);
         }
 
         usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
@@ -526,7 +525,7 @@ public class TableProjectsManagerController {
                 String selectUser = usersLoggedChoiceBox.getValue();
 
                 if (selectUser != null && !selectUser.isEmpty()) {
-                    if (selectUser.equalsIgnoreCase(toLoginWindow)) {
+                    if (selectUser.equalsIgnoreCase(AllData.toLoginWindow)) {
 
                         closeAllWindows();
 
@@ -924,7 +923,7 @@ public class TableProjectsManagerController {
     }
 
     public void handleClearLoggedUsersButton() {
-
+        AllData.mainApp.showDeleteLoggedUserWindow();
     }
 
     public void handleExitButton() {
