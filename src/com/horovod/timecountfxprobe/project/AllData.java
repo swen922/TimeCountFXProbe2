@@ -15,6 +15,8 @@ import javafx.collections.ObservableMap;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -23,17 +25,52 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.logging.Formatter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.*;
 
 
 public class AllData {
 
+    private static final Logger logger = Logger.getLogger(AllData.class.getName());
+
+    {
+        Handler fileHandler = null;
+        Formatter simpleFormatter = null;
+        try{
+            // Creating FileHandler
+            String logFilePAth = pathToHomeFolder + "/loggerAllData.log";
+            fileHandler = new FileHandler(logFilePAth);
+
+            // Creating SimpleFormatter
+            simpleFormatter = new SimpleFormatter();
+
+            // Assigning handler to logger
+            logger.addHandler(fileHandler);
+
+            LogManager.getLogManager().readConfiguration(MainApp.class.getResourceAsStream("resources/logging.properties"));
+
+            // Logging message of Level info (this should be publish in the default format i.e. XMLFormat)
+            logger.info("Finnest message: Logger with DEFAULT FORMATTER");
+
+            // Setting formatter to the handler
+            fileHandler.setFormatter(simpleFormatter);
+
+            // Setting Level to ALL
+            fileHandler.setLevel(Level.ALL);
+            logger.setLevel(Level.ALL);
+
+            // Logging message of Level finest (this should be publish in the simple format)
+            logger.finest("Finnest message: Logger with SIMPLE FORMATTER");
+        }catch(IOException exception){
+            exception.printStackTrace();
+        }
+    }
+
     // TODO Заменить на log4j от апача, чтоьбы записвал в файл
-    private static final Logger logger = LoggerFactory.getLogger(AllData.class);
+    //public static final Logger logger = LoggerFactory.getLogger(AllData.class);
+    //private static final Logger log = Logger.getLogger(AllData.class);
 
     private static volatile AtomicInteger idNumber = new AtomicInteger(0);
     private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
@@ -104,6 +141,7 @@ public class AllData {
     private static volatile double limitTimeForStaffWindow = 6;
     private static volatile int limitMoneyForStaffWindow = 6000;
     public static final String toLoginWindow = "Выйти в окно логина";
+    public static String status = "Все нормально";
 
 
     /** Стандартные геттеры и сеттеры */
@@ -336,6 +374,10 @@ public class AllData {
 
     /** Метод добавления и корректировки рабочего времени в проектах */
 
+    public void resetStatus() {
+        AllData.status = "Все нормально";
+    }
+
     public static synchronized boolean addWorkTime(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
 
         if (!AllUsers.isUserExist(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
@@ -365,6 +407,11 @@ public class AllData {
             rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
             rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
             rebuildDesignerYearWorkSumProperty(today.getYear());
+
+            //MainApp.logger.info("added work time right now");
+            //mainApp.getLogger().info("added work time right now");
+            logger.fine("Added work time");
+            logger.log(Level.INFO, "Added work time");
 
             return true;
         }

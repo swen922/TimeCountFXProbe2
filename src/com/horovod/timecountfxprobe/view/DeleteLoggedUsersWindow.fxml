@@ -22,7 +22,7 @@
          </children>
       </VBox>
       <FlowPane fx:id="usersFlowPane" alignment="CENTER_LEFT" hgap="20.0" layoutX="21.0" layoutY="100.0" maxHeight="120.0" minHeight="100.0" rowValignment="TOP" vgap="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0" />
-      <Label layoutX="50.0" layoutY="157.0" prefHeight="45.0" text="Среди показанных пользователей нет текущего пользователя, потому что его удалять нельзя. Залогиньтесь в другого пользователя." wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="210.0">
+      <Label layoutX="50.0" layoutY="157.0" prefHeight="45.0" text="Среди показанных пользователей нет текущего пользователя, потому что себя удалять нельзя." wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="210.0">
          <font>
             <Font size="11.0" />
          </font>

@@ -307,7 +307,7 @@ public class CountSalaryWindowController {
                 for (CheckBox noCh : noHourPay) {
                     salary.append(noCh.getText()).append("\n");
                 }
-                salary.append("по причине отсутствия указанной стоимости рабочего часа.\n");
+                salary.append("по причине отсутствия указанной стоимости рабочего часа\n");
                 salary.append("либо из-за отсутствия времени у этого дизайнера за указанный период.\n\n");
             }
             if (noHourPay.size() == usersCheckBoxes.size()) {

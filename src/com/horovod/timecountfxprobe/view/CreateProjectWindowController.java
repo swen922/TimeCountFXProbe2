@@ -185,10 +185,14 @@ public class CreateProjectWindowController {
                 return;
             }
             Project result = AllData.createProject(companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
-            AllData.tableProjectsManagerController.initialize();
+            AllData.tableProjectsManagerController.initializeTable();
             if (AllData.staffWindowController != null) {
                 AllData.staffWindowController.initializeTable();
             }
+
+            AllData.status = "Создан новый проект id-" + result.getIdNumber();
+            AllData.tableProjectsManagerController.updateStatus();
+
             AllData.createProjectWindow.close();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

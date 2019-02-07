@@ -41,6 +41,8 @@ public class AdminWindowController {
     private Button loaderSave;
     @FXML
     private Button loaderLoad;
+    @FXML
+    private Button clearLoggedUsers;
 
 
     @FXML
@@ -114,13 +116,6 @@ public class AdminWindowController {
         }
     }
 
-
-
-    public void handleExitButton() {
-        saveBase();
-        Platform.exit();
-        System.exit(0);
-    }
 
     public void initLoggedUsersChoiceBox() {
 
@@ -229,5 +224,15 @@ public class AdminWindowController {
     }
 
 
+    public void handleClearLoggedUsersButton() {
+        AllData.mainApp.showDeleteLoggedUserWindow();
+    }
+
+
+    public void handleExitButton() {
+        saveBase();
+        Platform.exit();
+        System.exit(0);
+    }
 
 }

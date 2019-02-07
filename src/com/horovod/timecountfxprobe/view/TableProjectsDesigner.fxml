@@ -226,6 +226,7 @@
             </Label>
          </children>
       </AnchorPane>
+      <Button fx:id="clearLoggedUsers" layoutX="813.0" layoutY="779.0" mnemonicParsing="false" onAction="#handleClearLoggedUsersButton" text="x" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="340.0" />
       <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1036.0" layoutY="773.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0">
          <padding>
             <Insets left="10.0" right="10.0" />

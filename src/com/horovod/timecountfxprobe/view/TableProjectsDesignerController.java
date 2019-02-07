@@ -111,6 +111,9 @@ public class TableProjectsDesignerController {
     private Label aboutProgramLabel;
 
     @FXML
+    private Button clearLoggedUsers;
+
+    @FXML
     private ChoiceBox<String> usersLoggedChoiceBox;
 
     @FXML
@@ -775,6 +778,11 @@ public class TableProjectsDesignerController {
             }
         }
         return Integer.compare(time2, time1);
+    }
+
+
+    public void handleClearLoggedUsersButton() {
+        AllData.mainApp.showDeleteLoggedUserWindow();
     }
 
 

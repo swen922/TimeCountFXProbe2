@@ -186,9 +186,6 @@ public class TableProjectsManagerController {
         AllData.deleteZeroTime();
         AllData.rebuildWorkSum();
         AllData.rebuildTodayWorkSumProperty();
-        //AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
-        //AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonth().getValue());
-        //AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
 
         if (showProjects == null) {
             showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
@@ -208,6 +205,22 @@ public class TableProjectsManagerController {
             sortedList = new SortedList<>(filterDataWrapper);
         }
 
+        initializeTable();
+
+        todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
+        workSumLabel.textProperty().bind(AllData.workSumProjectsProperty().asString());
+
+        initializeChart();
+
+        initLoggedUsersChoiceBox();
+
+        initExportChoiceBox();
+
+        resetStatus();
+
+    }
+
+    public void initializeTable() {
         sortTableProjects();
         handleFilters();
 
@@ -387,14 +400,6 @@ public class TableProjectsManagerController {
         filterDataWrapper.setPredicate(filterPredicate);
         projectsTable.setItems(sortedList);
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
-
-        todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
-        workSumLabel.textProperty().bind(AllData.workSumProjectsProperty().asString());
-
-        initializeChart();
-        initLoggedUsersChoiceBox();
-        initExportChoiceBox();
-
     }
 
 
@@ -473,7 +478,7 @@ public class TableProjectsManagerController {
             }
         };
 
-        initialize();
+        initializeTable();
     }
 
 
@@ -686,7 +691,7 @@ public class TableProjectsManagerController {
                 return true;
             }
         });
-        initialize();
+        initializeTable();
     }
 
 
@@ -701,19 +706,19 @@ public class TableProjectsManagerController {
 
     public void handleShowArchiveProjectsCheckBox() {
         handleFilters();
-        initialize();
+        initializeTable();
     }
 
     public void handleFromDatePicker() {
         checkDatePicker(fromDatePicker);
         handleFilters();
-        initialize();
+        initializeTable();
     }
 
     public void handleTillDatePicker() {
         checkDatePicker(tillDatePicker);
         handleFilters();
-        initialize();
+        initializeTable();
     }
 
     private void checkDatePicker(Node node) {
@@ -863,16 +868,16 @@ public class TableProjectsManagerController {
         AllData.mainApp.showAboutWindow();
     }
 
-    public void updateStatus(String message) {
-        statusLabel.setText("Статус: " + message);
+    public void updateStatus() {
+        statusLabel.setText("Статус: " + AllData.status);
     }
 
     public void resetStatus() {
-        statusLabel.setText("Статус: все системы работают нормально");
+        statusLabel.setText("Статус: все нормально");
     }
 
 
-    /** Вытащенный в отдельный метод кусок кода из метода initialize()
+    /** Вытащенный в отдельный метод кусок кода из метода initializeTable()
      * чтобы не повторять один и тот же код несколько раз
      * */
 
@@ -950,11 +955,13 @@ public class TableProjectsManagerController {
             loader.save();
         } catch (IOException e) {
             e.printStackTrace();
-            updateStatus("Не удалось записать базу в файл: IOException");
+            AllData.status = "Не удалось записать базу в файл: IOException";
+            updateStatus();
             alertSerialize(e.toString());
         } catch (JAXBException e) {
             e.printStackTrace();
-            updateStatus("Ошибка сериализации в XML: JAXBException");
+            AllData.status = "Ошибка сериализации в XML: JAXBException";
+            updateStatus();
             alertSerialize(e.toString());
         }
     }
@@ -1255,6 +1262,8 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
                                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                                AllData.status = "Проект id-" + entry.getKey() + " переведен в архив.";
+                                updateStatus();
                             }
                             else {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
@@ -1271,6 +1280,8 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
                                 setStyle(null);
+                                AllData.status = "Проект id-" + entry.getKey() + " возвращен из архива.";
+                                updateStatus();
                             }
                             else if (option.get() == ButtonType.CANCEL) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
@@ -1278,7 +1289,7 @@ public class TableProjectsManagerController {
                             }
                         }
                         handleFilters();
-                        initialize();
+                        initializeTable();
                     }
                 });
 
@@ -1298,7 +1309,9 @@ public class TableProjectsManagerController {
                             if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
                                 AllData.staffWindowController.initializeTable();
                             }
-                            initialize();
+                            AllData.status = "Проект id-" + entry.getKey() + " удален безвозвратно.";
+                            updateStatus();
+                            initializeTable();
                         }
                     }
                 });
@@ -1411,8 +1424,6 @@ public class TableProjectsManagerController {
                         commitEdit(textField.getText());
                         TableProjectsManagerController.EditingCellString.this.getTableView().requestFocus();
                         TableProjectsManagerController.EditingCellString.this.getTableView().getSelectionModel().selectAll();
-                        //initialize();
-                        //projectsTable.refresh();
                     }
                 }
             });
@@ -1423,8 +1434,6 @@ public class TableProjectsManagerController {
                         commitEdit(textField.getText());
                         TableProjectsManagerController.EditingCellString.this.getTableView().requestFocus();
                         TableProjectsManagerController.EditingCellString.this.getTableView().getSelectionModel().selectAll();
-                        //initialize();
-                        //projectsTable.refresh();
                     }
                 }
             });

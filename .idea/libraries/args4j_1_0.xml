@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="args4j-1.0">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/args4j/args4j/1.0/args4j-1.0.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

@@ -290,7 +290,7 @@ public class EditProjectWindowController {
 
                     AllData.addWorkTime(myProject.getIdNumber(), AllData.parseDate(dateString), i, newTimeDouble);
                     AllData.deleteZeroTime(myProject.getIdNumber());
-                    AllData.tableProjectsManagerController.initialize();
+                    AllData.tableProjectsManagerController.initializeTable();
                     if (AllData.staffWindowController != null) {
                         AllData.staffWindowController.initializeTable();
                     }
@@ -447,6 +447,8 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
+                AllData.status = "Проект id-" + myProject.getIdNumber() + " переведен в архив.";
+                AllData.tableProjectsManagerController.updateStatus();
             }
             else {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
@@ -461,13 +463,15 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
+                AllData.status = "Проект id-" + myProject.getIdNumber() + " возвращен из архива.";
+                AllData.tableProjectsManagerController.updateStatus();
             }
             else if (option.get() == ButtonType.CANCEL) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
             }
         }
         initializeArchiveCheckBox();
-        AllData.tableProjectsManagerController.initialize();
+        AllData.tableProjectsManagerController.initializeTable();
     }
 
     public void handleAddWorkDayButton() {
@@ -877,7 +881,9 @@ public class EditProjectWindowController {
 
         isChanged = false;
         initSaveButtons();
-        AllData.tableProjectsManagerController.initialize();
+        AllData.tableProjectsManagerController.initializeTable();
+        AllData.status = "Свойства проекта id-" + myProject.getIdNumber() + " изменены.";
+        AllData.tableProjectsManagerController.updateStatus();
     }
 
     public void handleSaveAndCloseButton() {

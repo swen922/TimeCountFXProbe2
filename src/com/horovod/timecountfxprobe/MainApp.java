@@ -29,6 +29,8 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        //logger = LoggerFactory.getLogger(MainApp.class);
+
         this.primaryStage = primaryStage;
         AllData.primaryStage = primaryStage;
         this.primaryStage.setTitle("Time Count System Probe FX -1");

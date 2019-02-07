@@ -446,8 +446,6 @@ public class EditUserWindowController {
             }
             AllUsers.getOneUser(userID).setFullName(fullNameTextArea.getText().trim());
             textAreas.put(fullNameTextArea, fullNameTextArea.getText());
-
-
         }
 
 
@@ -527,10 +525,10 @@ public class EditUserWindowController {
         isChanged = false;
         initSaveButtons();
         AllData.staffWindowController.initializeTable();
-        AllData.tableProjectsManagerController.initialize();
+        //AllData.tableProjectsManagerController.initialize();
+        AllData.status = "Свойства работника id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + " изменены.";
+        AllData.tableProjectsManagerController.updateStatus();
     }
-
-
 
 
     public void handleSaveAndCloseButton() {

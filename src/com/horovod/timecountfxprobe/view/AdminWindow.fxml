@@ -38,13 +38,7 @@
             <Separator layoutX="395.0" layoutY="24.0" orientation="VERTICAL" prefHeight="120.0" AnchorPane.leftAnchor="785.0" AnchorPane.topAnchor="10.0" />
          </children>
       </AnchorPane>
-      <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1046.0" layoutY="783.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0">
-         <padding>
-            <Insets left="10.0" right="10.0" />
-         </padding>
-      </ChoiceBox>
-      <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
-      <AnchorPane layoutX="-12.0" layoutY="757.0" prefHeight="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="350.0">
+      <AnchorPane layoutX="-12.0" layoutY="757.0" prefHeight="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="375.0">
          <children>
             <Label fx:id="statusLabel" alignment="TOP_LEFT" prefHeight="30.0" text="Статус: все системы работают нормально" textFill="#666666" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
                <font>
@@ -53,5 +47,12 @@
             </Label>
          </children>
       </AnchorPane>
+      <Button fx:id="clearLoggedUsers" layoutX="813.0" layoutY="779.0" mnemonicParsing="false" onAction="#handleClearLoggedUsersButton" text="x" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="340.0" />
+      <ChoiceBox fx:id="usersLoggedChoiceBox" layoutX="1046.0" layoutY="783.0" prefWidth="240.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="90.0">
+         <padding>
+            <Insets left="10.0" right="10.0" />
+         </padding>
+      </ChoiceBox>
+      <Button layoutX="1347.0" layoutY="505.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>
