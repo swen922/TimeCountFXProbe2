@@ -380,6 +380,7 @@ public class EditProjectWindowController {
                     browsDir(path);
                 } catch (Exception e1) {
                     showAlertOpenFolder(myProject.getIdNumber());
+
                 }
             }
         }
@@ -388,6 +389,7 @@ public class EditProjectWindowController {
                 browsDir(path);
             } catch (Exception e) {
                 showAlertOpenFolder(myProject.getIdNumber());
+
             }
         }
     }
@@ -447,8 +449,6 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
-                AllData.status = "Проект id-" + myProject.getIdNumber() + " переведен в архив.";
-                AllData.tableProjectsManagerController.updateStatus();
             }
             else {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
@@ -463,8 +463,6 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
-                AllData.status = "Проект id-" + myProject.getIdNumber() + " возвращен из архива.";
-                AllData.tableProjectsManagerController.updateStatus();
             }
             else if (option.get() == ButtonType.CANCEL) {
                 AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
@@ -625,6 +623,7 @@ public class EditProjectWindowController {
                 alert.setTitle("Ошибка записи");
                 alert.setHeaderText("Ошибка при сохранении файла");
                 alert.showAndWait();
+                AllData.logger.error(ex.getMessage(), ex);
             }
         }
     }
@@ -716,6 +715,8 @@ public class EditProjectWindowController {
                 alert.setTitle("Ошибка записи");
                 alert.setHeaderText("Ошибка при сохранении файла");
                 alert.showAndWait();
+                AllData.logger.error(ex.getMessage(), ex);
+
             }
         }
 
@@ -882,8 +883,10 @@ public class EditProjectWindowController {
         isChanged = false;
         initSaveButtons();
         AllData.tableProjectsManagerController.initializeTable();
-        AllData.status = "Свойства проекта id-" + myProject.getIdNumber() + " изменены.";
-        AllData.tableProjectsManagerController.updateStatus();
+
+        AllData.status = "Свойства проекта id-" + myProject.getIdNumber() + " изменены";
+        AllData.updateAllStatus();
+        AllData.logger.info(AllData.status);
     }
 
     public void handleSaveAndCloseButton() {

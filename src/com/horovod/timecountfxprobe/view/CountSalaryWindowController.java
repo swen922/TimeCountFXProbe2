@@ -371,6 +371,8 @@ public class CountSalaryWindowController {
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();
+                    AllData.logger.error(ex.getMessage(), ex);
+
                 }
             }
         }
@@ -420,6 +422,8 @@ public class CountSalaryWindowController {
                 }
                 catch (Exception ex) {
                     ex.printStackTrace();
+                    AllData.logger.error(ex.getMessage(), ex);
+
                 }
             }
         }

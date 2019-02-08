@@ -18,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.time.LocalDate;
 
 public class MainApp extends Application {
@@ -29,8 +30,6 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        //logger = LoggerFactory.getLogger(MainApp.class);
-
         this.primaryStage = primaryStage;
         AllData.primaryStage = primaryStage;
         this.primaryStage.setTitle("Time Count System Probe FX -1");
@@ -38,6 +37,7 @@ public class MainApp extends Application {
         /** TODO убрать эту строчку в рабочем варианте */
         //Generator.generateUsers();
         //Generator.generateProjects2();
+
         Loader loader = new Loader();
         loader.load();
 
@@ -60,6 +60,7 @@ public class MainApp extends Application {
         }
         AllData.mainApp = this;
 
+
     }
 
     public void initRootLayut() {
@@ -78,6 +79,7 @@ public class MainApp extends Application {
             AllData.rootLayout = rootLayout;
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
         }
     }
 
@@ -97,6 +99,8 @@ public class MainApp extends Application {
             AllData.tableProjectsDesignerController = loader.getController();;
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -112,6 +116,8 @@ public class MainApp extends Application {
             AllData.tableProjectsManagerController = (TableProjectsManagerController) loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -126,8 +132,9 @@ public class MainApp extends Application {
 
             AllData.adminWindowController = (AdminWindowController) loader.getController();
         } catch (IOException e) {
-            System.out.println("exception!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -154,6 +161,8 @@ public class MainApp extends Application {
 
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -179,6 +188,8 @@ public class MainApp extends Application {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -203,6 +214,8 @@ public class MainApp extends Application {
             addWorkStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -228,6 +241,8 @@ public class MainApp extends Application {
             staffStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -251,6 +266,8 @@ public class MainApp extends Application {
             editUserStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -272,6 +289,8 @@ public class MainApp extends Application {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
 
     }
@@ -293,6 +312,7 @@ public class MainApp extends Application {
             salaryStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
         }
     }
 
@@ -313,6 +333,7 @@ public class MainApp extends Application {
             AllData.deleteLoggedUserStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
         }
     }
 
@@ -335,7 +356,7 @@ public class MainApp extends Application {
             logWinStage.show();
         } catch (IOException e) {
             e.printStackTrace();
-
+            AllData.logger.error(e.getMessage(), e);
         }
     }
 
@@ -358,6 +379,8 @@ public class MainApp extends Application {
             logWinStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -379,20 +402,9 @@ public class MainApp extends Application {
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        /*if (statisticWindow == null || statStage == null || statisticWindowController == null) {
+            AllData.logger.error(e.getMessage(), e);
 
         }
-        else {
-            statStage.hide();
-            statStage.show();
-            statisticWindowController.initialize();
-            LocalDate today = LocalDate.now();
-            int y = today.getYear();
-            int m = today.getMonthValue();
-            statisticWindowController.initializeBarChart(FillChartMode.DAILY, LocalDate.of(y, m, 1) );
-        }*/
     }
 
     public void showStatisticManagerWindow() {
@@ -411,6 +423,8 @@ public class MainApp extends Application {
             AllData.statisticManagerStage = stManagerStage;
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -431,6 +445,8 @@ public class MainApp extends Application {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -466,9 +482,7 @@ public class MainApp extends Application {
             aboutStage.show();
         } catch (IOException e) {
             e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
         }
     }
-
-
-
 }

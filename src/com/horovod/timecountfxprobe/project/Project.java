@@ -1,5 +1,6 @@
 package com.horovod.timecountfxprobe.project;
 
+import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -78,6 +79,7 @@ public class Project {
         //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
+
     @XmlElement(name = "projectidnumber")
     public int getIdNumber() {
         return idNumber;
@@ -89,18 +91,11 @@ public class Project {
     }
 
     //@XmlTransient
-    public int getIdNumberProperty() {
-        return idNumberProperty.get();
-    }
-
-    //@XmlTransient
     public IntegerProperty idNumberProperty() {
         return idNumberProperty;
     }
 
-    public synchronized void setIdNumberProperty(int idNumberProperty) {
-        this.idNumberProperty.set(idNumberProperty);
-    }
+
 
     @XmlElement(name = "clientcompany")
     public String getCompany() {
@@ -110,21 +105,15 @@ public class Project {
     public synchronized void setCompany(String newCompany) {
         this.company = newCompany;
         this.companyProperty.set(newCompany);
+        //updateAllStatus("Поле \"Компания\" проекта id-" + this.idNumber + " изменено.");
+        AllData.status = "Поле \"Компания\" проекта id-" + this.idNumber + " изменено.";
+        AllData.updateAllStatus();
     }
-
-    //@XmlTransient
-    public String getCompanyProperty() {
-        return companyProperty.get();
-    }
-
     //@XmlTransient
     public StringProperty companyProperty() {
         return companyProperty;
     }
 
-    public synchronized void setCompanyProperty(String newCompanyProperty) {
-        this.companyProperty.set(newCompanyProperty);
-    }
 
 
     @XmlElement(name = "manager")
@@ -136,20 +125,11 @@ public class Project {
         this.manager = manager;
         this.managerProperty.set(manager);
     }
-
-    //@XmlTransient
-    public String getManagerProperty() {
-        return managerProperty.get();
-    }
-
     //@XmlTransient
     public StringProperty managerProperty() {
         return managerProperty;
     }
 
-    public synchronized void setManagerProperty(String manager) {
-        this.managerProperty.set(manager);
-    }
 
 
     @XmlElement(name = "descr")
@@ -161,20 +141,12 @@ public class Project {
         this.description = newDescription;
         this.descriptionProperty.set(newDescription);
     }
-
-    //@XmlTransient
-    public String getDescriptionProperty() {
-        return descriptionProperty.get();
-    }
-
     //@XmlTransient
     public StringProperty descriptionProperty() {
         return descriptionProperty;
     }
 
-    public synchronized void setDescriptionProperty(String newDescriptionProperty) {
-        this.descriptionProperty.set(newDescriptionProperty);
-    }
+
 
     @XmlElement(name = "datecreationstring")
     public String getDateCreationString() {
@@ -249,6 +221,7 @@ public class Project {
 
     private synchronized void setWorkSum(int newWorkSum) {
         this.workSum = newWorkSum >= 0 ? newWorkSum : 0;
+        this.workSumProperty.set(AllData.formatWorkTime(AllData.intToDouble(workSum)));
     }
 
     //@XmlTransient
@@ -256,27 +229,13 @@ public class Project {
         return AllData.intToDouble(workSum);
     }
 
-    protected synchronized void setWorkSumDouble(double newWorkSumDouble) {
-        if (newWorkSumDouble <= 0) {
-            this.workSum = 0;
-        }
-        else {
-            this.workSum = AllData.doubleToInt(newWorkSumDouble);
-        }
-    }
-
-    //@XmlTransient
-    public String getWorkSumProperty() {
-        return workSumProperty.get();
-    }
-
     //@XmlTransient
     public StringProperty workSumProperty() {
         return workSumProperty;
     }
 
-    public synchronized void setWorkSumProperty(String workSumProperty) {
-        this.workSumProperty.set(workSumProperty);
+    public synchronized void setWorkSumProperty(double workSumDouble) {
+        this.workSumProperty.set(AllData.formatWorkTime(workSumDouble));
     }
 
 
@@ -332,7 +291,7 @@ public class Project {
                 int newWorkSumInt = getWorkSum() + diff;
 
                 setWorkSum(newWorkSumInt);
-                setWorkSumProperty(String.valueOf(AllData.intToDouble(newWorkSumInt)));
+                setWorkSumProperty(newTimeDouble);
 
                 // удаляем экземпляр WorkTime, если время в нем стало равно 0
                 if (newTimeInt <= 0) {
@@ -351,7 +310,7 @@ public class Project {
         work.add(new WorkTime(this.idNumber, newDate, idUser, newTimeDouble));
         int newWorkSumInt = getWorkSum() + newTimeInt;
         setWorkSum(newWorkSumInt);
-        setWorkSumProperty(String.valueOf(AllData.intToDouble(newWorkSumInt)));
+        setWorkSumProperty(newTimeDouble);
         return newTimeInt;
 
     }

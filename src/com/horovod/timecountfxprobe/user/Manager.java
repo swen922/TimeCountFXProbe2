@@ -1,5 +1,7 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.horovod.timecountfxprobe.project.AllData;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
@@ -39,6 +41,7 @@ public class Manager implements User {
 
     public void setNameLogin(String newNameLogin) {
         this.nameLogin = newNameLogin;
+
     }
 
     @XmlElement(name = "managerrole")

@@ -124,11 +124,15 @@ public class InfoProjectWindowController {
         initSaveButtons();
         initClosing();
 
+        workSum.textProperty().bind(myProject.workSumProperty());
+
+
     }
 
     public void initializeTable() {
 
-        workSum.setText(AllData.formatWorkTime(AllData.intToDouble(myProject.getWorkSumForDesigner(AllUsers.getCurrentUser()))));
+
+        //workSum.setText(AllData.formatWorkTime(AllData.intToDouble(myProject.getWorkSumForDesigner(AllUsers.getCurrentUser()))));
         hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(AllData.intToDouble(myProject.getWorkSumForDesigner(AllUsers.getCurrentUser())))));
 
         if (workDays == null) {
@@ -222,6 +226,7 @@ public class InfoProjectWindowController {
                     browsDir(path);
                 } catch (Exception e1) {
                     showAlertOpenFolder(myProject.getIdNumber());
+
                 }
             }
         }
@@ -292,6 +297,9 @@ public class InfoProjectWindowController {
             myProject.setComment(commentTextArea.getText());
         }
         initSaveButtons();
+        AllData.status = "Текст комментария в проекте id-" + myProject.getIdNumber() + " изменен";
+        AllData.updateAllStatus();
+        AllData.logger.info(AllData.status);
     }
 
     public void handleSaveAndCloseButton() {

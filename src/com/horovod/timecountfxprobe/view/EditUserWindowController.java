@@ -525,9 +525,10 @@ public class EditUserWindowController {
         isChanged = false;
         initSaveButtons();
         AllData.staffWindowController.initializeTable();
-        //AllData.tableProjectsManagerController.initialize();
-        AllData.status = "Свойства работника id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + " изменены.";
-        AllData.tableProjectsManagerController.updateStatus();
+
+        AllData.status = "Свойства пользователя id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + " изменены";
+        AllData.updateAllStatus();
+        AllData.logger.info(AllData.status);
     }
 
 

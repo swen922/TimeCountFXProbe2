@@ -6,6 +6,7 @@ import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -14,9 +15,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 
-
-import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -25,52 +26,13 @@ import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
-import java.util.logging.Formatter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.*;
 
 
 public class AllData {
 
-    private static final Logger logger = Logger.getLogger(AllData.class.getName());
-
-    {
-        Handler fileHandler = null;
-        Formatter simpleFormatter = null;
-        try{
-            // Creating FileHandler
-            String logFilePAth = pathToHomeFolder + "/loggerAllData.log";
-            fileHandler = new FileHandler(logFilePAth);
-
-            // Creating SimpleFormatter
-            simpleFormatter = new SimpleFormatter();
-
-            // Assigning handler to logger
-            logger.addHandler(fileHandler);
-
-            LogManager.getLogManager().readConfiguration(MainApp.class.getResourceAsStream("resources/logging.properties"));
-
-            // Logging message of Level info (this should be publish in the default format i.e. XMLFormat)
-            logger.info("Finnest message: Logger with DEFAULT FORMATTER");
-
-            // Setting formatter to the handler
-            fileHandler.setFormatter(simpleFormatter);
-
-            // Setting Level to ALL
-            fileHandler.setLevel(Level.ALL);
-            logger.setLevel(Level.ALL);
-
-            // Logging message of Level finest (this should be publish in the simple format)
-            logger.finest("Finnest message: Logger with SIMPLE FORMATTER");
-        }catch(IOException exception){
-            exception.printStackTrace();
-        }
-    }
-
-    // TODO Заменить на log4j от апача, чтоьбы записвал в файл
-    //public static final Logger logger = LoggerFactory.getLogger(AllData.class);
-    //private static final Logger log = Logger.getLogger(AllData.class);
+    public static final Logger logger = Logger.getLogger(AllData.class);
 
     private static volatile AtomicInteger idNumber = new AtomicInteger(0);
     private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
@@ -145,7 +107,6 @@ public class AllData {
 
 
     /** Стандартные геттеры и сеттеры */
-
 
 
     public static int incrementIdNumberAndGet() {
@@ -380,8 +341,7 @@ public class AllData {
 
     public static synchronized boolean addWorkTime(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
 
-        if (!AllUsers.isUserExist(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
-            System.out.println("1");
+        if (!AllUsers.isUserExist(idUser) || AllUsers.isUserDeleted(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
             return false;
         }
 
@@ -408,10 +368,8 @@ public class AllData {
             rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
             rebuildDesignerYearWorkSumProperty(today.getYear());
 
-            //MainApp.logger.info("added work time right now");
-            //mainApp.getLogger().info("added work time right now");
-            logger.fine("Added work time");
-            logger.log(Level.INFO, "Added work time");
+            AllData.status = "Добавлено рабочее время в проект id-" + projectIDnumber;
+            AllData.updateAllStatus();
 
             return true;
         }
@@ -682,6 +640,11 @@ public class AllData {
         }
         allProjects.put(project.getIdNumber(), project);
         activeProjects.put(project.getIdNumber(), project);
+
+        AllData.status = "Создан новый проект id-" + project.getIdNumber();
+        updateAllStatus();
+        AllData.logger.info(AllData.status);
+
         return project;
     }
 
@@ -708,6 +671,9 @@ public class AllData {
             }
             workSumProjects.set(tmp);
 
+            AllData.status = "Проект id-" + deadProject + " удален безвозвратно.";
+            updateAllStatus();
+            AllData.logger.info(AllData.status);
 
             return true;
         }
@@ -721,14 +687,36 @@ public class AllData {
 
             if (projectIsArchive) {
                 activeProjects.remove(changedProject);
+                AllData.status = "Проект id-" + changedProject + " переведен в архив.";
             }
             else if (!projectIsArchive) {
                 activeProjects.put(changedProject, chProject);
+                AllData.status = "Проект id-" + changedProject + " возвращен из архива.";
             }
             if (editProjectWindowControllers.containsKey(changedProject)) {
                 editProjectWindowControllers.get(changedProject).initializeArchiveCheckBox();
             }
+            updateAllStatus();
+            AllData.logger.info(AllData.status);
         }
+    }
+
+
+    public static void updateAllStatus() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (AllData.adminWindowController != null) {
+                    AllData.adminWindowController.updateStatus();
+                }
+                if (AllData.tableProjectsManagerController != null) {
+                    AllData.tableProjectsManagerController.updateStatus();
+                }
+                /*if (AllData.tableProjectsDesignerController != null) {
+                    AllData.tableProjectsDesignerController.updateStatus();
+                }*/
+            }
+        });
     }
 
 
@@ -761,26 +749,6 @@ public class AllData {
         });
         activeProjects.clear();
         activeProjects.putAll(newActiveProjects);
-    }
-
-    public static synchronized int computeWorkSum() {
-        int result = 0;
-
-        for (Project p : allProjects.values()) {
-            result += p.getWorkSum();
-        }
-        workSumProjects.set(result);
-        return result;
-    }
-
-    public static synchronized void computeProjectsProperties() {
-        for (Project p : activeProjects.values()) {
-            p.setIdNumberProperty(p.getIdNumber());
-            p.setCompanyProperty(p.getCompany());
-            p.setManagerProperty(p.getManager());
-            p.setDescriptionProperty(p.getDescription());
-            p.setWorkSumProperty(String.valueOf(p.getWorkSumDouble()));
-        }
     }
 
 

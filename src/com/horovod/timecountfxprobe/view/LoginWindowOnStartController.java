@@ -120,11 +120,7 @@ public class LoginWindowOnStartController {
                 }
                 else if (role.equals(Role.ADMIN)) {
                     this.stage.close();
-                    try {
-                        AllData.mainApp.showAdminWindow();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    AllData.mainApp.showAdminWindow();
                 }
                 break;
             }

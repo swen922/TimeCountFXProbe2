@@ -1,6 +1,11 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.horovod.timecountfxprobe.project.AllData;
+
 public interface User {
+
+    //private void updateAllStatus(String change) {}
+
     int getIDNumber();
     void setIDNumber(int newIDNumber);
     String getNameLogin();

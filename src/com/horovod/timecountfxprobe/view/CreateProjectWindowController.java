@@ -190,9 +190,6 @@ public class CreateProjectWindowController {
                 AllData.staffWindowController.initializeTable();
             }
 
-            AllData.status = "Создан новый проект id-" + result.getIdNumber();
-            AllData.tableProjectsManagerController.updateStatus();
-
             AllData.createProjectWindow.close();
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

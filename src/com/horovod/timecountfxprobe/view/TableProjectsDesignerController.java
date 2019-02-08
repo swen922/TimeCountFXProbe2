@@ -245,16 +245,22 @@ public class TableProjectsDesignerController {
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 double newTimeDouble = AllData.getDoubleFromText(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())), event.getNewValue(), 1);
-                AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
+                boolean added = AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
 
-                // код для мгновенного обновления страниц у менеджера
-                if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
-                    AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                if (added) {
+                    // код для мгновенного обновления страниц у менеджера
+                    if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
+                        AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                    }
+                    if (AllData.statisticWindowController != null) {
+                        AllData.statisticWindowController.initialize();
+                    }
+                    initialize();
                 }
-                if (AllData.statisticWindowController != null) {
-                    AllData.statisticWindowController.initialize();
+                else {
+                    // TODO Написать алерт или еще как-то показать, что не добавлено
                 }
-                initialize();
+
 
                 /*filterField.setText("-");
                 filterField.clear();*/
@@ -715,8 +721,8 @@ public class TableProjectsDesignerController {
         AllData.mainApp.showAboutWindow();
     }
 
-    public void updateStatus(String message) {
-        statusLabel.setText("Статус: " + message);
+    public void updateStatus() {
+        statusLabel.setText("Статус: " + AllData.status);
     }
 
     public void resetStatus() {
@@ -836,12 +842,16 @@ public class TableProjectsDesignerController {
             loader.save();
         } catch (IOException e) {
             e.printStackTrace();
-            updateStatus("Не удалось записать базу в файл: IOException");
+            AllData.status = "Не удалось записать базу в файл: IOException";
+            updateStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
-            updateStatus("Ошибка сериализации в XML: JAXBException");
+            AllData.status = "Ошибка сериализации в XML: JAXBException";
+            updateStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
         }
     }
 
@@ -885,6 +895,8 @@ public class TableProjectsDesignerController {
                                     browsDir(path);
                                 } catch (Exception e1) {
                                     showAlertOpenFolder(entry.getKey());
+
+
                                 }
                             }
                         }

@@ -1156,6 +1156,7 @@ public class StaffWindowController {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+                AllData.logger.error(ex.getMessage(), ex);
             }
         }
     }
@@ -1302,6 +1303,8 @@ public class StaffWindowController {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+                AllData.logger.error(ex.getMessage(), ex);
+
             }
         }
 
@@ -1618,8 +1621,6 @@ public class StaffWindowController {
                                     if (AllData.countSalaryWindowController != null) {
                                         AllData.countSalaryWindowController.updateUsers();
                                     }
-                                    AllData.status = "Работник id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + " уволен.";
-                                    AllData.tableProjectsManagerController.updateStatus();
                                     initializeTable();
                                 }
                                 else {
@@ -1649,8 +1650,6 @@ public class StaffWindowController {
                                     if (AllData.countSalaryWindowController != null) {
                                         AllData.countSalaryWindowController.updateUsers();
                                     }
-                                    AllData.status = "Работник id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + " снова принят на работу.";
-                                    AllData.tableProjectsManagerController.updateStatus();
                                     initializeTable();
                                 }
                                 else {

@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.user;
 
 import com.horovod.timecountfxprobe.exceptions.WrongArgumentException;
+import com.horovod.timecountfxprobe.project.AllData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -215,9 +216,11 @@ public class AllUsers {
 
             users.put(result.getIDNumber(), result);
             usersPass.put(result.getIDNumber(), sp);
-            if (result.getRole().equals(Role.ADMIN)) {
-                System.out.println("created Admin id-" + result.getIDNumber() + " " + result.getNameLogin() + " " + result.getFullName());
-            }
+
+            // Статус и Логирование
+            AllData.status = "Создан новый работник id-" + result.getIDNumber() + " " + AllUsers.getOneUser(result.getIDNumber()).getFullName();
+            AllData.updateAllStatus();
+            AllData.logger.info(AllData.status);
         }
         return result;
     }
@@ -233,6 +236,12 @@ public class AllUsers {
     public static synchronized boolean deleteUser(int idUser) {
         if (isUserExist(idUser)) {
             users.get(idUser).setRetired(true);
+
+            // Статус и Логирование
+            AllData.status = "Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " уволен.";
+            AllData.updateAllStatus();
+            AllData.logger.info(AllData.status);
+
             return true;
         }
         return false;
@@ -241,6 +250,11 @@ public class AllUsers {
     public static synchronized boolean resurrectUser(int idUser) {
         if (isUserDeleted(idUser)) {
             users.get(idUser).setRetired(false);
+
+            // Статус и Логирование
+            AllData.status = "Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " снова принят на работу.";
+            AllData.updateAllStatus();
+            AllData.logger.info(AllData.status);
             return true;
         }
         return false;

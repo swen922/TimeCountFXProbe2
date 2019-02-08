@@ -958,11 +958,13 @@ public class TableProjectsManagerController {
             AllData.status = "Не удалось записать базу в файл: IOException";
             updateStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
             AllData.status = "Ошибка сериализации в XML: JAXBException";
             updateStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
         }
     }
 
@@ -1030,6 +1032,8 @@ public class TableProjectsManagerController {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+                AllData.logger.error(ex.getMessage(), ex);
+
             }
         }
     }
@@ -1143,6 +1147,8 @@ public class TableProjectsManagerController {
             }
             catch (Exception ex) {
                 ex.printStackTrace();
+                AllData.logger.error(ex.getMessage(), ex);
+
             }
         }
 
@@ -1262,8 +1268,6 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
                                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                                AllData.status = "Проект id-" + entry.getKey() + " переведен в архив.";
-                                updateStatus();
                             }
                             else {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
@@ -1280,8 +1284,6 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
                                 setStyle(null);
-                                AllData.status = "Проект id-" + entry.getKey() + " возвращен из архива.";
-                                updateStatus();
                             }
                             else if (option.get() == ButtonType.CANCEL) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
@@ -1309,8 +1311,6 @@ public class TableProjectsManagerController {
                             if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
                                 AllData.staffWindowController.initializeTable();
                             }
-                            AllData.status = "Проект id-" + entry.getKey() + " удален безвозвратно.";
-                            updateStatus();
                             initializeTable();
                         }
                     }

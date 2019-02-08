@@ -180,16 +180,21 @@ public class AdminWindowController {
             loader.save();
         } catch (IOException e) {
             e.printStackTrace();
-            updateStatus("Не удалось записать базу в файл: IOException");
+            AllData.status = "Не удалось записать базу в файл: IOException";
+            updateStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
             System.out.println("");
             System.out.println(e.getMessage());
             System.out.println();
             System.out.println(e.getCause());
-            updateStatus("Ошибка сериализации в XML: JAXBException");
+            AllData.status = "Ошибка сериализации в XML: JAXBException";
+            updateStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -207,8 +212,11 @@ public class AdminWindowController {
             loader.load();
         } catch (JAXBException e) {
             e.printStackTrace();
-            updateStatus("Ошибка чтения XML: " + e.toString());
+            AllData.status = "Ошибка чтения XML: " + e.toString();
+            updateStatus();
             alertDeSerialize(e.toString());
+            AllData.logger.error(e.getMessage(), e);
+
         }
     }
 
@@ -219,8 +227,8 @@ public class AdminWindowController {
         alert.showAndWait();
     }
 
-    public void updateStatus(String message) {
-        statusLabel.setText("Статус: " + message);
+    public void updateStatus() {
+        statusLabel.setText("Статус: " + AllData.status);
     }
 
 

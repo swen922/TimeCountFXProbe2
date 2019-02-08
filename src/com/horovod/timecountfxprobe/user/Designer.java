@@ -1,5 +1,7 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.horovod.timecountfxprobe.project.AllData;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
@@ -31,6 +33,7 @@ public class Designer implements User {
 
     public Designer() {
     }
+
 
     @XmlElement(name = "designeridnumber")
     public int getIDNumber() {
