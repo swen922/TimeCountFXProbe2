@@ -170,22 +170,30 @@ public class TableProjectsDesignerController {
          * сюда внутрь класса, а в AllData оставить только глобальные суммы по всем дизайнерам */
 
         // Отработка методов данных
-        AllData.deleteZeroTime();
-        AllData.rebuildDesignerDayWorkSumProperty();
+
         LocalDate today = LocalDate.now();
-        AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
-        AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
-        AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
+
+        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+            dayWorkSumLabel.setText("0");
+            ratingPositionLabel.setText("-");
+        }
+        else {
+            dayWorkSumLabel.textProperty().bind(AllData.designerDayWorkSumProperty().asString());
+            ratingPositionLabel.textProperty().bind(AllData.designerRatingPositionProperty().asString());
+            AllData.rebuildDesignerRatingPosition();
+
+            AllData.deleteZeroTime();
+            AllData.rebuildDesignerDayWorkSumProperty();
+            AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+            AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
+            AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
+        }
 
         handleFilters();
 
         sortTableProjects();
 
         initializeTable();
-
-        dayWorkSumLabel.textProperty().bind(AllData.designerDayWorkSumProperty().asString());
-        ratingPositionLabel.textProperty().bind(AllData.designerRatingPositionProperty().asString());
-        AllData.rebuildDesignerRatingPosition();
 
         initializeChart();
         initLoggedUsersChoiceBox();
@@ -614,6 +622,10 @@ public class TableProjectsDesignerController {
 
         if (fromDate != null && tillDate != null) {
 
+            if (tillDate.isAfter(LocalDate.now())) {
+                tillDatePicker.setValue(LocalDate.now());
+            }
+
             if (fromDate.compareTo(tillDate) > 0) {
                 if (node == showMyProjectsCheckBox) {
                     fromDatePicker.setValue(null);
@@ -879,6 +891,13 @@ public class TableProjectsDesignerController {
 
                 Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
 
+                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    openFolderButton.setDisable(true);
+                }
+                else {
+                    openFolderButton.setDisable(false);
+                }
+
                 openFolderButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
@@ -913,8 +932,6 @@ public class TableProjectsDesignerController {
                 infoButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
-                        //initClosing();
-                        //AllData.mainApp.showEditProjectWindow(entry.getKey());
                         AllData.mainApp.showInfoProjectWindow(entry.getKey());
                     }
                 });

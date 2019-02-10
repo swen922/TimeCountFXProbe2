@@ -120,6 +120,7 @@ public class InfoProjectWindowController {
         commentTextArea.setText(myProject.getComment());
         linkedProjectsTextField.setText(myProject.getLinkedProjects());
 
+        checkArchives();
         initializeTable();
         initSaveButtons();
         initClosing();
@@ -127,6 +128,25 @@ public class InfoProjectWindowController {
         workSum.textProperty().bind(myProject.workSumProperty());
 
 
+    }
+
+    private void checkArchives() {
+        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+            openFolderButton.setDisable(true);
+            companyNameTextArea.setEditable(false);
+            managerTextArea.setEditable(false);
+            descriptionTextArea.setEditable(false);
+            commentTextArea.setEditable(false);
+            linkedProjectsTextField.setEditable(false);
+        }
+        else {
+            openFolderButton.setDisable(false);
+            companyNameTextArea.setEditable(true);
+            managerTextArea.setEditable(true);
+            descriptionTextArea.setEditable(true);
+            commentTextArea.setEditable(true);
+            linkedProjectsTextField.setEditable(true);
+        }
     }
 
     public void initializeTable() {

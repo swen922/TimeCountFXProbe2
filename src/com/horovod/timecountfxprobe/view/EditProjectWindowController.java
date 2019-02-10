@@ -380,7 +380,6 @@ public class EditProjectWindowController {
                     browsDir(path);
                 } catch (Exception e1) {
                     showAlertOpenFolder(myProject.getIdNumber());
-
                 }
             }
         }
@@ -389,7 +388,6 @@ public class EditProjectWindowController {
                 browsDir(path);
             } catch (Exception e) {
                 showAlertOpenFolder(myProject.getIdNumber());
-
             }
         }
     }
@@ -413,29 +411,29 @@ public class EditProjectWindowController {
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
             openFolderButton.setDisable(true);
             archiveCheckBox.setSelected(true);
-            //projectNameTextArea.setEditable(false);
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
             descriptionTextArea.setEditable(false);
+            commentTextArea.setEditable(false);
+            linkedProjectsTextField.setEditable(false);
             budgetTextField.setEditable(false);
             POnumberTextField.setEditable(false);
             pathToFolderTextField.setEditable(false);
             addWorkDayButton.setDisable(true);
-            //workTimeTableView.setEditable(false);
         }
         else {
             topColoredPane.setStyle(null);
             openFolderButton.setDisable(false);
             archiveCheckBox.setSelected(false);
-            //projectNameTextArea.setEditable(true);
             companyNameTextArea.setEditable(true);
             managerTextArea.setEditable(true);
             descriptionTextArea.setEditable(true);
+            commentTextArea.setEditable(true);
+            linkedProjectsTextField.setEditable(true);
             budgetTextField.setEditable(true);
             POnumberTextField.setEditable(true);
             pathToFolderTextField.setEditable(true);
             addWorkDayButton.setDisable(false);
-            //workTimeTableView.setEditable(true);
         }
     }
 
@@ -500,9 +498,7 @@ public class EditProjectWindowController {
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
         chooser.getExtensionFilters().add(extFilter);
-
-        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-        chooser.setInitialDirectory(new File(path));
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
         String fileName = "Проект id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
         chooser.setInitialFileName(fileName);
 
@@ -634,9 +630,7 @@ public class EditProjectWindowController {
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
         chooser.getExtensionFilters().add(extFilter);
-
-        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-        chooser.setInitialDirectory(new File(path));
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
         String fileName = "Проект id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
         chooser.setInitialFileName(fileName);
 

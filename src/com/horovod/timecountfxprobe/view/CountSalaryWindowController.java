@@ -238,9 +238,11 @@ public class CountSalaryWindowController {
 
             if (fromDate.compareTo(LocalDate.now()) > 0) {
                 fromDatePicker.setValue(LocalDate.now());
+                fromDate = LocalDate.now();
             }
             if (tillDate.compareTo(LocalDate.now()) > 0) {
                 tillDatePicker.setValue(LocalDate.now());
+                tillDate = LocalDate.now();
             }
 
             if (fromDate.compareTo(tillDate) > 0) {
@@ -250,6 +252,16 @@ public class CountSalaryWindowController {
                 else {
                     tillDatePicker.setValue(fromDatePicker.getValue());
                 }
+            }
+        }
+        else if (fromDate != null) {
+            if (fromDate.isAfter(LocalDate.now())) {
+                fromDatePicker.setValue(LocalDate.now());
+            }
+        }
+        else if (tillDate != null) {
+            if (tillDate.isAfter(LocalDate.now())) {
+                tillDatePicker.setValue(LocalDate.now());
             }
         }
     }
@@ -308,7 +320,7 @@ public class CountSalaryWindowController {
                     salary.append(noCh.getText()).append("\n");
                 }
                 salary.append("по причине отсутствия указанной стоимости рабочего часа\n");
-                salary.append("либо из-за отсутствия времени у этого дизайнера за указанный период.\n\n");
+                salary.append("либо из-за отсутствия времени за указанный период.\n\n");
             }
             if (noHourPay.size() == usersCheckBoxes.size()) {
                 textArea.setText("Расчет невозможен.\nВыберите для расчета работников, у которых указан размер часовой оплаты " +
@@ -351,8 +363,8 @@ public class CountSalaryWindowController {
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
             chooser.getExtensionFilters().add(extFilter);
 
-            String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-            chooser.setInitialDirectory(new File(path));
+            //String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+            chooser.setInitialDirectory(new File(AllData.pathToDownloads));
 
             String fileName = textArea.getText().split("\n")[0];
             chooser.setInitialFileName(fileName);
@@ -385,8 +397,8 @@ public class CountSalaryWindowController {
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
             chooser.getExtensionFilters().add(extFilter);
 
-            String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-            chooser.setInitialDirectory(new File(path));
+            //String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
+            chooser.setInitialDirectory(new File(AllData.pathToDownloads));
 
             String fileName = textArea.getText().split("\n")[0];
             chooser.setInitialFileName(fileName);

@@ -184,15 +184,30 @@ public class EditUserWindowController {
         }
     }
 
-    private void initRetiredCheckBox() {
+    private void checkRetireds() {
         if (AllUsers.getOneUser(userID).isRetired()) {
             retiredCheckBox.setSelected(true);
             topColoredAnchorPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+            loginTextArea.setEditable(false);
+            passwordField.setEditable(false);
+            fullNameTextArea.setEditable(false);
+            emailTextField.setEditable(false);
+            hourPayTextField.setEditable(false);
         }
         else {
             retiredCheckBox.setSelected(false);
             topColoredAnchorPane.setStyle(null);
+            loginTextArea.setEditable(true);
+            passwordField.setEditable(true);
+            fullNameTextArea.setEditable(true);
+            emailTextField.setEditable(true);
+            hourPayTextField.setEditable(true);
         }
+    }
+
+    private void initRetiredCheckBox() {
+
+        checkRetireds();
 
         retiredCheckBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -209,6 +224,7 @@ public class EditUserWindowController {
                         if (retired) {
                             retiredCheckBox.setSelected(true);
                             topColoredAnchorPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                            checkRetireds();
                             AllData.staffWindowController.initializeTable();
                             if (AllData.countSalaryWindowController != null) {
                                 AllData.countSalaryWindowController.updateUsers();
@@ -225,6 +241,7 @@ public class EditUserWindowController {
                     else {
                         retiredCheckBox.setSelected(false);
                         topColoredAnchorPane.setStyle(null);
+                        checkRetireds();
                     }
                 }
                 else {
@@ -239,6 +256,7 @@ public class EditUserWindowController {
                         if (returned) {
                             retiredCheckBox.setSelected(false);
                             topColoredAnchorPane.setStyle(null);
+                            checkRetireds();
                             AllData.staffWindowController.initializeTable();
                             if (AllData.countSalaryWindowController != null) {
                                 AllData.countSalaryWindowController.updateUsers();
@@ -255,6 +273,7 @@ public class EditUserWindowController {
                     else {
                         retiredCheckBox.setSelected(true);
                         topColoredAnchorPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                        checkRetireds();
                     }
 
                 }

@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
+import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -28,14 +29,21 @@ public class EditingCell<T, String> extends TableCell<T, String> {
 
     @Override
     public void startEdit() {
-        if (!isEmpty()) {
-            super.startEdit();
-            createTextField();
-            setText(null);
-            setGraphic(textField);
-            textField.selectAll();
+        try {
+            Integer num = (Integer) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
+            Project p = AllData.getAnyProject(num);
+            if (!p.isArchive() && !AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                if (!isEmpty()) {
+                    super.startEdit();
+                    createTextField();
+                    setText(null);
+                    setGraphic(textField);
+                    textField.selectAll();
+                }
+            }
+        } catch (Exception e) {
+            AllData.logger.error(e.getMessage(), e);
         }
-
     }
 
     @Override
@@ -114,8 +122,6 @@ public class EditingCell<T, String> extends TableCell<T, String> {
                     }
                     EditingCell.this.getTableView().requestFocus();
                     EditingCell.this.getTableView().getSelectionModel().selectAll();
-
-
                 }
             }
         });

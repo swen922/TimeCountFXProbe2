@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -58,6 +59,8 @@ public class AllData {
 
     private static String meUser = System.getProperty("user.name");
     public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX";
+    public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
+
 
 
 

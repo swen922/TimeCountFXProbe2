@@ -1,6 +1,9 @@
 package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.project.Project;
+import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.user.User;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -15,19 +18,23 @@ public class EditingCellHourPay<T, String> extends TableCell<T, String> {
 
     private TextField textField;
 
+
     public EditingCellHourPay() {
     }
 
     @Override
     public void startEdit() {
-        if (!isEmpty()) {
-            super.startEdit();
-            createTextField();
-            setText(null);
-            setGraphic(textField);
-            textField.selectAll();
+        java.lang.String fullName = (java.lang.String) this.getTableView().getColumns().get(2).getCellObservableValue(this.getIndex()).getValue();
+        User u = AllUsers.getOneUserForFullName(fullName);
+        if (!u.isRetired()) {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
         }
-
     }
 
     @Override

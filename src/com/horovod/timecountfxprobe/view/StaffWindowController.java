@@ -1047,9 +1047,7 @@ public class StaffWindowController {
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
         chooser.getExtensionFilters().add(extFilter);
-
-        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-        chooser.setInitialDirectory(new File(path));
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
 
 
         StringBuilder fileName = new StringBuilder("Статистика по персоналу за ");
@@ -1170,9 +1168,7 @@ public class StaffWindowController {
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
         chooser.getExtensionFilters().add(extFilter);
-
-        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-        chooser.setInitialDirectory(new File(path));
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
 
 
         StringBuilder fileName = new StringBuilder("Статистика по персоналу за ");

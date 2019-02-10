@@ -321,15 +321,17 @@ public class TableProjectsManagerController {
             @Override
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
 
-                int oldValue = 0;
-                if (event.getOldValue() == null || event.getOldValue().isEmpty()) {
-                }
-                else {
-                    oldValue = AllData.parseMoney(0, event.getOldValue());
-                }
-                int budget = AllData.parseMoney(oldValue, event.getNewValue());
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
-                project.setBudget(budget);
+                if (!project.isArchive()) {
+                    int oldValue = 0;
+                    if (event.getOldValue() == null || event.getOldValue().isEmpty()) {
+                    }
+                    else {
+                        oldValue = AllData.parseMoney(0, event.getOldValue());
+                    }
+                    int budget = AllData.parseMoney(oldValue, event.getNewValue());
+                    //Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
+                    project.setBudget(budget);
 
                 /*Integer budget = null;
                 try {
@@ -340,16 +342,17 @@ public class TableProjectsManagerController {
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 project.setBudget(budget);*/
 
-                // код для мгновенного обновления страниц у менеджера
-                if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
-                    AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
-                }
-                if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
-                    AllData.staffWindowController.initializeTable();
-                }
+                    // код для мгновенного обновления страниц у менеджера
+                    if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
+                        AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                    }
+                    if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
+                        AllData.staffWindowController.initializeTable();
+                    }
 
-                filterField.setText("-");
-                filterField.clear();
+                    filterField.setText("-");
+                    filterField.clear();
+                }
             }
         });
 
@@ -727,6 +730,15 @@ public class TableProjectsManagerController {
 
         if (fromDate != null && tillDate != null) {
 
+            if (fromDate.isAfter(LocalDate.now())) {
+                fromDatePicker.setValue(LocalDate.now());
+                fromDate = LocalDate.now();
+            }
+            if (tillDate.isAfter(LocalDate.now())) {
+                tillDatePicker.setValue(LocalDate.now());
+                tillDate = LocalDate.now();
+            }
+
             if (fromDate.compareTo(tillDate) > 0) {
                 if (node == fromDatePicker) {
                     fromDatePicker.setValue(null);
@@ -734,6 +746,16 @@ public class TableProjectsManagerController {
                 else {
                     tillDatePicker.setValue(null);
                 }
+            }
+        }
+        else if (fromDate != null) {
+            if (fromDate.isAfter(LocalDate.now())) {
+                fromDatePicker.setValue(LocalDate.now());
+            }
+        }
+        else if (tillDate != null) {
+            if (tillDate.isAfter(LocalDate.now())) {
+                tillDatePicker.setValue(LocalDate.now());
             }
         }
     }
@@ -981,9 +1003,7 @@ public class TableProjectsManagerController {
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
         chooser.getExtensionFilters().add(extFilter);
-
-        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-        chooser.setInitialDirectory(new File(path));
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
 
 
         StringBuilder fileName = new StringBuilder("Рабочее время за ");
@@ -1045,11 +1065,7 @@ public class TableProjectsManagerController {
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
         chooser.getExtensionFilters().add(extFilter);
-
-        String path = new File(System.getProperty("user.home")).getPath() + "/Documents";
-        chooser.setInitialDirectory(new File(path));
-
-
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
 
         StringBuilder fileName = new StringBuilder("Время за ");
 
@@ -1369,14 +1385,18 @@ public class TableProjectsManagerController {
 
         @Override
         public void startEdit() {
-            if (!isEmpty()) {
-                super.startEdit();
-                createTextField();
-                setText(null);
-                setGraphic(textField);
-                textField.selectAll();
-            }
 
+            Integer num = (Integer) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
+            Project p = AllData.getAnyProject(num);
+            if (!p.isArchive()) {
+                if (!isEmpty()) {
+                    super.startEdit();
+                    createTextField();
+                    setText(null);
+                    setGraphic(textField);
+                    textField.selectAll();
+                }
+            }
         }
 
         @Override
