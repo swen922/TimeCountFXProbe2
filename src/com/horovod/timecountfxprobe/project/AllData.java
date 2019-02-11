@@ -366,10 +366,12 @@ public class AllData {
             rebuildMonthWorkSumProperty(today.getYear(), today.getMonthValue());
             rebuildYearWorkSumProperty(today.getYear());
 
-            rebuildDesignerDayWorkSumProperty();
-            rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
-            rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
-            rebuildDesignerYearWorkSumProperty(today.getYear());
+            if (AllData.tableProjectsDesignerController != null) {
+                rebuildDesignerDayWorkSumProperty();
+                rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+                rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
+                rebuildDesignerYearWorkSumProperty(today.getYear());
+            }
 
             AllData.status = "Добавлено рабочее время в проект id-" + projectIDnumber;
             AllData.updateAllStatus();

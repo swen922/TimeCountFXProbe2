@@ -31,6 +31,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -45,6 +46,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -62,6 +64,9 @@ public class TableProjectsManagerController {
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
     private XYChart.Series<String, Integer> series;
 
+
+    @FXML
+    private AnchorPane topColoredPane;
 
     @FXML
     private TextField filterField;
@@ -182,13 +187,41 @@ public class TableProjectsManagerController {
         /** TODO сюда или в mainApp добавить setStageTitle("Имя пользователя")
          * */
 
-        // Отработка методов данных
-        AllData.deleteZeroTime();
-        AllData.rebuildWorkSum();
-        AllData.rebuildTodayWorkSumProperty();
+        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+            todayWorkSumLabel.setText("-");
+            workSumLabel.setText("-");
+            topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+            statisticButton.setDisable(true);
+            usersButton.setDisable(true);
+            calculateSumButton.setDisable(true);
+            newProjectButton.setDisable(true);
+        }
+        else {
+            todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
+            workSumLabel.textProperty().bind(AllData.workSumProjectsProperty().asString());
+            AllData.rebuildDesignerRatingPosition();
+            statisticButton.setDisable(false);
+            usersButton.setDisable(false);
+            calculateSumButton.setDisable(false);
+            newProjectButton.setDisable(false);
 
-        if (showProjects == null) {
+            AllData.deleteZeroTime();
+            AllData.deleteZeroTime();
+            AllData.rebuildWorkSum();
+            AllData.rebuildTodayWorkSumProperty();
+            topColoredPane.setStyle(null);
+        }
+
+
+
+        // Отработка методов данных
+
+
+        if (showProjects == null && showArchiveProjectsCheckBox.isSelected()) {
             showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+        }
+        else if (showProjects == null && !showArchiveProjectsCheckBox.isSelected()) {
+            showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
         }
 
         if (filterData == null) {
@@ -206,9 +239,6 @@ public class TableProjectsManagerController {
         }
 
         initializeTable();
-
-        todayWorkSumLabel.textProperty().bind(AllData.todayWorkSumProperty().asString());
-        workSumLabel.textProperty().bind(AllData.workSumProjectsProperty().asString());
 
         initializeChart();
 
@@ -741,10 +771,10 @@ public class TableProjectsManagerController {
 
             if (fromDate.compareTo(tillDate) > 0) {
                 if (node == fromDatePicker) {
-                    fromDatePicker.setValue(null);
+                    fromDatePicker.setValue(tillDate);
                 }
                 else {
-                    tillDatePicker.setValue(null);
+                    tillDatePicker.setValue(fromDate);
                 }
             }
         }
@@ -766,19 +796,18 @@ public class TableProjectsManagerController {
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
+        if (showArchiveProjectsCheckBox.isSelected()) {
+            showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+        }
+        else {
+            showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+        }
+
+        filterData = new FilteredList<>(showProjects, p -> true);
+        filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
+        sortedList = new SortedList<>(filterDataWrapper);
+
         if (fromDate != null && tillDate != null) {
-
-            if (showArchiveProjectsCheckBox.isSelected()) {
-                showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
-            }
-            else {
-                showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-            }
-
-            filterData = new FilteredList<>(showProjects, p -> true);
-            filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
-            sortedList = new SortedList<>(filterDataWrapper);
-
             filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                 @Override
                 public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
@@ -790,16 +819,6 @@ public class TableProjectsManagerController {
             });
         }
         else {
-            if (showArchiveProjectsCheckBox.isSelected()) {
-                showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
-            }
-            else {
-                showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-            }
-            filterData = new FilteredList<>(showProjects, p -> true);
-            filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
-            sortedList = new SortedList<>(filterDataWrapper);
-
             filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                 @Override
                 public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
@@ -1229,6 +1248,19 @@ public class TableProjectsManagerController {
                     archiveCheckBox.setSelected(false);
                     openFolderButton.setDisable(false);
                     setStyle(null);
+                }
+
+                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    openFolderButton.setDisable(true);
+                    manageButton.setDisable(true);
+                    archiveCheckBox.setDisable(true);
+                    deleteButton.setDisable(true);
+                }
+                else {
+                    openFolderButton.setDisable(false);
+                    manageButton.setDisable(false);
+                    archiveCheckBox.setDisable(false);
+                    deleteButton.setDisable(false);
                 }
 
 

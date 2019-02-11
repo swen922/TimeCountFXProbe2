@@ -23,196 +23,200 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.TableProjectsManagerController">
    <children>
-      <HBox alignment="CENTER_LEFT" maxHeight="150.0" prefWidth="1200.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="topColoredPane" prefHeight="150.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox alignment="BOTTOM_CENTER" minWidth="450.0" prefWidth="450.0" spacing="3.0">
+            <HBox alignment="CENTER_LEFT" maxHeight="150.0" prefWidth="1200.0" spacing="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="10.0">
+                  <VBox alignment="BOTTOM_CENTER" minWidth="450.0" prefWidth="450.0" spacing="3.0">
                      <children>
-                        <CheckBox fx:id="showArchiveProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowArchiveProjectsCheckBox" text="Показывать архивные проекты">
-                           <padding>
-                              <Insets bottom="5.0" />
-                           </padding>
+                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="10.0">
+                           <children>
+                              <CheckBox fx:id="showArchiveProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowArchiveProjectsCheckBox" text="Показывать архивные проекты">
+                                 <padding>
+                                    <Insets bottom="5.0" />
+                                 </padding>
+                                 <tooltip>
+                                    <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
+                                 </tooltip>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </CheckBox>
+                           </children>
+                        </HBox>
+                        <Separator />
+                        <HBox alignment="CENTER_LEFT" minWidth="430.0" prefHeight="40.0" spacing="10.0">
+                           <children>
+                              <Label text="За период:">
+                                 <HBox.margin>
+                                    <Insets right="2.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="150.0" promptText="c">
+                                 <tooltip>
+                                    <Tooltip text="Выбери начальную дату периода" />
+                                 </tooltip>
+                              </DatePicker>
+                              <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="150.0" promptText="по">
+                                 <tooltip>
+                                    <Tooltip text="Выбери конечную дату периода" />
+                                 </tooltip>
+                              </DatePicker>
+                              <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
+                                 <tooltip>
+                                    <Tooltip text="Очистить период" />
+                                 </tooltip>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="3.0" top="1.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <Separator />
+                        <HBox alignment="CENTER" minWidth="430.0" prefHeight="40.0" spacing="10.0">
+                           <children>
+                              <TextField fx:id="filterField" onAction="#addPredicateToFilter" onKeyTyped="#addPredicateToFilter" prefHeight="26.0" prefWidth="400.0" promptText="Найти проект">
+                                 <opaqueInsets>
+                                    <Insets right="2010.0" />
+                                 </opaqueInsets>
+                                 <tooltip>
+                                    <Tooltip text="Набери номер проекта или кусок любого текста / имени / названия / бренда, который есть в этом проекте" />
+                                 </tooltip>
+                              </TextField>
+                              <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X">
+                                 <tooltip>
+                                    <Tooltip text="Очистить поле поиска" />
+                                 </tooltip>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="-10.0" top="2.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                     <children>
+                        <Button fx:id="statisticButton" mnemonicParsing="false" onAction="#handleStatisticButton" prefHeight="30.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                            <tooltip>
-                              <Tooltip text="Включить для отображения только тех проектов, в которых есть твое рабочее время" />
+                              <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
                            </tooltip>
+                        </Button>
+                        <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handleUsersButton" prefHeight="30.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
+                        <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="30.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
+                     </children>
+                     <padding>
+                        <Insets top="12.0" />
+                     </padding>
+                  </VBox>
+                  <LineChart fx:id="decadeLineChart" accessibleHelp="График рабочего времени за 3 недели" focusTraversable="true" horizontalZeroLineVisible="false" legendSide="RIGHT" legendVisible="false" maxHeight="200.0" minHeight="150.0" prefHeight="150.0" prefWidth="362.0" titleSide="RIGHT" verticalZeroLineVisible="false">
+                     <xAxis>
+                        <CategoryAxis autoRanging="false" side="BOTTOM" fx:id="xAxis" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis minorTickCount="10" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLabelsVisible="false" tickLength="10.0" tickMarkVisible="false" tickUnit="25.0">
+                           <tickLabelFont>
+                              <Font size="5.0" />
+                           </tickLabelFont>
+                        </NumberAxis>
+                     </yAxis>
+                  </LineChart>
+                  <VBox alignment="TOP_CENTER" prefWidth="100.0" spacing="5.0">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" text="за сегодня:" textAlignment="CENTER">
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+                           <effect>
+                              <InnerShadow blurType="GAUSSIAN" choke="1.0" />
+                           </effect>
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="todayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="#f3622d">
+                           <font>
+                              <Font name="System Bold" size="30.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="-5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Separator />
+                        <Label text="Всего">
+                           <VBox.margin>
+                              <Insets top="3.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="workSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="-2.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets top="5.0" />
+                     </padding>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0" spacing="10.0">
+                     <children>
+                        <Button fx:id="newProjectButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleNewProjectButton" prefHeight="50.0" prefWidth="100.0" text="Новый проект" textAlignment="CENTER" wrapText="true">
+                           <font>
+                              <Font name="System Bold" size="15.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="reloadButton" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Нажми, чтобы заново считать все данные и отсортировать таблицу" />
+                           </tooltip>
+                        </Button>
+                        <Label fx:id="aboutProgramLabel" onMouseClicked="#handleAbout" text="О программе" textFill="#f3622d" underline="true">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
-                        </CheckBox>
-                     </children>
-                  </HBox>
-                  <Separator />
-                  <HBox alignment="CENTER_LEFT" minWidth="430.0" prefHeight="40.0" spacing="10.0">
-                     <children>
-                        <Label text="За период:">
-                           <HBox.margin>
-                              <Insets right="2.0" />
-                           </HBox.margin>
                         </Label>
-                        <DatePicker fx:id="fromDatePicker" onAction="#handleFromDatePicker" prefWidth="150.0" promptText="c">
-                           <tooltip>
-                              <Tooltip text="Выбери начальную дату периода" />
-                           </tooltip>
-                        </DatePicker>
-                        <DatePicker fx:id="tillDatePicker" onAction="#handleTillDatePicker" prefWidth="150.0" promptText="по">
-                           <tooltip>
-                              <Tooltip text="Выбери конечную дату периода" />
-                           </tooltip>
-                        </DatePicker>
-                        <Button fx:id="clearDatePicker" mnemonicParsing="false" onAction="#handleDeleteDatePicker" text="X">
-                           <tooltip>
-                              <Tooltip text="Очистить период" />
-                           </tooltip>
-                        </Button>
                      </children>
-                     <VBox.margin>
-                        <Insets bottom="3.0" top="1.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <Separator />
-                  <HBox alignment="CENTER" minWidth="430.0" prefHeight="40.0" spacing="10.0">
-                     <children>
-                        <TextField fx:id="filterField" onAction="#addPredicateToFilter" onKeyTyped="#addPredicateToFilter" prefHeight="26.0" prefWidth="400.0" promptText="Найти проект">
-                           <opaqueInsets>
-                              <Insets right="2010.0" />
-                           </opaqueInsets>
-                           <tooltip>
-                              <Tooltip text="Набери номер проекта или кусок любого текста / имени / названия / бренда, который есть в этом проекте" />
-                           </tooltip>
-                        </TextField>
-                        <Button fx:id="deleteSearchTextButton" mnemonicParsing="false" onAction="#handleDeleteSearch" text="X">
-                           <tooltip>
-                              <Tooltip text="Очистить поле поиска" />
-                           </tooltip>
-                        </Button>
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="-10.0" top="2.0" />
-                     </VBox.margin>
-                  </HBox>
-               </children>
-               <padding>
-                  <Insets bottom="20.0" left="10.0" right="10.0" top="10.0" />
-               </padding>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
-            </VBox>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-               <children>
-                  <Button fx:id="statisticButton" mnemonicParsing="false" onAction="#handleStatisticButton" prefHeight="30.0" prefWidth="100.0" text="Статистика" textAlignment="CENTER">
-                     <VBox.margin>
+                     <opaqueInsets>
                         <Insets />
-                     </VBox.margin>
-                     <tooltip>
-                        <Tooltip text="Открыть окно с разной статистикой по твоему рабочему времени" />
-                     </tooltip>
-                  </Button>
-                  <Button fx:id="usersButton" mnemonicParsing="false" onAction="#handleUsersButton" prefHeight="30.0" prefWidth="100.0" text="Персонал" textAlignment="CENTER" wrapText="true" />
-                  <Button fx:id="calculateSumButton" mnemonicParsing="false" onAction="#handleSumButton" prefHeight="30.0" prefWidth="100.0" text="Сумма" textAlignment="CENTER" wrapText="true" />
-               </children>
-               <padding>
-                  <Insets top="12.0" />
-               </padding>
-            </VBox>
-            <LineChart fx:id="decadeLineChart" accessibleHelp="График рабочего времени за 3 недели" focusTraversable="true" horizontalZeroLineVisible="false" legendSide="RIGHT" legendVisible="false" maxHeight="200.0" minHeight="150.0" prefHeight="150.0" prefWidth="362.0" titleSide="RIGHT" verticalZeroLineVisible="false">
-               <xAxis>
-                  <CategoryAxis autoRanging="false" side="BOTTOM" fx:id="xAxis" />
-               </xAxis>
-               <yAxis>
-                  <NumberAxis minorTickCount="10" minorTickVisible="false" side="LEFT" tickLabelGap="5.0" tickLabelsVisible="false" tickLength="10.0" tickMarkVisible="false" tickUnit="25.0">
-                     <tickLabelFont>
-                        <Font size="5.0" />
-                     </tickLabelFont>
-                  </NumberAxis>
-               </yAxis>
-            </LineChart>
-            <VBox alignment="TOP_CENTER" prefWidth="100.0" spacing="5.0">
-               <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="за сегодня:" textAlignment="CENTER">
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                     <effect>
-                        <InnerShadow blurType="GAUSSIAN" choke="1.0" />
-                     </effect>
-                     <VBox.margin>
-                        <Insets top="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <Label fx:id="todayWorkSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" textFill="#f3622d">
-                     <font>
-                        <Font name="System Bold" size="30.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets top="-5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <Separator />
-                  <Label text="Всего">
-                     <VBox.margin>
-                        <Insets top="3.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font size="11.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="workSumLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets top="-2.0" />
-                     </VBox.margin>
-                  </Label>
-               </children>
-               <padding>
-                  <Insets top="5.0" />
-               </padding>
-            </VBox>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0" spacing="10.0">
-               <children>
-                  <Button fx:id="newProjectButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleNewProjectButton" prefHeight="50.0" prefWidth="100.0" text="Новый проект" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                  </Button>
-                  <Button fx:id="reloadButton" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
-                     <VBox.margin>
-                        <Insets bottom="5.0" />
-                     </VBox.margin>
-                     <font>
-                        <Font size="12.0" />
-                     </font>
-                     <tooltip>
-                        <Tooltip text="Нажми, чтобы заново считать все данные и отсортировать таблицу" />
-                     </tooltip>
-                  </Button>
-                  <Label fx:id="aboutProgramLabel" onMouseClicked="#handleAbout" text="О программе" textFill="#f3622d" underline="true">
-                     <VBox.margin>
+                     </opaqueInsets>
+                     <HBox.margin>
                         <Insets />
-                     </VBox.margin>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Label>
+                     </HBox.margin>
+                     <padding>
+                        <Insets top="12.0" />
+                     </padding>
+                  </VBox>
                </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <HBox.margin>
-                  <Insets />
-               </HBox.margin>
                <padding>
-                  <Insets top="12.0" />
+                  <Insets left="5.0" right="5.0" />
                </padding>
-            </VBox>
+            </HBox>
          </children>
-         <padding>
-            <Insets left="5.0" right="5.0" />
-         </padding>
-      </HBox>
+      </AnchorPane>
       <TableView fx:id="projectsTable" editable="true" layoutX="93.0" layoutY="87.0" prefHeight="200.0" prefWidth="200.0" tableMenuButtonVisible="true" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="160.0">
          <columns>
             <TableColumn fx:id="columnAction" maxWidth="3500.0" prefWidth="75.0" text="Управление" />

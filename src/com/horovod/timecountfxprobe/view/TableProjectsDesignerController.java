@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -53,16 +54,21 @@ import java.util.function.Predicate;
 
 public class TableProjectsDesignerController {
 
-    private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-    private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
-    private Predicate<Map.Entry<Integer, Project>> filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
+    private ObservableList<Map.Entry<Integer, Project>> tableProjects;
+    private FilteredList<Map.Entry<Integer, Project>> filterData;
+    private Predicate<Map.Entry<Integer, Project>> filterPredicate;
+    private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper;
+    private SortedList<Map.Entry<Integer, Project>> sortedList;
+
+    //private ObservableList<Map.Entry<Integer, Project>> tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+    //private FilteredList<Map.Entry<Integer, Project>> filterData = new FilteredList<>(tableProjects, p -> true);
+    /*private Predicate<Map.Entry<Integer, Project>> filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
         @Override
         public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
             return true;
         }
-    };
-    private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
-
+    };*/
+    //private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
 
     private ObservableList<String> datesForChart;
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
@@ -72,13 +78,19 @@ public class TableProjectsDesignerController {
 
 
     @FXML
+    private AnchorPane topColoredPane;
+
+    @FXML
+    private CheckBox showMyProjectsCheckBox;
+
+    @FXML
+    private CheckBox showArchiveProjectsCheckBox;
+
+    @FXML
     private TextField filterField;
 
     @FXML
     private Button deleteSearchTextButton;
-
-    @FXML
-    private CheckBox showMyProjectsCheckBox;
 
     @FXML
     private DatePicker fromDatePicker;
@@ -174,8 +186,9 @@ public class TableProjectsDesignerController {
         LocalDate today = LocalDate.now();
 
         if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
-            dayWorkSumLabel.setText("0");
+            dayWorkSumLabel.setText("-");
             ratingPositionLabel.setText("-");
+            topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
         }
         else {
             dayWorkSumLabel.textProperty().bind(AllData.designerDayWorkSumProperty().asString());
@@ -187,6 +200,30 @@ public class TableProjectsDesignerController {
             AllData.rebuildDesignerWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
             AllData.rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
             AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
+            topColoredPane.setStyle(null);
+        }
+
+
+
+        if (tableProjects == null && showArchiveProjectsCheckBox.isSelected()) {
+            tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+        }
+        else if (tableProjects == null && !showArchiveProjectsCheckBox.isSelected()) {
+            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+        }
+
+        if (filterData == null) {
+            filterData = new FilteredList<>(tableProjects, p -> true);
+        }
+        if (filterPredicate == null) {
+            filterPredicate = p -> true;
+
+        }
+        if (filterDataWrapper == null) {
+            filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
+        }
+        if (sortedList == null) {
+            sortedList = new SortedList<>(filterDataWrapper);
         }
 
         handleFilters();
@@ -199,6 +236,12 @@ public class TableProjectsDesignerController {
         initLoggedUsersChoiceBox();
         initClosing();
 
+    }
+
+
+    public void handleShowArchiveProjectsCheckBox() {
+        handleFilters();
+        initializeTable();
     }
 
     public void initializeTable() {
@@ -602,7 +645,7 @@ public class TableProjectsDesignerController {
 
 
     public void handleShowMyProjectsCheckBox() {
-        checkDatePicker(showMyProjectsCheckBox);
+        //checkDatePicker(showMyProjectsCheckBox);
         handleFilters();
     }
 
@@ -620,23 +663,35 @@ public class TableProjectsDesignerController {
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
+
         if (fromDate != null && tillDate != null) {
 
+            if (fromDate.isAfter(LocalDate.now())) {
+                fromDatePicker.setValue(LocalDate.now());
+                fromDate = LocalDate.now();
+            }
             if (tillDate.isAfter(LocalDate.now())) {
                 tillDatePicker.setValue(LocalDate.now());
+                tillDate = LocalDate.now();
             }
 
             if (fromDate.compareTo(tillDate) > 0) {
-                if (node == showMyProjectsCheckBox) {
-                    fromDatePicker.setValue(null);
-                    tillDatePicker.setValue(null);
+                if (node == fromDatePicker) {
+                    fromDatePicker.setValue(tillDate);
                 }
-                else if (node == fromDatePicker) {
-                    fromDatePicker.setValue(null);
+                else {
+                    tillDatePicker.setValue(fromDate);
                 }
-                else if (node == tillDatePicker) {
-                    tillDatePicker.setValue(null);
-                }
+            }
+        }
+        else if (fromDate != null) {
+            if (fromDate.isAfter(LocalDate.now())) {
+                fromDatePicker.setValue(LocalDate.now());
+            }
+        }
+        else if (tillDate != null) {
+            if (tillDate.isAfter(LocalDate.now())) {
+                tillDatePicker.setValue(LocalDate.now());
             }
         }
     }
@@ -647,10 +702,19 @@ public class TableProjectsDesignerController {
         LocalDate fromDate = fromDatePicker.getValue();
         LocalDate tillDate = tillDatePicker.getValue();
 
+        if (showArchiveProjectsCheckBox.isSelected()) {
+            tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+        }
+        else {
+            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+        }
+
+        filterData = new FilteredList<>(tableProjects, p -> true);
+        filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
+        sortedList = new SortedList<>(filterDataWrapper);
+
         if (fromDate != null && tillDate != null) {
-
             if (showMyProjectsCheckBox.isSelected()) {
-
                 filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
@@ -663,7 +727,6 @@ public class TableProjectsDesignerController {
 
             }
             else {
-
                 filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
@@ -700,7 +763,7 @@ public class TableProjectsDesignerController {
         }
 
         sortTableProjects();
-        projectsTable.refresh();
+        initializeTable();
     }
 
 
@@ -891,11 +954,22 @@ public class TableProjectsDesignerController {
 
                 Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
 
-                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                if (entry.getValue().isArchive()) {
                     openFolderButton.setDisable(true);
+                    setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                 }
                 else {
                     openFolderButton.setDisable(false);
+                    setStyle(null);
+                }
+
+                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    openFolderButton.setDisable(true);
+                    infoButton.setDisable(true);
+                }
+                else {
+                    openFolderButton.setDisable(false);
+                    infoButton.setDisable(false);
                 }
 
                 openFolderButton.setOnAction(new EventHandler<ActionEvent>() {

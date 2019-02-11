@@ -41,6 +41,9 @@ public class InfoProjectWindowController {
 
 
     @FXML
+    private AnchorPane topColoredPane;
+
+    @FXML
     private Label idNumberLabel;
 
     @FXML
@@ -105,7 +108,7 @@ public class InfoProjectWindowController {
     }
 
     @FXML
-    private void initialize() {
+    public void initialize() {
 
         if (myProject == null) {
             myProject = AllData.getAnyProject(AllData.IDnumberForEdit);
@@ -125,13 +128,10 @@ public class InfoProjectWindowController {
         initSaveButtons();
         initClosing();
 
-        workSum.textProperty().bind(myProject.workSumProperty());
-
-
     }
 
     private void checkArchives() {
-        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired() || AllData.getAnyProject(myProject.getIdNumber()).isArchive()) {
             openFolderButton.setDisable(true);
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
@@ -147,12 +147,18 @@ public class InfoProjectWindowController {
             commentTextArea.setEditable(true);
             linkedProjectsTextField.setEditable(true);
         }
+
+        if (AllData.getAnyProject(myProject.getIdNumber()).isArchive()) {
+            topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+        }
+        else {
+            topColoredPane.setStyle(null);
+        }
     }
 
     public void initializeTable() {
 
-
-        //workSum.setText(AllData.formatWorkTime(AllData.intToDouble(myProject.getWorkSumForDesigner(AllUsers.getCurrentUser()))));
+        workSum.setText(AllData.formatWorkTime(AllData.intToDouble(myProject.getWorkSumForDesigner(AllUsers.getCurrentUser()))));
         hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(AllData.intToDouble(myProject.getWorkSumForDesigner(AllUsers.getCurrentUser())))));
 
         if (workDays == null) {
