@@ -1,6 +1,5 @@
 package com.horovod.timecountfxprobe.user;
 
-import com.horovod.timecountfxprobe.project.AllData;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

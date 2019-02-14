@@ -1,6 +1,5 @@
 package com.horovod.timecountfxprobe.user;
 
-import com.horovod.timecountfxprobe.exceptions.WrongArgumentException;
 import com.horovod.timecountfxprobe.project.AllData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

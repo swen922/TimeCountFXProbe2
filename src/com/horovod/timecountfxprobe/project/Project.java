@@ -1,6 +1,5 @@
 package com.horovod.timecountfxprobe.project;
 
-import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
