@@ -1,5 +1,7 @@
 package com.horovod.timecountfxprobe.project;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,28 +13,61 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.time.LocalDate;
 import java.util.*;
 
+@JsonAutoDetect
 @XmlRootElement(name = "project")
 public class Project {
 
+    @JsonDeserialize(as = Integer.class)
     private int idNumber;
+
     private IntegerProperty idNumberProperty;
+
+    @JsonDeserialize(as = String.class)
     private String company;
+
     private StringProperty companyProperty;
+
+    @JsonDeserialize(as = String.class)
     private String manager;
+
     private StringProperty managerProperty;
+
+    @JsonDeserialize(as = String.class)
     private String description;
+
     private StringProperty descriptionProperty;
+
+    @JsonDeserialize(as = String.class)
     private String dateCreationString;
+
+    @JsonDeserialize(as = Boolean.class)
     private volatile boolean isArchive = false;
+
+    @JsonDeserialize(as = String.class)
     private String comment;
+
+    @JsonDeserialize(as = String.class)
     private String folderPath;
+
+    @JsonDeserialize(as = String.class)
     private String linkedProjects;
+
+    @JsonDeserialize(as = String.class)
     private String PONumber;
+
     private StringProperty PONumberProperty;
+
+    @JsonDeserialize(as = Integer.class)
     private volatile int workSum = 0;
+
     private volatile StringProperty workSumProperty;
+
+    @JsonDeserialize(as = Integer.class)
     private int budget = 0;
+
     private StringProperty budgetProperty;
+
+    @JsonDeserialize(as = ArrayList.class)
     private List<WorkTime> work = new ArrayList<>();
 
 
@@ -575,6 +610,17 @@ public class Project {
 
     /** Методы получения всех экземпляров WorkTime по разным параметрам */
 
+
+    public WorkTime getWorkTimeForDesignerAndDate(int designerIDnumber, LocalDate date) {
+        for (WorkTime wt : work) {
+            if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
+                return wt;
+            }
+        }
+        return null;
+    }
+
+
     public List<WorkTime> getWorkTimeForDesigner(int designerIDnumber) {
         List<WorkTime> result = new ArrayList<>();
         for (WorkTime wt : work) {
@@ -589,16 +635,6 @@ public class Project {
         List<WorkTime> result = new ArrayList<>();
         for (WorkTime wt : work) {
             if (wt.getDate().equals(date)) {
-                result.add(wt);
-            }
-        }
-        return result;
-    }
-
-    public List<WorkTime> getWorkTimeForDesignerAndDate(int designerIDnumber, LocalDate date) {
-        List<WorkTime> result = new ArrayList<>();
-        for (WorkTime wt : work) {
-            if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
                 result.add(wt);
             }
         }

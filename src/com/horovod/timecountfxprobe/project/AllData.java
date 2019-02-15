@@ -1,6 +1,8 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.MainApp;
+import com.horovod.timecountfxprobe.threads.ThreadUpdateWorkTime;
+import com.horovod.timecountfxprobe.threads.Updater;
 import com.horovod.timecountfxprobe.user.Admin;
 import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
@@ -28,6 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -372,6 +376,10 @@ public class AllData {
                 rebuildDesignerMonthWorkSumProperty(today.getYear(), today.getMonthValue());
                 rebuildDesignerYearWorkSumProperty(today.getYear());
             }
+
+            Updater.update(new ThreadUpdateWorkTime(projectIDnumber, correctDate, idUser, newTime));
+
+            //service.submit(new ThreadUpdateWorkTime(projectIDnumber, correctDate, idUser, newTime));
 
             AllData.status = "Добавлено рабочее время в проект id-" + projectIDnumber;
             AllData.updateAllStatus();
