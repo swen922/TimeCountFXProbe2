@@ -35,31 +35,23 @@ public class ThreadUpdateWorkTime extends Task<WorkTime> {
         System.out.println("inside call");
 
         workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, date);
-        System.out.println("worktime = " + workTime);
 
         try {
-            System.out.println("worktime != null");
 
             ObjectMapper mapper = new ObjectMapper();
             String jsonSerialize = mapper.writeValueAsString(workTime);
-            System.out.println("jsonSerialize = " + jsonSerialize);
 
-            URL url = new URL("http://localhost:8080/updateworktime");
+            URL url = new URL("http://localhost:8088/updateworktime");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
-            System.out.println(connection.getRequestMethod());
-
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
             out.write(jsonSerialize);
             out.close();
 
-            System.out.println("out closed = " + out.toString());
-
             int responceCode = connection.getResponseCode();
-            System.out.println("responceCode = " + responceCode);
 
             StringBuilder sb = new StringBuilder();
             String tmp = null;
@@ -69,6 +61,7 @@ public class ThreadUpdateWorkTime extends Task<WorkTime> {
             }
             inn.close();
 
+            System.out.println("responceCode = " + responceCode);
             System.out.println("received from server = " + sb.toString());
         } catch (IOException e) {
             e.printStackTrace();

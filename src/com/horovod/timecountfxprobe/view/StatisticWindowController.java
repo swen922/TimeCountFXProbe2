@@ -398,7 +398,7 @@ public class StatisticWindowController {
             }
             else {
 
-                List<WorkTime> myWorks = AllData.getOneActiveProject(projectIDnumber).getWorkTimeForDesigner(AllUsers.getCurrentUser());
+                List<WorkTime> myWorks = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesigner(AllUsers.getCurrentUser());
 
                 if (myWorks.isEmpty()) {
                     projectNumberTextArea.setText("В этом проекте у меня нет рабочего времени");

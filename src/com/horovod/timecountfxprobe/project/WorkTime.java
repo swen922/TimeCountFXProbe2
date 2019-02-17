@@ -1,6 +1,8 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,6 +35,9 @@ public class WorkTime {
     @JsonDeserialize(as = Integer.class)
     private int weekNumber;
 
+    @JsonIgnore
+    private LocalDate date;
+
     /**
      Время храним умноженное на 10, чтобы обойтись без double или BigDecimal,
      а при выводе на экран делим на 10 и выдаем double
@@ -40,9 +45,10 @@ public class WorkTime {
     @JsonDeserialize(as = Integer.class)
     private volatile int time = 0;
 
-    public WorkTime(int newProjectID, LocalDate date, int ID, double time) {
+    public WorkTime(int newProjectID, String dateString, int ID, double time) {
         this.projectID = newProjectID;
-        this.dateString = AllData.formatDate(date);
+        this.dateString = dateString;
+        this.date = AllData.parseDate(dateString);
         this.year = date.getYear();
         this.month = date.getMonth().getValue();
         this.weekNumber = date.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());

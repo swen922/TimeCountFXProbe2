@@ -341,7 +341,7 @@ public class Project {
 
         // Если существующего экземпляра WorkTime с такой же датой и дизайнером не обнаружено,
         // то создаем новый экземпляр WorkTime и кладем в список
-        work.add(new WorkTime(this.idNumber, newDate, idUser, newTimeDouble));
+        work.add(new WorkTime(this.idNumber, AllData.formatDate(newDate), idUser, newTimeDouble));
         int newWorkSumInt = getWorkSum() + newTimeInt;
         setWorkSum(newWorkSumInt);
         setWorkSumProperty(newTimeDouble);
