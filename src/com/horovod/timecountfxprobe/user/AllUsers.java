@@ -54,6 +54,17 @@ public class AllUsers {
         return usersPass;
     }
 
+    public static SecurePassword getSecurePassForUser(int idUser) {
+        if (usersPass.containsKey(idUser)) {
+            return usersPass.get(idUser);
+        }
+        return null;
+    }
+
+    public static synchronized void addSecurePass(int idUser, SecurePassword securePassword) {
+        usersPass.put(idUser, securePassword);
+    }
+
     public static synchronized void setUsersPass(Map<Integer, SecurePassword> newUsersPass) {
         AllUsers.usersPass = newUsersPass;
     }

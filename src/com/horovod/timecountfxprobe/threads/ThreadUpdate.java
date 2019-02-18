@@ -1,37 +1,35 @@
 package com.horovod.timecountfxprobe.threads;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.horovod.timecountfxprobe.project.AllData;
-import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
 import javafx.concurrent.Task;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.concurrent.Callable;
+import java.util.ArrayList;
 
-public class ThreadUpdateWorkTime extends Task<WorkTime> {
+public class ThreadUpdate extends Task {
 
-    private WorkTime workTime;
+    private SerializeWrapper serializeWrapper;
 
-    public ThreadUpdateWorkTime(WorkTime workTime) {
-        this.workTime = workTime;
+    public ThreadUpdate(SerializeWrapper wrapper) {
+        this.serializeWrapper = wrapper;
     }
 
-
     @Override
-    public WorkTime call() throws Exception {
+    protected Object call() throws Exception {
 
         System.out.println("inside call");
 
         try {
 
             ObjectMapper mapper = new ObjectMapper();
-            String jsonSerialize = mapper.writeValueAsString(workTime);
+            String jsonSerialize = mapper.writeValueAsString(serializeWrapper);
 
-            URL url = new URL("http://localhost:8088/updateworktime");
+            URL url = new URL("http://localhost:8088/receiveupdate");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -58,5 +56,4 @@ public class ThreadUpdateWorkTime extends Task<WorkTime> {
         }
         return null;
     }
-
 }

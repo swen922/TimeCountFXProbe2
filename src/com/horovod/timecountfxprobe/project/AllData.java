@@ -1,9 +1,9 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.MainApp;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.threads.ThreadUpdateWorkTime;
-import com.horovod.timecountfxprobe.threads.Updater;
-import com.horovod.timecountfxprobe.user.Admin;
 import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -19,8 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.StringWriter;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -30,8 +29,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -358,7 +355,7 @@ public class AllData {
 
         if (isProjectExist(projectIDnumber) && (!isProjectArchive(projectIDnumber))) {
 
-            Project project = getOneActiveProject(projectIDnumber);
+            Project project = getAnyProject(projectIDnumber);
             int difference = project.addWorkTime(correctDate, idUser, newTime);
 
             addWorkSumProjects(difference);
@@ -377,7 +374,9 @@ public class AllData {
                 rebuildDesignerYearWorkSumProperty(today.getYear());
             }
 
-            Updater.update(new ThreadUpdateWorkTime(projectIDnumber, correctDate, idUser, newTime));
+            WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
+            System.out.println(workTime);
+            Updater.update(UpdateType.UPDATE_TIME, workTime);
 
             //service.submit(new ThreadUpdateWorkTime(projectIDnumber, correctDate, idUser, newTime));
 
