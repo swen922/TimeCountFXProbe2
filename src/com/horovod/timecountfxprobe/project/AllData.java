@@ -3,7 +3,6 @@ package com.horovod.timecountfxprobe.project;
 import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
-import com.horovod.timecountfxprobe.threads.ThreadUpdateWorkTime;
 import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -22,9 +21,8 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
+import java.text.ParsePosition;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -61,6 +59,8 @@ public class AllData {
     private static String meUser = System.getProperty("user.name");
     public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX";
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
+    // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
+    public static String httpUpdate = "http://localhost:8088/receiveupdate";
 
 
 
@@ -107,6 +107,7 @@ public class AllData {
     private static volatile double limitTimeForStaffWindow = 6;
     private static volatile int limitMoneyForStaffWindow = 6000;
     public static final String toLoginWindow = "Выйти в окно логина";
+    public static String timeStamp = formatDateTime(LocalDateTime.now()) + " - ";
     public static String status = "Все нормально";
 
 
@@ -339,9 +340,6 @@ public class AllData {
 
     /** Метод добавления и корректировки рабочего времени в проектах */
 
-    public void resetStatus() {
-        AllData.status = "Все нормально";
-    }
 
     public static synchronized boolean addWorkTime(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
 
@@ -375,12 +373,11 @@ public class AllData {
             }
 
             WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
-            System.out.println(workTime);
             Updater.update(UpdateType.UPDATE_TIME, workTime);
 
             //service.submit(new ThreadUpdateWorkTime(projectIDnumber, correctDate, idUser, newTime));
 
-            AllData.status = "Добавлено рабочее время в проект id-" + projectIDnumber;
+            AllData.status = "Локально добавлено рабочее время в проект id-" + projectIDnumber;
             AllData.updateAllStatus();
 
             return true;
@@ -653,8 +650,8 @@ public class AllData {
         allProjects.put(project.getIdNumber(), project);
         activeProjects.put(project.getIdNumber(), project);
 
-        AllData.status = "Создан новый проект id-" + project.getIdNumber();
-        updateAllStatus();
+        AllData.status = "Локально создан новый проект id-" + project.getIdNumber();
+        AllData.updateAllStatus();
         AllData.logger.info(AllData.status);
 
         return project;
@@ -683,7 +680,8 @@ public class AllData {
             }
             workSumProjects.set(tmp);
 
-            AllData.status = "Проект id-" + deadProject + " удален безвозвратно.";
+
+            AllData.status = "Локально проект id-" + deadProject + " удален безвозвратно.";
             updateAllStatus();
             AllData.logger.info(AllData.status);
 
@@ -699,23 +697,29 @@ public class AllData {
 
             if (projectIsArchive) {
                 activeProjects.remove(changedProject);
-                AllData.status = "Проект id-" + changedProject + " переведен в архив.";
+                AllData.status = "Локально проект id-" + changedProject + " переведен в архив.";
             }
-            else if (!projectIsArchive) {
+            else {
                 activeProjects.put(changedProject, chProject);
-                AllData.status = "Проект id-" + changedProject + " возвращен из архива.";
+                AllData.status = "Локально проект id-" + changedProject + " возвращен из архива.";
             }
+
             if (editProjectWindowControllers.containsKey(changedProject)) {
                 editProjectWindowControllers.get(changedProject).initializeArchiveCheckBox();
             }
+
             updateAllStatus();
             AllData.logger.info(AllData.status);
         }
     }
 
 
-    public static void updateAllStatus() {
-        Platform.runLater(new Runnable() {
+    public static synchronized void updateAllStatus() {
+
+        updateTimeStamp();
+        AllData.status = timeStamp + AllData.status;
+
+                Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 if (AllData.adminWindowController != null) {
@@ -724,12 +728,22 @@ public class AllData {
                 if (AllData.tableProjectsManagerController != null) {
                     AllData.tableProjectsManagerController.updateStatus();
                 }
-                /*if (AllData.tableProjectsDesignerController != null) {
+                if (AllData.tableProjectsDesignerController != null) {
                     AllData.tableProjectsDesignerController.updateStatus();
-                }*/
+                }
             }
         });
     }
+
+    public static void updateTimeStamp() {
+        timeStamp = formatDateTime(LocalDateTime.now()) + " - ";
+    }
+
+    public static void resetStatus() {
+        updateTimeStamp();
+        AllData.status = timeStamp + "Все нормально";
+    }
+
 
 
     /** Методы проверки существования проекта в списке
@@ -1038,7 +1052,12 @@ public class AllData {
     /** Форматировщик даты.
      * @return null
      * */
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+    //private static DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss.SSS");
+
+
+
 
     public static String formatDate(LocalDate date) {
         if (date == null) {
@@ -1050,6 +1069,26 @@ public class AllData {
     public static LocalDate parseDate(String dateString) {
         try {
             return DATE_FORMATTER.parse(dateString, LocalDate::from);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String formatDateTime(LocalDateTime dateTime) {
+        if (TIME_FORMATTER == null) {
+            TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        }
+
+        if (dateTime == null) {
+            return TIME_FORMATTER.format(LocalDateTime.now());
+        }
+        return TIME_FORMATTER.format(dateTime);
+        //return time.toString();
+    }
+
+    public static LocalDateTime parseDateTime(String dateTimeString) {
+        try {
+            return TIME_FORMATTER.parse(dateTimeString, LocalDateTime::from);
         } catch (Exception e) {
             return null;
         }

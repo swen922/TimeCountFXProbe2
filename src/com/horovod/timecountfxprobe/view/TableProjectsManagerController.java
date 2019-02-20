@@ -6,7 +6,9 @@ import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
+import com.horovod.timecountfxprobe.threads.ReadBaseOnServer;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -45,6 +47,8 @@ import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -174,11 +178,20 @@ public class TableProjectsManagerController {
     @FXML
     private Button testDeleteButton;
 
+    @FXML
+    private Button readBase;
 
+    public void readBaseNow() {
 
-    public TextField getFilterField() {
-        return filterField;
+        System.out.println("inside readBaseNow");
+
+        ReadBaseOnServer readBaseOnServer = new ReadBaseOnServer();
+        Updater.getService().submit(readBaseOnServer);
+
     }
+
+
+
 
 
     @FXML
@@ -186,6 +199,7 @@ public class TableProjectsManagerController {
 
         /** TODO сюда или в mainApp добавить setStageTitle("Имя пользователя")
          * */
+
 
         if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
             todayWorkSumLabel.setText("-");
@@ -211,6 +225,8 @@ public class TableProjectsManagerController {
             AllData.rebuildTodayWorkSumProperty();
             topColoredPane.setStyle(null);
         }
+
+        AllData.resetStatus();
 
 
 
@@ -910,7 +926,7 @@ public class TableProjectsManagerController {
     }
 
     public void updateStatus() {
-        statusLabel.setText("Статус: " + AllData.status);
+        statusLabel.setText(AllData.timeStamp + AllData.status);
     }
 
     public void resetStatus() {
@@ -990,6 +1006,8 @@ public class TableProjectsManagerController {
         }
     }
 
+    // TODO Переписать как булин, перенести в AllData, чтобы не дублировать
+    // А здесть проверяется булин, и если false, то останавливается закрытие программы
     private void saveBase() {
         Loader loader = new Loader();
         try {
@@ -997,14 +1015,16 @@ public class TableProjectsManagerController {
         } catch (IOException e) {
             e.printStackTrace();
             AllData.status = "Не удалось записать базу в файл: IOException";
-            updateStatus();
+            AllData.updateAllStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
             AllData.status = "Ошибка сериализации в XML: JAXBException";
-            updateStatus();
+            AllData.updateAllStatus();
             alertSerialize(e.toString());
+            AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
     }

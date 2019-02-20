@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.LocalDate;
 
 public class MainApp extends Application {
@@ -33,6 +35,8 @@ public class MainApp extends Application {
         this.primaryStage = primaryStage;
         AllData.primaryStage = primaryStage;
         this.primaryStage.setTitle("Time Count System Probe FX -1");
+
+        AllData.resetStatus();
 
         /** TODO убрать эту строчку в рабочем варианте */
         //Generator.generateUsers();
@@ -80,6 +84,18 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
             AllData.logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void initBaseOneServer() {
+        try {
+            URL url = new URL("http://localhost:8088/startup");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

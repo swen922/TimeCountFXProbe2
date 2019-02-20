@@ -4,7 +4,6 @@ package com.horovod.timecountfxprobe.serialize;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.threads.ThreadUpdate;
-import com.horovod.timecountfxprobe.threads.ThreadUpdateWorkTime;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.concurrent.Task;
 
@@ -24,6 +23,10 @@ public class Updater {
     //repeatUpdater.schedule(new Runnable() { ... }, 5, TimeUnit.SECONDS);
 
 
+    public static ExecutorService getService() {
+        return service;
+    }
+
     public ScheduledExecutorService getRepeatUpdater() {
         return repeatUpdater;
 
@@ -31,7 +34,11 @@ public class Updater {
 
     public static void update(UpdateType updateType, Object object) {
 
+        System.out.println("inside Updater.update");
+
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);
+
+        System.out.println(wrapper);
 
         Task task = new ThreadUpdate(wrapper);
         service.submit(task);

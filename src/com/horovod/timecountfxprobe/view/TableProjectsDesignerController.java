@@ -203,6 +203,8 @@ public class TableProjectsDesignerController {
             topColoredPane.setStyle(null);
         }
 
+        AllData.resetStatus();
+
 
 
         if (tableProjects == null && showArchiveProjectsCheckBox.isSelected()) {
