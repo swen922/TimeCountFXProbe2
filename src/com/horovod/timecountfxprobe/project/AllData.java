@@ -61,6 +61,8 @@ public class AllData {
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
     // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
     public static String httpUpdate = "http://localhost:8088/receiveupdate";
+    public static String httpReadBaseOnServer = "http://localhost:8088/readbase";
+
 
 
 

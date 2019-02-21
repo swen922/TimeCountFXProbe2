@@ -14,7 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class ThreadUpdate extends Task {
+public class ThreadUpdate extends Task<Boolean> {
 
     private SerializeWrapper serializeWrapper;
 
@@ -22,75 +22,92 @@ public class ThreadUpdate extends Task {
         this.serializeWrapper = wrapper;
     }
 
-    @Override
-    protected Object call() throws Exception {
+
+    protected Boolean call() throws Exception {
 
         System.out.println("insie ThreadUpdate.call");
 
-        AllData.status = "Начинаю обновление";
+        AllData.status = "Начинаю отправку обновления на сервер...";
         AllData.updateAllStatus();
 
         if (serializeWrapper != null) {
-            try {
 
-                ObjectMapper mapper = new ObjectMapper();
-                String jsonSerialize = mapper.writeValueAsString(serializeWrapper);
+            String jsonSerialize = ThreadUtil.getJsonString(serializeWrapper);
 
-                URL url = new URL(AllData.httpUpdate);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+            if (jsonSerialize != null && !jsonSerialize.isEmpty()) {
 
-                BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-                out.write(jsonSerialize);
-                out.close();
+                try {
 
-                int responceCode = connection.getResponseCode();
+                    URL url = new URL(AllData.httpUpdate);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setDoOutput(true);
+                    connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
-                System.out.println(responceCode);
+                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+                    out.write(jsonSerialize);
+                    out.close();
 
-                if (responceCode == 200) {
+                    int responceCode = connection.getResponseCode();
 
-                    StringBuilder sb = new StringBuilder("");
-                    String receivedString = null;
-                    BufferedReader inn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    while ((receivedString = inn.readLine()) != null) {
-                        sb.append(receivedString);
-                    }
-                    inn.close();
+                    System.out.println(responceCode);
 
-                    if (sb.toString().equalsIgnoreCase("true")) {
-                        AllData.status = "Обновление успешно отправлено на сервер.";
-                        AllData.updateAllStatus();
-                        AllData.logger.info(AllData.status);
+                    if (responceCode == 200) {
+
+                        StringBuilder sb = new StringBuilder("");
+                        String tmp = null;
+                        BufferedReader inn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                        while ((tmp = inn.readLine()) != null) {
+                            sb.append(tmp);
+                        }
+                        inn.close();
+
+                        if (sb.toString().equalsIgnoreCase("true")) {
+                            AllData.status = "Обновление успешно отправлено на сервер.";
+                            AllData.updateAllStatus();
+                            AllData.logger.info(AllData.status);
+                            return true;
+                        }
+                        else if (sb.toString().equalsIgnoreCase("false loginpass")) {
+                            AllData.status = "Не удалось обновить данные на сервере: ошибка логина/пароля " +
+                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
+                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
+                                    ", Объект = " + serializeWrapper;
+                            AllData.updateAllStatus();
+                            AllData.logger.error(AllData.status);
+                        }
+                        else {
+                            AllData.status = "Не удалось обновить данные на сервере. " +
+                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
+                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
+                                    ", Объект = " + serializeWrapper;
+                            AllData.updateAllStatus();
+                            AllData.logger.error(AllData.status);
+                        }
+
                     }
                     else {
-                        AllData.status = "Не удалось обновить данные на сервере. " +
-                                "Инициатор = userID-" + AllUsers.getOneUser(AllUsers.getCurrentUser()).getIDNumber()
-                                + "   " +
-                                AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                ", Объект = " + serializeWrapper.getList().get(0);
+                        AllData.status = "Ошибка соединения. Responce code = " + responceCode;
                         AllData.updateAllStatus();
                         AllData.logger.error(AllData.status);
                     }
 
-                }
-                else {
-                    AllData.status = "Ошибка соединения. Responce code = " + responceCode;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    AllData.status = "Ошибка обновления. Выброшено исключение! " +
+                            "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
+                            AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
+                            ", Объект = " + serializeWrapper;
                     AllData.updateAllStatus();
                     AllData.logger.error(AllData.status);
+                    AllData.logger.error(e.getMessage(), e);
                 }
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                AllData.status = "Ошибка обновления! Выброшено исключение! " +
-                        "Инициатор = " + AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                        ", Объект = " + serializeWrapper.getList().get(0);
+            }
+            else {
+                AllData.status = "Отмена отправки обновления на сервер из-за ошибки сериализации объекта serializeWrapper";
                 AllData.updateAllStatus();
                 AllData.logger.error(AllData.status);
-                AllData.logger.error(e.getMessage(), e);
             }
         }
         else {
@@ -98,7 +115,6 @@ public class ThreadUpdate extends Task {
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
         }
-
-        return null;
+        return false;
     }
 }

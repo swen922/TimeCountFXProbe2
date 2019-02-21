@@ -4,6 +4,7 @@ package com.horovod.timecountfxprobe;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.test.Generator;
+import com.horovod.timecountfxprobe.threads.ThreadUtil;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;
@@ -47,6 +48,8 @@ public class MainApp extends Application {
 
         initRootLayut();
 
+        ThreadUtil.readBaseOnServer();
+
         if (AllUsers.getCurrentUser() == 0) {
             showLoginWindowOnStart();
         }
@@ -84,18 +87,6 @@ public class MainApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
             AllData.logger.error(e.getMessage(), e);
-        }
-    }
-
-    private void initBaseOneServer() {
-        try {
-            URL url = new URL("http://localhost:8088/startup");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

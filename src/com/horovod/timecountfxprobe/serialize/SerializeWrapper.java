@@ -77,4 +77,14 @@ public class SerializeWrapper {
     public void setSecurePassword(SecurePassword securePassword) {
         this.securePassword = securePassword;
     }
+
+    @Override
+    public String toString() {
+        return "SerializeWrapper{" +
+                "updateType=" + updateType +
+                ", list=" + list +
+                ", login='" + login + '\'' +
+                ", securePassword=" + securePassword +
+                '}';
+    }
 }

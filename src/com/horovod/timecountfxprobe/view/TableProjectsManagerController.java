@@ -6,6 +6,8 @@ import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.threads.ReadBaseOnServer;
@@ -182,16 +184,9 @@ public class TableProjectsManagerController {
     private Button readBase;
 
     public void readBaseNow() {
-
-        System.out.println("inside readBaseNow");
-
-        ReadBaseOnServer readBaseOnServer = new ReadBaseOnServer();
+        ReadBaseOnServer readBaseOnServer = new ReadBaseOnServer(new SerializeWrapper(UpdateType.UPDATE_BASE_ON_SERVER, null));
         Updater.getService().submit(readBaseOnServer);
-
     }
-
-
-
 
 
     @FXML
