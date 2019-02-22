@@ -19,6 +19,9 @@ import java.util.Optional;
 
 public class CreateProjectWindowController {
 
+
+    // TODO разбить на 2 этапа создание проекта – сначала получение нового id-номера у сервера
+
     private String existingDescription = "";
 
     @FXML

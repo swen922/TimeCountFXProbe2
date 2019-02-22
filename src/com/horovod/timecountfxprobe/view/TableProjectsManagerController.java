@@ -102,9 +102,6 @@ public class TableProjectsManagerController {
     private Button newProjectButton;
 
     @FXML
-    private Button selectTMPButton;
-
-    @FXML
     private LineChart<String, Integer> decadeLineChart;
 
     @FXML
@@ -183,10 +180,10 @@ public class TableProjectsManagerController {
     @FXML
     private Button readBase;
 
-    public void readBaseNow() {
+    /*public void readBaseNow() {
         ReadBaseOnServer readBaseOnServer = new ReadBaseOnServer(new SerializeWrapper(UpdateType.UPDATE_BASE_ON_SERVER, null));
         Updater.getService().submit(readBaseOnServer);
-    }
+    }*/
 
 
     @FXML
@@ -1011,14 +1008,14 @@ public class TableProjectsManagerController {
             e.printStackTrace();
             AllData.status = "Не удалось записать базу в файл: IOException";
             AllData.updateAllStatus();
-            alertSerialize(e.toString());
+            alertSerialize(e.getMessage());
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
             AllData.status = "Ошибка сериализации в XML: JAXBException";
             AllData.updateAllStatus();
-            alertSerialize(e.toString());
+            alertSerialize(e.getMessage());
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }

@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
-import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.SecurePassword;
+import com.horovod.timecountfxprobe.user.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 
 @JsonAutoDetect
 @XmlRootElement(name = "serializewrapper")
@@ -18,8 +16,23 @@ public class SerializeWrapper {
     @JsonDeserialize(as = UpdateType.class)
     private UpdateType updateType;
 
-    @JsonDeserialize(as = ArrayList.class)
-    private ArrayList list = new ArrayList();
+    @JsonDeserialize(as = WorkTime.class)
+    private WorkTime workTime;
+
+    @JsonDeserialize(as = Project.class)
+    private Project project;
+
+    @JsonDeserialize(as = Designer.class)
+    private Designer designer;
+
+    @JsonDeserialize(as = Manager.class)
+    private Manager manager;
+
+    @JsonDeserialize(as = Admin.class)
+    private Admin admin;
+
+    @JsonDeserialize(as = Surveyor.class)
+    private Surveyor surveyor;
 
     @JsonDeserialize(as = String.class)
     private String login;
@@ -32,9 +45,24 @@ public class SerializeWrapper {
         this.updateType = updateType;
 
         if (updateType.equals(UpdateType.UPDATE_TIME)) {
-            WorkTime workTime = (WorkTime) object;
-            list.add(workTime);
+            this.workTime = (WorkTime) object;
         }
+        else if (updateType.equals(UpdateType.UPDATE_PROJECT)) {
+            this.project = (Project) object;
+        }
+        else if (updateType.equals(UpdateType.UPDATE_DESIGNER)) {
+            this.designer = (Designer) object;
+        }
+        else if (updateType.equals(UpdateType.UPDATE_MANAGER)) {
+            this.manager = (Manager) object;
+        }
+        else if (updateType.equals(UpdateType.UPDATE_ADMIN)) {
+            this.admin = (Admin) object;
+        }
+        else if (updateType.equals(UpdateType.UPDATE_SURVEYOR)) {
+            this.surveyor = (Surveyor) object;
+        }
+
         this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
         this.securePassword = AllUsers.getSecurePassForUser(AllUsers.getCurrentUser());
     }
@@ -47,17 +75,42 @@ public class SerializeWrapper {
         return updateType;
     }
 
-    @XmlElement(name = "updatelist")
-    public ArrayList getList() {
-        return list;
+    @XmlElement(name = "worktimeinwrapper")
+    public WorkTime getWorkTime() {
+        return workTime;
     }
 
-    @XmlElement(name = "userlogin")
+    @XmlElement(name = "projectinwrapper")
+    public Project getProject() {
+        return project;
+    }
+
+    @XmlElement(name = "designerinwrapper")
+    public Designer getDesigner() {
+        return designer;
+    }
+
+    @XmlElement(name = "managerinwrapper")
+    public Manager getManager() {
+        return manager;
+    }
+
+    @XmlElement(name = "admininwrapper")
+    public Admin getAdmin() {
+        return admin;
+    }
+
+    @XmlElement(name = "surveyorinwrapper")
+    public Surveyor getSurveyor() {
+        return surveyor;
+    }
+
+    @XmlElement(name = "userlogininwrapper")
     public String getLogin() {
         return login;
     }
 
-    @XmlElement(name = "secureps")
+    @XmlElement(name = "securepassinwrapper")
     public SecurePassword getSecurePassword() {
         return securePassword;
     }
@@ -66,8 +119,28 @@ public class SerializeWrapper {
         this.updateType = updateType;
     }
 
-    public void setList(ArrayList list) {
-        this.list = list;
+    public void setWorkTime(WorkTime workTime) {
+        this.workTime = workTime;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setDesigner(Designer designer) {
+        this.designer = designer;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
+
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+    }
+
+    public void setSurveyor(Surveyor surveyor) {
+        this.surveyor = surveyor;
     }
 
     public void setLogin(String login) {
@@ -82,7 +155,12 @@ public class SerializeWrapper {
     public String toString() {
         return "SerializeWrapper{" +
                 "updateType=" + updateType +
-                ", list=" + list +
+                ", workTime=" + workTime +
+                ", project=" + project +
+                ", designer=" + designer +
+                ", manager=" + manager +
+                ", admin=" + admin +
+                ", surveyor=" + surveyor +
                 ", login='" + login + '\'' +
                 ", securePassword=" + securePassword +
                 '}';

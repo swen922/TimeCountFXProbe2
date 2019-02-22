@@ -13,6 +13,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+
+
+// TODO разбить на 2 этапа создание проекта – сначала получение нового id-номера у сервера
+
+
 public class CreateUserWindowController {
 
     String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz@.-_";
@@ -194,14 +199,17 @@ public class CreateUserWindowController {
 
     public void handleClearLoginButton() {
         loginTextField.clear();
+        checkButtons();
     }
 
     public void handleClearPassButton() {
-        loginTextField.clear();
+        passTextField.clear();
+        checkButtons();
     }
 
     public void handleClearFullNameButton() {
-        loginTextField.clear();
+        fullNameTextField.clear();
+        checkButtons();
     }
 
 }

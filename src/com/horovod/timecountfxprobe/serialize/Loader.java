@@ -21,8 +21,8 @@ import java.util.Map;
 
 public class Loader {
 
-    private final String fileOptionsName = "/tcprobeFX.xml";
-    private final String fileBackupOptionsName = "/tcprobeFXBackup.xml";
+    private final String fileOptionsName = "/CLIENT_BASE.xml";
+    private final String fileBackupOptionsName = "/CLIENT_BASE_Backup.xml";
     private String pathString = AllData.pathToHomeFolder + fileOptionsName;
     private String backupPathString = AllData.pathToHomeFolder + fileBackupOptionsName;
 
@@ -54,17 +54,7 @@ public class Loader {
 
         marshaller.marshal(allDataWrapper, this.file);
 
-        /*try {
-
-        } catch (IOException e) {
-            System.out.println("Can't save data to file:\n" + file.getPath());
-            e.printStackTrace();
-            return false;
-        } catch (JAXBException e) {
-            System.out.println("Can't marshal data");
-            e.printStackTrace();
-            return false;
-        }*/
+        AllData.logger.info(Loader.class.getSimpleName() + " - База успешно сохранена.");
 
         return true;
     }
@@ -94,24 +84,7 @@ public class Loader {
             AllUsers.setCurrentUser(0);
             AllUsers.getUsersLogged().clear();
 
-            /*System.out.println("all is zeroed");
-            System.out.println("AllData.getAllProjects().size() = " + AllData.getAllProjects().size());
-            System.out.println("AllData.getIdNumber() = " + AllData.getIdNumber());
-            System.out.println("AllData.getWorkSumProjects() = " + AllData.getWorkSumProjects());
-            System.out.println("AllUsers.getUsers().size() = " + AllUsers.getUsers().size());
-            System.out.println("AllUsers.getIDCounterAllUsers() = " + AllUsers.getIDCounterAllUsers());
-            System.out.println("AllUsers.getUsersPass() = " + AllUsers.getUsersPass());
-            System.out.println("AllUsers.getCurrentUser() = " + AllUsers.getCurrentUser());
-            System.out.println("AllUsers.getUsersLogged() = " + AllUsers.getUsersLogged());
-            System.out.println("\n");*/
-
-
-            //System.out.println("now starting rebuild all...");
-
             AllUsers.setIDCounterAllUsers(allDataWrapper.getIDCounterAllUsers());
-            //AllUsers.setIDCounterAllUsers(255);
-            /*System.out.println("allDataWrapper.getIDCounterAllUsers() = " + allDataWrapper.getIDCounterAllUsers());
-            System.out.println("id projects = " + AllUsers.getIDCounterAllUsers());*/
 
             AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
             AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
@@ -143,16 +116,10 @@ public class Loader {
             AllData.rebuildActiveProjects();
             //System.out.println(AllData.getActiveProjects().size());
 
-            //System.out.println("\n");
+            AllData.logger.info(Loader.class.getSimpleName() + " - База успешно прочитана.");
 
             return true;
         }
-
-        /*try {
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }*/
 
         return false;
     }

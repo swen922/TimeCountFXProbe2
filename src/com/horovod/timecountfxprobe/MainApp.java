@@ -48,8 +48,6 @@ public class MainApp extends Application {
 
         initRootLayut();
 
-        ThreadUtil.readBaseOnServer();
-
         if (AllUsers.getCurrentUser() == 0) {
             showLoginWindowOnStart();
         }

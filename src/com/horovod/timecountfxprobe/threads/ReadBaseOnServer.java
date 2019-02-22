@@ -20,14 +20,16 @@ public class ReadBaseOnServer extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
 
-        System.out.println("inside call");
+        return null;
+
+        /*System.out.println("inside call");
 
         AllData.status = "Отправляю команду чтения базы сервером...";
         AllData.updateAllStatus();
 
         if (serializeWrapper != null) {
 
-            String jsonSerialize = ThreadUtil.getJsonString(serializeWrapper);
+            String jsonSerialize = ThreadUtil.getJsonString(serializeWrapper)
 
             if (jsonSerialize != null && !jsonSerialize.isEmpty()) {
                 try {
@@ -109,5 +111,6 @@ public class ReadBaseOnServer extends Task<Boolean> {
 
         }
         return false;
+    }*/
     }
 }

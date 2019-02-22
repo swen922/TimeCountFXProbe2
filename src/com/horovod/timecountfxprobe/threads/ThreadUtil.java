@@ -23,8 +23,10 @@ public class ThreadUtil {
         return jsonSerialize;
     }
 
-    public static synchronized void readBaseOnServer() {
+    // Ненужный метод для запуска чтения базы сервером,
+    // сделал через ServletContextListener на старте и выходе
+    /*public static synchronized void readBaseOnServer() {
         ReadBaseOnServer readBaseOnServer = new ReadBaseOnServer(new SerializeWrapper(UpdateType.UPDATE_BASE_ON_SERVER, null));
         Updater.getService().submit(readBaseOnServer);
-    }
+    }*/
 }
