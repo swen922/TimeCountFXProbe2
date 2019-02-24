@@ -3,7 +3,9 @@ package com.horovod.timecountfxprobe;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.Generator;
+import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
 import com.horovod.timecountfxprobe.threads.ThreadUtil;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -45,6 +47,8 @@ public class MainApp extends Application {
 
         Loader loader = new Loader();
         loader.load();
+
+        Updater.getService().submit(new ThreadStartCheckingWaitingTasks());
 
         initRootLayut();
 

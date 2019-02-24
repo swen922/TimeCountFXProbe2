@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.serialize;
 
 
+import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.threads.ThreadUpdate;
@@ -15,11 +16,11 @@ import java.util.concurrent.*;
 
 public class Updater {
 
-    public static final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
-    //private static ExecutorService service = Executors.newFixedThreadPool(1);
-    private static ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, queue);
 
-    private ScheduledExecutorService repeatUpdater = Executors.newSingleThreadScheduledExecutor();
+    //private static ExecutorService service = Executors.newFixedThreadPool(1);
+    private static ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, AllData.tasksQueue);
+
+    private static ScheduledExecutorService repeatUpdater = Executors.newSingleThreadScheduledExecutor();
     //repeatUpdater.schedule(new Runnable() { ... }, 5, TimeUnit.SECONDS);
 
 
@@ -27,23 +28,20 @@ public class Updater {
         return service;
     }
 
-    public ScheduledExecutorService getRepeatUpdater() {
+    public static ScheduledExecutorService getRepeatUpdater() {
         return repeatUpdater;
 
     }
 
     public static void update(UpdateType updateType, Object object) {
 
-        System.out.println("inside Updater.update");
-
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);
-
-        System.out.println(wrapper);
 
         Task task = new ThreadUpdate(wrapper);
         service.submit(task);
-        //queue.add(task);
+    }
 
+    public static void startSheduledUpdate() {
 
     }
 

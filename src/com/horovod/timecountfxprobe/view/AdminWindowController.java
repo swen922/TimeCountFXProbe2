@@ -182,18 +182,16 @@ public class AdminWindowController {
         } catch (IOException e) {
             e.printStackTrace();
             AllData.status = "Не удалось записать базу в файл: IOException";
-            updateStatus();
-            alertSerialize(e.toString());
+            AllData.updateAllStatus();
+            alertSerialize(e.getMessage());
+            AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
-            System.out.println("");
-            System.out.println(e.getMessage());
-            System.out.println();
-            System.out.println(e.getCause());
-            AllData.status = "Ошибка сериализации в XML: JAXBException";
-            updateStatus();
-            alertSerialize(e.toString());
+            AllData.status = "Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
+            AllData.updateAllStatus();
+            alertSerialize(e.getMessage());
+            AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
 
         }

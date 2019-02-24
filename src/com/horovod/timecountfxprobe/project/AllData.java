@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.concurrent.Task;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
@@ -26,7 +27,9 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -61,7 +64,7 @@ public class AllData {
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
     // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
     public static String httpUpdate = "http://localhost:8088/receiveupdate";
-    public static String httpReadBaseOnServer = "http://localhost:8088/readbase";
+
 
 
 
@@ -104,6 +107,8 @@ public class AllData {
 
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
+    public static BlockingQueue<Runnable> tasksQueue = new LinkedBlockingQueue<>();
+    public static BlockingQueue<Task> waitingTasks = new LinkedBlockingQueue<>();
 
 
     private static volatile double limitTimeForStaffWindow = 6;

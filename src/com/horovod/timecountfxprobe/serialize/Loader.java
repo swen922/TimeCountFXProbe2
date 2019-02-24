@@ -21,25 +21,29 @@ import java.util.Map;
 
 public class Loader {
 
-    private final String fileOptionsName = "/CLIENT_BASE.xml";
-    private final String fileBackupOptionsName = "/CLIENT_BASE_Backup.xml";
-    private String pathString = AllData.pathToHomeFolder + fileOptionsName;
-    private String backupPathString = AllData.pathToHomeFolder + fileBackupOptionsName;
+    private final String fileBaseName = "/CLIENT_BASE.xml";
+    private final String fileBackupBaseName = "/CLIENT_BASE_Backup.xml";
+    private final String fileWaitingTasksName = "/CLIENT_WAITING_TASKS.xml";
+    private String pathBase = AllData.pathToHomeFolder + fileBaseName;
+    private String backupPathBase = AllData.pathToHomeFolder + fileBackupBaseName;
+    private String pathWaitingTasks = AllData.pathToHomeFolder + fileWaitingTasksName;
 
-    private Path pathToFile = Paths.get(pathString);
-    private Path pathToBackupFile = Paths.get(backupPathString);
-    private File file = new File(pathString);
-    private File backupFile = new File(backupPathString);
+    private Path pathToFile = Paths.get(pathBase);
+    private Path pathToBackupFile = Paths.get(backupPathBase);
+    private Path pathToWaitingTasks = Paths.get(pathWaitingTasks);
+    private File fileBase = new File(pathBase);
+    private File backupFileBase = new File(backupPathBase);
+    private File waitingTasksFile = new File(pathWaitingTasks);
 
 
     public boolean save() throws IOException, JAXBException {
 
         AllDataWrapper allDataWrapper = new AllDataWrapper();
 
-        if (this.file.exists() && this.backupFile.exists()) {
+        if (this.fileBase.exists() && this.backupFileBase.exists()) {
             Files.copy(pathToFile, pathToBackupFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        else if (this.file.exists()) {
+        else if (this.fileBase.exists()) {
             Files.createFile(pathToBackupFile);
             Files.copy(pathToFile, pathToBackupFile, StandardCopyOption.REPLACE_EXISTING);
         }
@@ -52,9 +56,11 @@ public class Loader {
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-        marshaller.marshal(allDataWrapper, this.file);
+        marshaller.marshal(allDataWrapper, this.fileBase);
 
-        AllData.logger.info(Loader.class.getSimpleName() + " - База успешно сохранена.");
+        AllData.status = Loader.class.getSimpleName() + " - База успешно сохранена.";
+        AllData.updateAllStatus();
+        AllData.logger.info(AllData.status);
 
         return true;
     }
@@ -62,14 +68,17 @@ public class Loader {
 
     public boolean load() throws JAXBException {
 
-        if (!this.file.exists()) {
+        if (!this.fileBase.exists()) {
             // TODO здесь записа логгера добавить, когда напишу логгер
+            AllData.status = Loader.class.getSimpleName() + " - Ошибка загрузки базы. Отсутствует файл базы.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
             return false;
         }
 
         JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(this.file);
+        AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(this.fileBase);
 
         if (allDataWrapper != null) {
 
@@ -116,12 +125,89 @@ public class Loader {
             AllData.rebuildActiveProjects();
             //System.out.println(AllData.getActiveProjects().size());
 
-            AllData.logger.info(Loader.class.getSimpleName() + " - База успешно прочитана.");
+            AllData.status = Loader.class.getSimpleName() + " - База успешно прочитана.";
+            AllData.updateAllStatus();
+            AllData.logger.info(AllData.status);
 
             return true;
         }
 
         return false;
+    }
+
+
+    public boolean saveWatingTasks() throws IOException, JAXBException {
+
+        try {
+            if (!AllData.waitingTasks.isEmpty()) {
+
+                WaitingTasksWrapper wrapper = new WaitingTasksWrapper();
+
+                if (!this.waitingTasksFile.exists()) {
+                    Files.createDirectories(pathToWaitingTasks.getParent());
+                    Files.createFile(pathToWaitingTasks);
+                }
+
+
+                JAXBContext context = JAXBContext.newInstance(WaitingTasksWrapper.class);
+                Marshaller marshaller = context.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+                marshaller.marshal(wrapper, this.waitingTasksFile);
+
+                AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы сохранен.";
+                AllData.updateAllStatus();
+                AllData.logger.info(AllData.status);
+                return true;
+            }
+            else {
+                if (this.waitingTasksFile.exists()) {
+                    Files.delete(pathToWaitingTasks);
+
+                    AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы очищен и удален.";
+                    AllData.updateAllStatus();
+                    AllData.logger.info(AllData.status);
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл: IOException";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл. Ошибка сериализации в XML: JAXBException";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public boolean loadWaitingTasks() {
+
+        if (this.waitingTasksFile.exists()) {
+            try {
+                JAXBContext context = JAXBContext.newInstance(WaitingTasksWrapper.class);
+                Unmarshaller unmarshaller = context.createUnmarshaller();
+                WaitingTasksWrapper wrapper = (WaitingTasksWrapper) unmarshaller.unmarshal(this.waitingTasksFile);
+
+                if (wrapper != null) {
+                    AllData.waitingTasks.clear();
+                    AllData.waitingTasks.addAll(wrapper.getWaitingTasks());
+                }
+            } catch (JAXBException e) {
+                e.printStackTrace();
+                AllData.status = Loader.class.getSimpleName() + " - Не удалось прочитать список неисполненных обновлений базы в файл. Ошибка десериализации из XML: JAXBException";
+                AllData.updateAllStatus();
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
+        }
+        return false;
+
     }
 
 }

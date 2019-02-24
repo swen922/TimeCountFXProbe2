@@ -101,15 +101,12 @@ public class Admin implements User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Admin admin = (Admin) o;
-        return IDNumber == admin.IDNumber &&
-                Objects.equals(nameLogin, admin.nameLogin) &&
-                role == admin.role &&
-                Objects.equals(fullName, admin.fullName);
+        return IDNumber == admin.IDNumber;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(IDNumber, nameLogin, role, fullName);
+        return Objects.hash(IDNumber);
     }
 
     @Override

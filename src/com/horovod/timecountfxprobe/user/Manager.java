@@ -103,15 +103,12 @@ public class Manager implements User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Manager manager = (Manager) o;
-        return IDNumber == manager.IDNumber &&
-                Objects.equals(nameLogin, manager.nameLogin) &&
-                role == manager.role;
+        return IDNumber == manager.IDNumber;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(IDNumber, nameLogin, role);
+        return Objects.hash(IDNumber);
     }
 
     @Override

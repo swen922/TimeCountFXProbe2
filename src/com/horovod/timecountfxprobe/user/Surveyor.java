@@ -98,16 +98,13 @@ public class Surveyor implements User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Surveyor surveyor = (Surveyor) o;
-        return IDNumber == surveyor.IDNumber &&
-                Objects.equals(nameLogin, surveyor.nameLogin) &&
-                role == surveyor.role &&
-                Objects.equals(fullName, surveyor.fullName);
+        return IDNumber == surveyor.IDNumber;
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(IDNumber, nameLogin, role, fullName);
+        return Objects.hash(IDNumber);
     }
 
     @Override

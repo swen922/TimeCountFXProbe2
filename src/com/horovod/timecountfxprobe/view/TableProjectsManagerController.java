@@ -1013,7 +1013,7 @@ public class TableProjectsManagerController {
             AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
             e.printStackTrace();
-            AllData.status = "Ошибка сериализации в XML: JAXBException";
+            AllData.status = "Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
             AllData.updateAllStatus();
             alertSerialize(e.getMessage());
             AllData.logger.error(AllData.status);

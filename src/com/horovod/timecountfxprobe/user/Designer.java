@@ -106,23 +106,24 @@ public class Designer implements User {
         isRetired = retired;
     }
 
-    /** TODO В методах equals и hashcode использовать ТОЛЬКО неизменяемые
-     * или редкоизменяемые поля, т.к. иначе сломается после смены мейла или стоимости часа */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Designer designer = (Designer) o;
-        return IDNumber == designer.IDNumber &&
-                Objects.equals(nameLogin, designer.nameLogin) &&
-                role == designer.role;
+        return IDNumber == designer.IDNumber;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(IDNumber, nameLogin, role);
+
+        return Objects.hash(IDNumber);
     }
+
+    /** TODO В методах equals и hashcode использовать ТОЛЬКО неизменяемые
+     * или редкоизменяемые поля, т.к. иначе сломается после смены мейла или стоимости часа */
+
+
 
     @Override
     public String toString() {

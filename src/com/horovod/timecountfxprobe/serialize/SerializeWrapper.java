@@ -8,6 +8,7 @@ import com.horovod.timecountfxprobe.user.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @JsonAutoDetect
 @XmlRootElement(name = "serializewrapper")
@@ -152,6 +153,27 @@ public class SerializeWrapper {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SerializeWrapper that = (SerializeWrapper) o;
+        return updateType == that.updateType &&
+                Objects.equals(workTime, that.workTime) &&
+                Objects.equals(project, that.project) &&
+                Objects.equals(designer, that.designer) &&
+                Objects.equals(manager, that.manager) &&
+                Objects.equals(admin, that.admin) &&
+                Objects.equals(surveyor, that.surveyor) &&
+                Objects.equals(login, that.login);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(updateType, workTime, project, designer, manager, admin, surveyor, login);
+    }
+
+    @Override
     public String toString() {
         return "SerializeWrapper{" +
                 "updateType=" + updateType +
@@ -162,7 +184,6 @@ public class SerializeWrapper {
                 ", admin=" + admin +
                 ", surveyor=" + surveyor +
                 ", login='" + login + '\'' +
-                ", securePassword=" + securePassword +
                 '}';
     }
 }

@@ -3,17 +3,22 @@ package com.horovod.timecountfxprobe.threads;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.concurrent.Task;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.logging.Logger;
 
+@XmlRootElement(name = "threadupdate")
 public class ThreadUpdate extends Task<Boolean> {
 
     private SerializeWrapper serializeWrapper;
@@ -22,8 +27,18 @@ public class ThreadUpdate extends Task<Boolean> {
         this.serializeWrapper = wrapper;
     }
 
+    @XmlElement(name = "serializewrapper")
+    public SerializeWrapper getSerializeWrapper() {
+        return serializeWrapper;
+    }
+
+    public void setSerializeWrapper(SerializeWrapper serializeWrapper) {
+        this.serializeWrapper = serializeWrapper;
+    }
 
     protected Boolean call() throws Exception {
+
+        boolean result = false;
 
         System.out.println("insie ThreadUpdate.call");
 
@@ -65,10 +80,13 @@ public class ThreadUpdate extends Task<Boolean> {
                         String received = sb.toString();
 
                         if (received.equalsIgnoreCase("true")) {
-                            AllData.status = "Обновление успешно отправлено на сервер.";
+                            AllData.status = "Обновление успешно отправлено на сервер." +
+                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
+                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
+                                    ", Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.info(AllData.status);
-                            return true;
+                            result = true;
                         }
                         else if (received.equalsIgnoreCase("false input")) {
                             AllData.status = "Не удалось обновить данные на сервере: Отправленная строка равна null или пуста. " +
@@ -111,7 +129,7 @@ public class ThreadUpdate extends Task<Boolean> {
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false add")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime вернул false. " +
+                            AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime на сервере вернул false. " +
                                     "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
                                     AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
                                     ", Объект = " + serializeWrapper;
@@ -157,6 +175,27 @@ public class ThreadUpdate extends Task<Boolean> {
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
         }
-        return false;
+        if (!result) {
+            if (!AllData.waitingTasks.contains(this)) {
+                AllData.waitingTasks.offer(this);
+                Loader loader = new Loader();
+                loader.saveWatingTasks();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ThreadUpdate that = (ThreadUpdate) o;
+        return Objects.equals(serializeWrapper, that.serializeWrapper);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(serializeWrapper);
     }
 }
