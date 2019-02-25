@@ -1,22 +1,46 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
+
+@JsonAutoDetect
+@XmlRootElement(name = "surveyor")
 public class Surveyor implements User {
 
+    @JsonDeserialize(as = Integer.class)
     private int IDNumber;
-    private String nameLogin;
-    private Role role = Role.SURVEYOR;
-    private String fullName;
+
+    @JsonDeserialize(as = String.class)
+    private String nameLogin = "";
+
+    @JsonDeserialize(as = Role.class)
+    private Role role = Role.DESIGNER;
+
+    @JsonDeserialize(as = String.class)
+    private String fullName = "";
+
+    @JsonDeserialize(as = String.class)
     private String email;
+
+    @JsonDeserialize(as = Integer.class)
     private int workHourValue = 0;
+
+    @JsonDeserialize(as = Boolean.class)
     private boolean isRetired = false;
 
-    public Surveyor(String nameLogin) {
+    @JsonDeserialize(as = SecurePassword.class)
+    private SecurePassword securePassword;
+
+    public Surveyor(String nameLogin, SecurePassword newSecurePass) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
+        this.securePassword = newSecurePass;
     }
 
     public Surveyor() {
@@ -93,6 +117,16 @@ public class Surveyor implements User {
         isRetired = retired;
     }
 
+    @XmlElement(name = "surveyorsecurepass")
+    public SecurePassword getSecurePassword() {
+        return securePassword;
+    }
+
+    @Override
+    public void setSecurePassword(SecurePassword securePassword) {
+        this.securePassword = securePassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -103,7 +137,6 @@ public class Surveyor implements User {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(IDNumber);
     }
 

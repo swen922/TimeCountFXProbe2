@@ -1,20 +1,41 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.horovod.timecountfxprobe.project.AllData;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
+
+@JsonAutoDetect
 @XmlRootElement(name = "designer")
 public class Designer implements User {
+
+    @JsonDeserialize(as = Integer.class)
     private int IDNumber;
+
+    @JsonDeserialize(as = String.class)
     private String nameLogin = "";
+
+    @JsonDeserialize(as = Role.class)
     private Role role = Role.DESIGNER;
+
+    @JsonDeserialize(as = String.class)
     private String fullName = "";
+
+    @JsonDeserialize(as = String.class)
     private String email;
+
+    @JsonDeserialize(as = Integer.class)
     private int workHourValue = 0;
+
+    @JsonDeserialize(as = Boolean.class)
     private boolean isRetired = false;
+
+    @JsonDeserialize(as = SecurePassword.class)
+    private SecurePassword securePassword;
 
     /**
      * TODO в графон в создании юзера вставить проверку nameLogin на уникальность,
@@ -25,10 +46,11 @@ public class Designer implements User {
      * */
 
 
-    public Designer(String nameLogin) {
+    public Designer(String nameLogin, SecurePassword newSecurePass) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
+        this.securePassword = newSecurePass;
     }
 
     public Designer() {
@@ -104,6 +126,15 @@ public class Designer implements User {
 
     public void setRetired(boolean retired) {
         isRetired = retired;
+    }
+
+    @XmlElement(name = "designersecurepass")
+    public SecurePassword getSecurePassword() {
+        return securePassword;
+    }
+
+    public void setSecurePassword(SecurePassword securePassword) {
+        this.securePassword = securePassword;
     }
 
     @Override

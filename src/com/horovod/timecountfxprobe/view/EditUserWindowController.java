@@ -2,10 +2,9 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
-import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.Role;
-import com.horovod.timecountfxprobe.user.SecurePassword;
-import com.horovod.timecountfxprobe.user.User;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
+import com.horovod.timecountfxprobe.user.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -325,13 +324,15 @@ public class EditUserWindowController {
 
     public void handleSaveButton() {
 
+        User user = AllUsers.getOneUser(userID);
+
         if (!textAreas.get(loginTextArea).equalsIgnoreCase(loginTextArea.getText().trim())) {
             if (loginTextArea.getText() == null || loginTextArea.getText().isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Неправильный логин");
                 StringBuilder sb = new StringBuilder("Указанный вами новый логин\n");
                 sb.append("для пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append(" ").append(user.getFullName()).append("\n");
                 sb.append("не соответствует правилам создания логинов.\n");
                 sb.append("Логин должен состоять не менее, чем из 1 символа\n");
                 sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
@@ -350,7 +351,7 @@ public class EditUserWindowController {
                 alert.setTitle("Дублирующийся логин");
                 StringBuilder sb = new StringBuilder("Указанный вами новый логин \"");
                 sb.append(loginTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append(" ").append(user.getFullName()).append("\n");
                 sb.append("совпадает с логином другого пользователя\n");
                 sb.append("Укажите другой логин!");
 
@@ -373,7 +374,7 @@ public class EditUserWindowController {
                 alert.setTitle("Неправильный логин");
                 StringBuilder sb = new StringBuilder("Указанный вами новый логин\n");
                 sb.append("для пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append(" ").append(user.getFullName()).append("\n");
                 sb.append("не соответствует правилам создания логинов.\n");
                 sb.append("Логин должен состоять не менее, чем из 1 символа\n");
                 sb.append("и не должен включать символы пробела и иные посторонние символы.\n");
@@ -385,7 +386,7 @@ public class EditUserWindowController {
                 return;
             }
 
-            AllUsers.getOneUser(userID).setNameLogin(loginTextArea.getText().trim());
+            user.setNameLogin(loginTextArea.getText().trim());
             textAreas.put(loginTextArea, loginTextArea.getText().trim());
         }
 
@@ -404,7 +405,7 @@ public class EditUserWindowController {
                 alert.setTitle("Неправильный пароль");
 
                 StringBuilder header = new StringBuilder("Указанный вами пароль\nдля пользователя id-");
-                header.append(userID).append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                header.append(userID).append(" ").append(user.getFullName()).append("\n");
                 header.append("не соответствует правилам создания паролей!\n");
 
                 alert.setHeaderText(header.toString());
@@ -422,6 +423,7 @@ public class EditUserWindowController {
 
             SecurePassword sp = SecurePassword.getInstance(passwordField.getText().trim());
             AllUsers.getUsersPass().put(userID, sp);
+            user.setSecurePassword(sp);
             passwordField.setText(null);
         }
 
@@ -433,7 +435,7 @@ public class EditUserWindowController {
                 alert.setTitle("Неправильное имя");
                 StringBuilder sb = new StringBuilder("Указанное вами новое имя\n");
                 sb.append("для пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append(" ").append(user.getFullName()).append("\n");
                 sb.append("не соответствует правилам создания имен.\n");
                 sb.append("Имя должно состоять не менее, чем из 1 символа\n");
                 sb.append("Укажите другое имя, состоящее более, чем из 1 символа!");
@@ -449,7 +451,7 @@ public class EditUserWindowController {
                 alert.setTitle("Дублирующееся имя");
                 StringBuilder sb = new StringBuilder("Указанное вами новое имя \"");
                 sb.append(fullNameTextArea.getText()).append("\"\nдля пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                sb.append(" ").append(user.getFullName()).append("\n");
                 sb.append("совпадает с именем другого пользователя.\n");
                 sb.append("Укажите другое имя!");
 
@@ -459,11 +461,11 @@ public class EditUserWindowController {
                 return;
             }
 
-            if (AllUsers.isUsersLoggedContainsUser(AllUsers.getOneUser(userID).getFullName())) {
-                AllUsers.deleteLoggedUser(AllUsers.getOneUser(userID).getFullName());
+            if (AllUsers.isUsersLoggedContainsUser(user.getFullName())) {
+                AllUsers.deleteLoggedUser(user.getFullName());
                 AllUsers.addLoggedUser(fullNameTextArea.getText().trim());
             }
-            AllUsers.getOneUser(userID).setFullName(fullNameTextArea.getText().trim());
+            user.setFullName(fullNameTextArea.getText().trim());
             textAreas.put(fullNameTextArea, fullNameTextArea.getText());
         }
 
@@ -472,7 +474,7 @@ public class EditUserWindowController {
                 (textAreas.get(emailTextField) != null && !textAreas.get(emailTextField).equalsIgnoreCase(emailTextField.getText()))) {
 
             if (emailTextField.getText() == null || emailTextField.getText().trim().isEmpty()) {
-                AllUsers.getOneUser(userID).setEmail("");
+                user.setEmail("");
             }
             else {
                 boolean hasOtherSymbols = false;
@@ -489,7 +491,7 @@ public class EditUserWindowController {
                     alert.setTitle("Неправильный е-мейл");
                     StringBuilder sb = new StringBuilder("Указанный вами новый е-мейл\n");
                     sb.append("для пользователя id-").append(userID);
-                    sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\n");
+                    sb.append(" ").append(user.getFullName()).append("\n");
                     sb.append("не соответствует правилам создания е-мейлов.\n");
                     sb.append("Е-мейл должен состоять из нескольких символов,\n");
                     sb.append("одним из которых должен быть \"@\"\n");
@@ -501,7 +503,7 @@ public class EditUserWindowController {
                     return;
                 }
 
-                AllUsers.getOneUser(userID).setEmail(emailTextField.getText());
+                user.setEmail(emailTextField.getText());
             }
             textAreas.put(emailTextField, emailTextField.getText());
         }
@@ -511,7 +513,7 @@ public class EditUserWindowController {
         if (!textAreas.get(hourPayTextField).equalsIgnoreCase(hourPayTextField.getText())) {
 
             if (hourPayTextField.getText() == null || hourPayTextField.getText().trim().isEmpty()) {
-                AllUsers.getOneUser(userID).setWorkHourValue(0);
+                user.setWorkHourValue(0);
                 hourPayTextField.setText("");
                 textAreas.put(hourPayTextField, "");
                 return;
@@ -525,7 +527,7 @@ public class EditUserWindowController {
                 alert.setTitle("Неправильная сумма");
                 StringBuilder sb = new StringBuilder("Указанный вами новый размер часовой оплаты\n");
                 sb.append("для пользователя id-").append(userID);
-                sb.append(" ").append(AllUsers.getOneUser(userID).getFullName()).append("\nне является корректным числом\n");
+                sb.append(" ").append(user.getFullName()).append("\nне является корректным числом\n");
                 sb.append("Укажите правильную сумму!");
 
                 alert.setHeaderText(sb.toString());
@@ -535,7 +537,7 @@ public class EditUserWindowController {
             }
 
             if (hourPay != null) {
-                AllUsers.getOneUser(userID).setWorkHourValue(hourPay);
+                user.setWorkHourValue(hourPay);
                 hourPayTextField.setText(AllData.formatInputInteger(hourPay));
                 textAreas.put(hourPayTextField, AllData.formatInputInteger(hourPay));
             }
@@ -545,7 +547,20 @@ public class EditUserWindowController {
         initSaveButtons();
         AllData.staffWindowController.initializeTable();
 
-        AllData.status = "Свойства пользователя id-" + userID + " " + AllUsers.getOneUser(userID).getFullName() + " изменены";
+        if (user.getRole().equals(Role.DESIGNER)) {
+            Updater.update(UpdateType.UPDATE_DESIGNER, user);
+        }
+        else if (user.getRole().equals(Role.MANAGER)) {
+            Updater.update(UpdateType.UPDATE_MANAGER, user);
+        }
+        else if (user.getRole().equals(Role.ADMIN)) {
+            Updater.update(UpdateType.UPDATE_ADMIN, user);
+        }
+        else if (user.getRole().equals(Role.SURVEYOR)) {
+            Updater.update(UpdateType.UPDATE_SURVEYOR, user);
+        }
+
+        AllData.status = "Локально изменены свойства пользователя id-" + userID + " = " + user.getFullName();
         AllData.updateAllStatus();
         AllData.logger.info(AllData.status);
     }

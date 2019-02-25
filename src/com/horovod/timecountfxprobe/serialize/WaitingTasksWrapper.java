@@ -11,18 +11,9 @@ import java.util.List;
 @XmlRootElement(name = "waitingtaskswrapper")
 public class WaitingTasksWrapper {
 
-    private List<Task> waitingTasks = new ArrayList<>();
+    private ArrayList<SerializeWrapper> waitingTasks = new ArrayList<>();
 
-    public WaitingTasksWrapper() {
-        this.waitingTasks.addAll(AllData.waitingTasks);
-    }
 
     @XmlElement(name = "waitingtaskslist")
-    public List<Task> getWaitingTasks() {
-        return waitingTasks;
-    }
 
-    public void setWaitingTasks(List<Task> waitingTasks) {
-        this.waitingTasks = waitingTasks;
-    }
 }

@@ -54,6 +54,7 @@ public class AllDataWrapper {
         this.IDCounterAllUsers = AllUsers.getIDCounterAllUsers();
         for (User usr : AllUsers.getUsers().values()) {
             if (usr.getRole().equals(Role.DESIGNER)) {
+                System.out.println(usr);
                 Designer des = (Designer) usr;
                 this.saveDesigners.put(des.getIDNumber(), des);
             }

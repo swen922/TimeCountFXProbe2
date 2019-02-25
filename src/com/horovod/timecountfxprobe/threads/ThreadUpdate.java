@@ -104,8 +104,8 @@ public class ThreadUpdate extends Task<Boolean> {
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
-                        else if (received.equalsIgnoreCase("false user")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пользователь не существует, либо уволен. " +
+                        else if (received.equalsIgnoreCase("false login")) {
+                            AllData.status = "Не удалось обновить данные на сервере: Инициатор обновления не существует, либо уволен. " +
                                     "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
                                     AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
                                     ", Объект = " + serializeWrapper;
@@ -121,15 +121,31 @@ public class ThreadUpdate extends Task<Boolean> {
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false project")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Проект равен null или отсутствует на сервере. " +
+                            AllData.status = "Не удалось обновить данные на сервере: Проект равен null или имеет место другая ошибка в объекте проекта. " +
                                     "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
                                     AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
                                     ", Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
-                        else if (received.equalsIgnoreCase("false add")) {
+                        else if (received.equalsIgnoreCase("false addtime")) {
                             AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime на сервере вернул false. " +
+                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
+                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
+                                    ", Объект = " + serializeWrapper;
+                            AllData.updateAllStatus();
+                            AllData.logger.error(AllData.status);
+                        }
+                        else if (received.equalsIgnoreCase("false user")) {
+                            AllData.status = "Не удалось обновить данные на сервере: Пользователь отсутствует/присутствует в списке. " +
+                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
+                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
+                                    ", Объект = " + serializeWrapper;
+                            AllData.updateAllStatus();
+                            AllData.logger.error(AllData.status);
+                        }
+                        else if (received.equalsIgnoreCase("false user null")) {
+                            AllData.status = "Не удалось обновить данные на сервере: Пользователь равен null. " +
                                     "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
                                     AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
                                     ", Объект = " + serializeWrapper;

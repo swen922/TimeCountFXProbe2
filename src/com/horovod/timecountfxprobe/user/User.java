@@ -20,5 +20,8 @@ public interface User {
     void setWorkHourValue(int workHourValue);
     boolean isRetired();
     void setRetired(boolean retired);
+    SecurePassword getSecurePassword();
+    void setSecurePassword(SecurePassword securePassword);
     String toString();
+
 }

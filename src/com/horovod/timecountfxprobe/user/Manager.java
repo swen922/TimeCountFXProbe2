@@ -1,25 +1,48 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.horovod.timecountfxprobe.project.AllData;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
+@JsonAutoDetect
 @XmlRootElement(name = "manager")
 public class Manager implements User {
+
+    @JsonDeserialize(as = Integer.class)
     private int IDNumber;
-    private String nameLogin;
-    private Role role = Role.MANAGER;
-    private String fullName;
+
+    @JsonDeserialize(as = String.class)
+    private String nameLogin = "";
+
+    @JsonDeserialize(as = Role.class)
+    private Role role = Role.DESIGNER;
+
+    @JsonDeserialize(as = String.class)
+    private String fullName = "";
+
+    @JsonDeserialize(as = String.class)
     private String email;
+
+    @JsonDeserialize(as = Integer.class)
     private int workHourValue = 0;
+
+    @JsonDeserialize(as = Boolean.class)
     private boolean isRetired = false;
 
-    public Manager(String nameLogin) {
+    @JsonDeserialize(as = SecurePassword.class)
+    private SecurePassword securePassword;
+
+
+    public Manager(String nameLogin, SecurePassword newSecurePass) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
+        this.securePassword = newSecurePass;
+
     }
 
     public Manager() {
@@ -97,6 +120,14 @@ public class Manager implements User {
         isRetired = retired;
     }
 
+    @XmlElement(name = "managersecurepass")
+    public SecurePassword getSecurePassword() {
+        return securePassword;
+    }
+
+    public void setSecurePassword(SecurePassword securePassword) {
+        this.securePassword = securePassword;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -113,6 +144,11 @@ public class Manager implements User {
 
     @Override
     public String toString() {
-        return this.fullName;
+        return "Manager{" +
+                "IDNumber=" + IDNumber +
+                ", nameLogin='" + nameLogin + '\'' +
+                ", role=" + role +
+                ", fullName='" + fullName + '\'' +
+                '}' + "\n";
     }
 }

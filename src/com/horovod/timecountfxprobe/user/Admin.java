@@ -1,25 +1,47 @@
 package com.horovod.timecountfxprobe.user;
 
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
+
+@JsonAutoDetect
 @XmlRootElement(name = "admin")
 public class Admin implements User {
 
+    @JsonDeserialize(as = Integer.class)
     private int IDNumber;
-    private String nameLogin;
-    private Role role = Role.ADMIN;
-    private String fullName;
+
+    @JsonDeserialize(as = String.class)
+    private String nameLogin = "";
+
+    @JsonDeserialize(as = Role.class)
+    private Role role = Role.DESIGNER;
+
+    @JsonDeserialize(as = String.class)
+    private String fullName = "";
+
+    @JsonDeserialize(as = String.class)
     private String email;
+
+    @JsonDeserialize(as = Integer.class)
     private int workHourValue = 0;
+
+    @JsonDeserialize(as = Boolean.class)
     private boolean isRetired = false;
 
-    public Admin(String nameLogin) {
+    @JsonDeserialize(as = SecurePassword.class)
+    private SecurePassword securePassword;
+
+    public Admin(String nameLogin, SecurePassword newSecurePass) {
         this.IDNumber = AllUsers.incrementIdNumberAndGet();
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
+        this.securePassword = newSecurePass;
     }
 
     public Admin() {
@@ -96,6 +118,16 @@ public class Admin implements User {
         isRetired = retired;
     }
 
+    @XmlElement(name = "adminsecurepass")
+    public SecurePassword getSecurePassword() {
+        return securePassword;
+    }
+
+    @Override
+    public void setSecurePassword(SecurePassword securePassword) {
+        this.securePassword = securePassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -118,4 +150,5 @@ public class Admin implements User {
                 ", fullName='" + fullName + '\'' +
                 '}' + "\n";
     }
+
 }

@@ -5,6 +5,8 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.User;
@@ -878,9 +880,12 @@ public class EditProjectWindowController {
         initSaveButtons();
         AllData.tableProjectsManagerController.initializeTable();
 
-        AllData.status = "Свойства проекта id-" + myProject.getIdNumber() + " изменены";
+        AllData.status = "Локально изменены свойства проекта id-" + myProject.getIdNumber();
         AllData.updateAllStatus();
         AllData.logger.info(AllData.status);
+
+        Updater.update(UpdateType.UPDATE_PROJECT, myProject);
+
     }
 
     public void handleSaveAndCloseButton() {

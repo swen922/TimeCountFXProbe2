@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.horovod.timecountfxprobe.MainApp;
+import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.view.*;
@@ -108,7 +109,11 @@ public class AllData {
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
     public static BlockingQueue<Runnable> tasksQueue = new LinkedBlockingQueue<>();
-    public static BlockingQueue<Task> waitingTasks = new LinkedBlockingQueue<>();
+    //public static BlockingQueue<Task> waitingTasks = new LinkedBlockingQueue<>();
+
+    // TODO для начала будем хранить в списке не абстрактные Task, а наши SerializeWrapper'ы
+    public static BlockingQueue<SerializeWrapper> waitingTasks = new LinkedBlockingQueue<>();
+
 
 
     private static volatile double limitTimeForStaffWindow = 6;
@@ -379,13 +384,12 @@ public class AllData {
                 rebuildDesignerYearWorkSumProperty(today.getYear());
             }
 
+
+            AllData.status = "Локально добавлено/изменено рабочее время в проекте id-" + projectIDnumber;
+            AllData.updateAllStatus();
+
             WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
             Updater.update(UpdateType.UPDATE_TIME, workTime);
-
-            //service.submit(new ThreadUpdateWorkTime(projectIDnumber, correctDate, idUser, newTime));
-
-            AllData.status = "Локально добавлено рабочее время в проект id-" + projectIDnumber;
-            AllData.updateAllStatus();
 
             return true;
         }
@@ -661,17 +665,11 @@ public class AllData {
         AllData.updateAllStatus();
         AllData.logger.info(AllData.status);
 
+        Updater.update(UpdateType.CREATE_PROJECT, project);
+
         return project;
     }
 
-    /*public synchronized static boolean addNewProject(Project newProject) {
-        if (!isProjectExist(newProject.getIdNumber())) {
-            allProjects.put(newProject.getIdNumber(), newProject);
-            activeProjects.put(newProject.getIdNumber(), newProject);
-            return true;
-        }
-        return false;
-    }*/
 
     public synchronized static boolean deleteProject(int deadProject) {
         if (isProjectExist(deadProject)) {

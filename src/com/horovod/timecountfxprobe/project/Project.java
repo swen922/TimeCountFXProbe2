@@ -300,9 +300,7 @@ public class Project {
 
     public synchronized void setWork(List<WorkTime> newWork) {
         this.work = newWork;
-        computeWorkSum();
-        this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
-        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
+        rebuildWorkSum();
     }
 
 
@@ -665,24 +663,21 @@ public class Project {
     }
 
 
-    private synchronized void computeWorkSum() {
+    public synchronized void rebuildWorkSum() {
         int result = 0;
         for (WorkTime wt : this.work) {
             result += wt.getTime();
         }
         this.workSum = result;
-        this.workSumProperty.set(String.valueOf(AllData.intToDouble(result)));
-        //this.workSumProperty.set(AllData.intToDouble(result));
+        this.workSumProperty.set(AllData.formatWorkTime(AllData.intToDouble(result)));
     }
 
-    public synchronized void computeProperties() {
-        //this.idNumberProperty = new SimpleStringProperty(String.valueOf(idNumber));
+    public synchronized void rebuildProperties() {
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.companyProperty = new SimpleStringProperty(company);
         this.managerProperty = new SimpleStringProperty(manager);
         this.descriptionProperty = new SimpleStringProperty(description);
-        this.workSumProperty = new SimpleStringProperty(String.valueOf(AllData.intToDouble(workSum)));
-        //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
+        this.workSumProperty = new SimpleStringProperty(AllData.formatWorkTime(AllData.intToDouble(workSum)));
     }
 
 

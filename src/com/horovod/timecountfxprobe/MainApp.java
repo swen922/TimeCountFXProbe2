@@ -42,11 +42,11 @@ public class MainApp extends Application {
         AllData.resetStatus();
 
         /** TODO убрать эту строчку в рабочем варианте */
-        //Generator.generateUsers();
-        //Generator.generateProjects2();
+        Generator.generateUsers2();
+        Generator.generateProjects2();
 
-        Loader loader = new Loader();
-        loader.load();
+        //Loader loader = new Loader();
+        //loader.load();
 
         Updater.getService().submit(new ThreadStartCheckingWaitingTasks());
 

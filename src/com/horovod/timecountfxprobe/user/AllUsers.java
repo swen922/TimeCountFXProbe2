@@ -1,6 +1,8 @@
 package com.horovod.timecountfxprobe.user;
 
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -199,28 +201,25 @@ public class AllUsers {
 
         login = login.trim();
         password = password.trim();
+        SecurePassword sp = SecurePassword.getInstance(password);
+
 
         User result = null;
         if (!isNameLoginExist(login)) {
             if (role.equals(Role.DESIGNER)) {
-                result = new Designer(login);
+                result = new Designer(login, sp);
             }
             else if (role.equals(Role.MANAGER)) {
-                result = new Manager(login);
+                result = new Manager(login, sp);
             }
             else if (role.equals(Role.ADMIN)) {
-                result = new Admin(login);
+                result = new Admin(login, sp);
             }
             else if (role.equals(Role.SURVEYOR)) {
-                result = new Surveyor(login);
+                result = new Surveyor(login, sp);
             }
 
             if (result == null) {
-                return null;
-            }
-
-            SecurePassword sp = SecurePassword.getInstance(password);
-            if (sp == null) {
                 return null;
             }
 
@@ -228,9 +227,22 @@ public class AllUsers {
             usersPass.put(result.getIDNumber(), sp);
 
             // Статус и Логирование
-            AllData.status = "Создан новый работник id-" + result.getIDNumber() + " " + AllUsers.getOneUser(result.getIDNumber()).getFullName();
+            AllData.status = "Локально создан новый работник id-" + result.getIDNumber() + " = " + AllUsers.getOneUser(result.getIDNumber()).getFullName();
             AllData.updateAllStatus();
             AllData.logger.info(AllData.status);
+
+            if (role.equals(Role.DESIGNER)) {
+                Updater.update(UpdateType.CREATE_DESIGNER, result);
+            }
+            else if (role.equals(Role.MANAGER)) {
+                Updater.update(UpdateType.CREATE_MANAGER, result);
+            }
+            else if (role.equals(Role.ADMIN)) {
+                Updater.update(UpdateType.CREATE_ADMIN, result);
+            }
+            else if (role.equals(Role.SURVEYOR)) {
+                Updater.update(UpdateType.CREATE_SURVEYOR, result);
+            }
         }
         return result;
     }

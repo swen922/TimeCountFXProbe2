@@ -35,6 +35,8 @@ public class SerializeWrapper {
     @JsonDeserialize(as = Surveyor.class)
     private Surveyor surveyor;
 
+
+
     @JsonDeserialize(as = String.class)
     private String login;
 
@@ -105,6 +107,7 @@ public class SerializeWrapper {
     public Surveyor getSurveyor() {
         return surveyor;
     }
+
 
     @XmlElement(name = "userlogininwrapper")
     public String getLogin() {

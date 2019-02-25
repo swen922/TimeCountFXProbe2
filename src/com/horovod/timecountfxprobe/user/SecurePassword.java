@@ -1,12 +1,20 @@
 package com.horovod.timecountfxprobe.user;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+
+@JsonAutoDetect
 @XmlRootElement(name = "securepassword")
 public class SecurePassword {
 
+    @JsonDeserialize(as = String.class)
     private String securePass;
+
+    @JsonDeserialize(as = String.class)
     private String salt;
 
     private SecurePassword(String newSecurePass, String newSalt) {
