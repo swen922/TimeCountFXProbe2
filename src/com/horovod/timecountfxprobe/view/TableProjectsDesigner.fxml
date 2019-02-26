@@ -232,7 +232,7 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <AnchorPane layoutX="63.0" layoutY="682.0" prefHeight="35.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="260.0">
+      <AnchorPane layoutX="63.0" layoutY="682.0" prefHeight="35.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="375.0">
          <children>
             <Label fx:id="statusLabel" alignment="TOP_LEFT" prefHeight="30.0" text="Статус: все системы работают нормально" textFill="#666666" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="3.0">
                <font>

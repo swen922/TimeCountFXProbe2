@@ -40,8 +40,6 @@ public class ThreadUpdate extends Task<Boolean> {
 
         boolean result = false;
 
-        System.out.println("insie ThreadUpdate.call");
-
         AllData.status = "Начинаю отправку обновления на сервер...";
         AllData.updateAllStatus();
 
@@ -64,8 +62,6 @@ public class ThreadUpdate extends Task<Boolean> {
                     out.close();
 
                     int responceCode = connection.getResponseCode();
-
-                    System.out.println(responceCode);
 
                     if (responceCode == 200) {
 
@@ -192,8 +188,9 @@ public class ThreadUpdate extends Task<Boolean> {
             AllData.logger.error(AllData.status);
         }
         if (!result) {
-            if (!AllData.waitingTasks.contains(this)) {
-                AllData.waitingTasks.offer(this);
+
+            if (!AllData.waitingTasks.contains(serializeWrapper)) {
+                AllData.waitingTasks.offer(serializeWrapper);
                 Loader loader = new Loader();
                 loader.saveWatingTasks();
             }

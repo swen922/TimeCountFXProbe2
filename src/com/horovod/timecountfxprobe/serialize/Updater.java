@@ -20,7 +20,11 @@ public class Updater {
     //private static ExecutorService service = Executors.newFixedThreadPool(1);
     private static ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, AllData.tasksQueue);
 
-    private static ScheduledExecutorService repeatUpdater = Executors.newSingleThreadScheduledExecutor();
+    // TODO не запускается повторное выполнение, надо попробовать запустить этот эзекутор в отдельной нитке
+
+    //private static ScheduledExecutorService repeatUpdater = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledExecutorService repeatUpdater = Executors.newScheduledThreadPool(5);
+
     //repeatUpdater.schedule(new Runnable() { ... }, 5, TimeUnit.SECONDS);
 
 

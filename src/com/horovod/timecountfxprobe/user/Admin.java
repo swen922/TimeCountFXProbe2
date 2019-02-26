@@ -20,7 +20,7 @@ public class Admin implements User {
     private String nameLogin = "";
 
     @JsonDeserialize(as = Role.class)
-    private Role role = Role.DESIGNER;
+    private Role role = Role.ADMIN;
 
     @JsonDeserialize(as = String.class)
     private String fullName = "";

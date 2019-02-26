@@ -152,31 +152,18 @@ public class Generator {
     }
 
     public static void generateUsers2() {
-        Designer designer1 = new Designer("des1", SecurePassword.getInstance("pass"));
-        Designer designer2 = new Designer("des2", SecurePassword.getInstance("pass"));
-        Designer designer3 = new Designer("des3", SecurePassword.getInstance("pass"));
-        Designer designer4 = new Designer("des4", SecurePassword.getInstance("pass"));
-        Designer designer5 = new Designer("des5", SecurePassword.getInstance("pass"));
-        Designer designer6 = new Designer("des6", SecurePassword.getInstance("pass"));
-        Designer designer7 = new Designer("des7", SecurePassword.getInstance("pass"));
-        Designer designer8 = new Designer("des8", SecurePassword.getInstance("pass"));
-        Designer designer9 = new Designer("des9", SecurePassword.getInstance("pass"));
 
-        Manager manager1 = new Manager("man1",SecurePassword.getInstance("pass"));
-        Manager manager2 = new Manager("man2",SecurePassword.getInstance("pass"));
+        String partName = "des";
+        String partNameManager = "man";
+        String pass = "pass";
 
-        AllUsers.getUsers().put(designer1.getIDNumber(), designer1);
-        AllUsers.getUsers().put(designer2.getIDNumber(), designer2);
-        AllUsers.getUsers().put(designer3.getIDNumber(), designer3);
-        AllUsers.getUsers().put(designer4.getIDNumber(), designer4);
-        AllUsers.getUsers().put(designer5.getIDNumber(), designer5);
-        AllUsers.getUsers().put(designer6.getIDNumber(), designer6);
-        AllUsers.getUsers().put(designer7.getIDNumber(), designer7);
-        AllUsers.getUsers().put(designer8.getIDNumber(), designer8);
-        AllUsers.getUsers().put(designer9.getIDNumber(), designer9);
+        for (int i = 1; i <= 9; i++) {
+            AllUsers.createUser(partName + i, pass, Role.DESIGNER);
+        }
 
-        AllUsers.getUsers().put(manager1.getIDNumber(), manager1);
-        AllUsers.getUsers().put(manager2.getIDNumber(), manager2);
+        for (int i = 1; i <= 2; i++) {
+            AllUsers.createUser(partNameManager + i, pass, Role.MANAGER);
+        }
 
         AllUsers.setCurrentUser(5);
 
@@ -237,14 +224,29 @@ public class Generator {
             }
         }
 
+        String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
+        String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";
+        String descr03 = "Nescafe Gold label doypack 150g 250g 2018_12 - мейл от Климовой 06.12.2018 в 12.52 - корректировка текстов упаковок Нескафе Голд дойпак 150 г и 250 г";
+        String descr04 = "Rossia leaflet NEW";
+
+        Project p12 = AllData.createProject("Nestle", "Сидоренко Юлия", descr01, null);
+        p12.setBudget((int) (Math.random() * 90000));
+        Project p13 = AllData.createProject("Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
+        p13.setBudget((int) (Math.random() * 90000));
+        Project p14 = AllData.createProject("Nestle", "Климова Дарья", descr03, null);
+        p14.setBudget((int) (Math.random() * 90000));
+        Project p15 = AllData.createProject("Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
+        p15.setBudget((int) (Math.random() * 90000));
+
+
         int minusDays = 0;
 
-        for (int j = 1; j <= 4000; j++) {
+        for (int j = 1; j <= 1000; j++) {
             int projectID = (int) (Math.random() * 250 + 1);
-            if (j % 10 == 0) {
+            if (j % 5 == 0) {
                 minusDays++;
             }
-            int ID = (int) (Math.random() * 12 + 1);
+            int ID = (int) (Math.random() * 9 + 1);
             int tmp = (int) ((Math.random() * 1000) / 5);
             double newtime = AllData.intToDouble(tmp);
 
@@ -266,19 +268,7 @@ public class Generator {
 
         //AllData.addWorkTime(2, LocalDate.now().minusDays(3), 3, 35.5);
 
-        String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
-        String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";
-        String descr03 = "Nescafe Gold label doypack 150g 250g 2018_12 - мейл от Климовой 06.12.2018 в 12.52 - корректировка текстов упаковок Нескафе Голд дойпак 150 г и 250 г";
-        String descr04 = "Rossia leaflet NEW";
 
-        Project p12 = AllData.createProject("Nestle", "Сидоренко Юлия", descr01, null);
-        p12.setBudget((int) (Math.random() * 90000));
-        Project p13 = AllData.createProject("Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
-        p13.setBudget((int) (Math.random() * 90000));
-        Project p14 = AllData.createProject("Nestle", "Климова Дарья", descr03, null);
-        p14.setBudget((int) (Math.random() * 90000));
-        Project p15 = AllData.createProject("Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
-        p15.setBudget((int) (Math.random() * 90000));
 
     }
 
@@ -286,10 +276,9 @@ public class Generator {
 
     public static void generateProjects3() {
 
-        for (int i = 251; i >=1; i--) {
+        for (int i = 25; i >=1; i--) {
             String descr = "project-" + i;
-            Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
-            //Project project = AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
+            Project project = AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(30));
             project.setBudget((int) (Math.random() * 90000));
             if (i == 5) {
                 project.setPONumber("PO 2345676");
@@ -300,34 +289,6 @@ public class Generator {
             AllData.getAllProjects().put(project.getIdNumber(), project);
         }
 
-        int minusDays = 0;
-
-        for (int j = 1; j <= 4000; j++) {
-            int projectID = (int) (Math.random() * 250 + 1);
-            if (j % 10 == 0) {
-                minusDays++;
-            }
-            int ID = (int) (Math.random() * 12 + 1);
-            int tmp = (int) ((Math.random() * 1000) / 5);
-            double newtime = AllData.intToDouble(tmp);
-
-            if (!LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
-                    !LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
-                AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
-            }
-        }
-
-        /*for (int j = 0; j <= 20; j++) {
-            int projectID = (int) (Math.random() * 250 + 1);
-            int ID = (int) (Math.random() * 12 + 1);
-            int tmp = (int) ((Math.random() * 1000) / 30);
-            double newtime = AllData.intToDouble(tmp);
-            AllData.addWorkTime(projectID, LocalDate.now(), ID, newtime);
-        }*/
-
-
-
-        //AllData.addWorkTime(2, LocalDate.now().minusDays(3), 3, 35.5);
 
         String descr01 = "Maggi Potatoes promobox display 2018_12 - мейл от Сидоренко 06.12.2018 в 17.40 - дизайн нанесения на промокороб-дисплей по продукту Магги Картошечка";
         String descr02 = "Nesquik Kosmostarts CPW Legoland Dubai promo display-prepack 2018_12 - мейл от Гладченко 06.12.2018 в 18.59 - дизайн дисплея-препака по промо по сухим завтракам Несквик и Космостарс";
@@ -343,6 +304,23 @@ public class Generator {
         Project p15 = AllData.createProject("Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
         p15.setBudget((int) (Math.random() * 90000));
 
+
+        int minusDays = 0;
+
+        for (int j = 1; j <= 2; j++) {
+            int projectID = (int) (Math.random() * 25 + 1);
+            if (j % 2 == 0) {
+                minusDays++;
+            }
+            int ID = (int) (Math.random() * 8 + 1);
+            int tmp = (int) ((Math.random() * 1000) / 5);
+            double newtime = AllData.intToDouble(tmp);
+
+            if (!LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SUNDAY) &&
+                    !LocalDate.now().minusDays(minusDays).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+                AllData.addWorkTime(projectID, LocalDate.now().minusDays(minusDays), ID, newtime);
+            }
+        }
     }
 
 

@@ -19,7 +19,7 @@ public class Surveyor implements User {
     private String nameLogin = "";
 
     @JsonDeserialize(as = Role.class)
-    private Role role = Role.DESIGNER;
+    private Role role = Role.SURVEYOR;
 
     @JsonDeserialize(as = String.class)
     private String fullName = "";

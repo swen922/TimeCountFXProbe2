@@ -52,9 +52,10 @@ public class AllDataWrapper {
         this.allProjects.putAll(AllData.getAllProjects());
 
         this.IDCounterAllUsers = AllUsers.getIDCounterAllUsers();
+
         for (User usr : AllUsers.getUsers().values()) {
             if (usr.getRole().equals(Role.DESIGNER)) {
-                System.out.println(usr);
+                //System.out.println(usr);
                 Designer des = (Designer) usr;
                 this.saveDesigners.put(des.getIDNumber(), des);
             }

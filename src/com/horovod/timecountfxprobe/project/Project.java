@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.project;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -20,21 +21,25 @@ public class Project {
     @JsonDeserialize(as = Integer.class)
     private int idNumber;
 
+    @JsonIgnore
     private IntegerProperty idNumberProperty;
 
     @JsonDeserialize(as = String.class)
     private String company;
 
+    @JsonIgnore
     private StringProperty companyProperty;
 
     @JsonDeserialize(as = String.class)
     private String manager;
 
+    @JsonIgnore
     private StringProperty managerProperty;
 
     @JsonDeserialize(as = String.class)
     private String description;
 
+    @JsonIgnore
     private StringProperty descriptionProperty;
 
     @JsonDeserialize(as = String.class)
@@ -55,16 +60,19 @@ public class Project {
     @JsonDeserialize(as = String.class)
     private String PONumber;
 
+    @JsonIgnore
     private StringProperty PONumberProperty;
 
     @JsonDeserialize(as = Integer.class)
     private volatile int workSum = 0;
 
+    @JsonIgnore
     private volatile StringProperty workSumProperty;
 
     @JsonDeserialize(as = Integer.class)
     private int budget = 0;
 
+    @JsonIgnore
     private StringProperty budgetProperty;
 
     @JsonDeserialize(as = ArrayList.class)
@@ -259,15 +267,18 @@ public class Project {
     }
 
     //@XmlTransient
+    @JsonIgnore
     public double getWorkSumDouble() {
         return AllData.intToDouble(workSum);
     }
 
     //@XmlTransient
+    @JsonIgnore
     public StringProperty workSumProperty() {
         return workSumProperty;
     }
 
+    @JsonIgnore
     public synchronized void setWorkSumProperty(double workSumDouble) {
         this.workSumProperty.set(AllData.formatWorkTime(workSumDouble));
     }

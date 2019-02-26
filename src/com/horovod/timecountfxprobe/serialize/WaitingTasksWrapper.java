@@ -13,7 +13,18 @@ public class WaitingTasksWrapper {
 
     private ArrayList<SerializeWrapper> waitingTasks = new ArrayList<>();
 
+    public WaitingTasksWrapper() {
+        if (!AllData.waitingTasks.isEmpty()) {
+            this.waitingTasks.addAll(AllData.waitingTasks);
+        }
+    }
 
     @XmlElement(name = "waitingtaskslist")
+    public ArrayList<SerializeWrapper> getWaitingTasks() {
+        return waitingTasks;
+    }
 
+    public void setWaitingTasks(ArrayList<SerializeWrapper> waitingTasks) {
+        this.waitingTasks = waitingTasks;
+    }
 }

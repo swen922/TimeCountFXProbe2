@@ -5,6 +5,7 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.Generator;
+import com.horovod.timecountfxprobe.threads.ThreadRunCheckWaitingTasks;
 import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
 import com.horovod.timecountfxprobe.threads.ThreadUtil;
 import com.horovod.timecountfxprobe.user.AllUsers;
@@ -41,14 +42,16 @@ public class MainApp extends Application {
 
         AllData.resetStatus();
 
+        Loader loader = new Loader();
+        loader.load();
+
         /** TODO убрать эту строчку в рабочем варианте */
-        Generator.generateUsers2();
+        //Generator.generateUsers2();
         Generator.generateProjects2();
 
-        //Loader loader = new Loader();
-        //loader.load();
-
         Updater.getService().submit(new ThreadStartCheckingWaitingTasks());
+        /*Thread th = new Thread(new ThreadRunCheckWaitingTasks());
+        th.start();*/
 
         initRootLayut();
 

@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe.threads;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import javafx.concurrent.Task;
 
@@ -14,6 +15,10 @@ public class ThreadCheckWaitingTasks extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
 
+        System.out.println("starting ThreadCheckWaitingTasks...");
+
+        System.out.println("AllData.waitingTasks.isEmpty() = " + AllData.waitingTasks.isEmpty());
+
         try {
             if (!AllData.waitingTasks.isEmpty()) {
 
@@ -24,9 +29,9 @@ public class ThreadCheckWaitingTasks extends Task<Boolean> {
                 int counter = 0;
 
                 for (int i = 0; i < AllData.waitingTasks.size(); i++) {
-                    Task task = AllData.waitingTasks.poll();
-                    if (task != null) {
-                        Updater.getService().submit(task);
+                    SerializeWrapper wrapper = AllData.waitingTasks.poll();
+                    if (wrapper != null) {
+                        Updater.update(wrapper.getUpdateType(), wrapper);
                         counter++;
                     }
                 }

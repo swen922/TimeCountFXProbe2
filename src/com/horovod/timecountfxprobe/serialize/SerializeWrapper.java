@@ -50,24 +50,32 @@ public class SerializeWrapper {
         if (updateType.equals(UpdateType.UPDATE_TIME)) {
             this.workTime = (WorkTime) object;
         }
-        else if (updateType.equals(UpdateType.UPDATE_PROJECT)) {
+        else if (updateType.equals(UpdateType.UPDATE_PROJECT) || updateType.equals(UpdateType.CREATE_PROJECT)) {
             this.project = (Project) object;
         }
-        else if (updateType.equals(UpdateType.UPDATE_DESIGNER)) {
+        else if (updateType.equals(UpdateType.UPDATE_DESIGNER) || updateType.equals(UpdateType.CREATE_DESIGNER)) {
             this.designer = (Designer) object;
         }
-        else if (updateType.equals(UpdateType.UPDATE_MANAGER)) {
+        else if (updateType.equals(UpdateType.UPDATE_MANAGER) || updateType.equals(UpdateType.CREATE_MANAGER)) {
             this.manager = (Manager) object;
         }
-        else if (updateType.equals(UpdateType.UPDATE_ADMIN)) {
+        else if (updateType.equals(UpdateType.UPDATE_ADMIN) || updateType.equals(UpdateType.CREATE_ADMIN)) {
             this.admin = (Admin) object;
         }
-        else if (updateType.equals(UpdateType.UPDATE_SURVEYOR)) {
+        else if (updateType.equals(UpdateType.UPDATE_SURVEYOR) || updateType.equals(UpdateType.CREATE_SURVEYOR)) {
             this.surveyor = (Surveyor) object;
         }
 
-        this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
-        this.securePassword = AllUsers.getSecurePassForUser(AllUsers.getCurrentUser());
+        if (AllUsers.getCurrentUser() == 0) {
+
+            this.login = AllUsers.getOneUser(1).getNameLogin();
+            this.securePassword = AllUsers.getSecurePassForUser(1);
+        }
+        else {
+            this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
+            this.securePassword = AllUsers.getSecurePassForUser(AllUsers.getCurrentUser());
+        }
+
     }
 
     public SerializeWrapper() {
