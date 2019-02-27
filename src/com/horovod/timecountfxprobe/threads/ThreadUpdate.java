@@ -36,7 +36,7 @@ public class ThreadUpdate extends Task<Boolean> {
         this.serializeWrapper = serializeWrapper;
     }
 
-    protected Boolean call() throws Exception {
+    protected Boolean call() {
 
         boolean result = false;
 

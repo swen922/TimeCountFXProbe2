@@ -28,6 +28,9 @@ public class CreateProjectWindowController {
     private TextField existingProjectTextField;
 
     @FXML
+    private Button getProjectID;
+
+    @FXML
     private Button clearExistingProjectButton;
 
     @FXML
@@ -187,7 +190,10 @@ public class CreateProjectWindowController {
                 alert.showAndWait();
                 return;
             }
-            Project result = AllData.createProject(companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
+
+
+
+            Project result = AllData.createProject(null, companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
             AllData.tableProjectsManagerController.initializeTable();
             if (AllData.staffWindowController != null) {
                 AllData.staffWindowController.initializeTable();

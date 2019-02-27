@@ -1,16 +1,11 @@
 package com.horovod.timecountfxprobe.view;
 
-import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.Loader;
-import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
-import com.horovod.timecountfxprobe.serialize.UpdateType;
-import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
-import com.horovod.timecountfxprobe.threads.ReadBaseOnServer;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -22,7 +17,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -41,18 +35,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
-import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDate;
-import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -998,33 +987,19 @@ public class TableProjectsManagerController {
         }
     }
 
-    // TODO Переписать как булин, перенести в AllData, чтобы не дублировать
     // А здесть проверяется булин, и если false, то останавливается закрытие программы
     private void saveBase() {
         Loader loader = new Loader();
-        try {
-            loader.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-            AllData.status = "Не удалось записать базу в файл: IOException";
-            AllData.updateAllStatus();
-            alertSerialize(e.getMessage());
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = "Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
-            AllData.updateAllStatus();
-            alertSerialize(e.getMessage());
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
+        boolean writed = loader.save();
+        if (!writed) {
+            alertSerialize();
         }
     }
 
-    private void alertSerialize(String exceptionName) {
+    private void alertSerialize() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Ошибка записи в файл");
-        alert.setHeaderText("Не удалось записать базу в файл: " + exceptionName);
+        alert.setTitle("Ошибка записи базы");
+        alert.setHeaderText("Не удалось записать базу в файл");
         alert.showAndWait();
     }
 

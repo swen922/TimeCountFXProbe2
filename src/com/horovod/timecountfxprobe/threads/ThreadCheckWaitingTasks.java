@@ -10,14 +10,10 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-public class ThreadCheckWaitingTasks extends Task<Boolean> {
+public class ThreadCheckWaitingTasks implements Runnable {
 
     @Override
-    protected Boolean call() throws Exception {
-
-        System.out.println("starting ThreadCheckWaitingTasks...");
-
-        System.out.println("AllData.waitingTasks.isEmpty() = " + AllData.waitingTasks.isEmpty());
+    public void run() {
 
         try {
             if (!AllData.waitingTasks.isEmpty()) {
@@ -39,24 +35,16 @@ public class ThreadCheckWaitingTasks extends Task<Boolean> {
                 Loader loader = new Loader();
                 loader.saveWatingTasks();
 
-                AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - активировано " + counter + " задач из списка неисполненных обновлений базы";
+                AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - активировано " + counter + " задач из списка неисполненных обновлений базы.";
                 AllData.updateAllStatus();
                 AllData.logger.info(AllData.status);
-                return true;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл: IOException";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл. Ошибка сериализации в XML: JAXBException";
+            AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - Не удалось заново запустить невыполненные задачи: выброшено исключение.";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
-        return false;
     }
 }

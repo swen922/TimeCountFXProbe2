@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
+import com.horovod.timecountfxprobe.threads.ThreadGetProjectID;
 import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -30,16 +31,19 @@ import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.horovod.timecountfxprobe.serialize.Updater.getService;
 
 
 public class AllData {
 
     public static final Logger logger = Logger.getLogger(AllData.class);
 
-    private static volatile AtomicInteger idNumber = new AtomicInteger(0);
-    private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
+    //private static volatile AtomicInteger idNumber = new AtomicInteger(0);
+    //private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
 
     private static ObservableMap<Integer, Project> allProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
     private static ObservableMap<Integer, Project> activeProjects = FXCollections.synchronizedObservableMap(FXCollections.observableHashMap());
@@ -126,7 +130,7 @@ public class AllData {
     /** Стандартные геттеры и сеттеры */
 
 
-    public static int incrementIdNumberAndGet() {
+    /*public static int incrementIdNumberAndGet() {
         return idNumber.incrementAndGet();
 
     }
@@ -150,7 +154,7 @@ public class AllData {
 
     private static void setIdNumberProperty(int newIdNumberProperty) {
         AllData.idNumberProperty.set(newIdNumberProperty);
-    }
+    }*/
 
 
     public static ObservableMap<Integer, Project> getAllProjects() {
@@ -639,7 +643,7 @@ public class AllData {
 
     /** Методы добавления, удаления проектов */
 
-    public synchronized static Project createProject(String company, String manager, String description, LocalDate newDate) {
+    public synchronized static Project createProject(Integer projectID, String company, String manager, String description, LocalDate newDate) {
 
         if (company == null || company.isEmpty()) {
             return null;
@@ -652,23 +656,37 @@ public class AllData {
         }
 
         Project project = null;
-        if (newDate == null) {
-            project = new Project(company, manager, description);
+
+        if (projectID == null) {
+            Integer id = Updater.getProjectID();
+            if (id != null) {
+                if (newDate == null) {
+                    project = new Project(id, company, manager, description);
+                }
+                else {
+                    project = new Project(id, company, manager, description, newDate);
+                }
+            }
         }
         else {
-            project = new Project(company, manager, description, newDate);
+            project = new Project(projectID, company, manager, description, newDate);
         }
-        allProjects.put(project.getIdNumber(), project);
-        activeProjects.put(project.getIdNumber(), project);
 
-        AllData.status = "Локально создан новый проект id-" + project.getIdNumber();
-        AllData.updateAllStatus();
-        AllData.logger.info(AllData.status);
+        if (project != null) {
+            allProjects.put(project.getIdNumber(), project);
+            activeProjects.put(project.getIdNumber(), project);
 
-        Updater.update(UpdateType.CREATE_PROJECT, project);
+            AllData.status = "Локально создан новый проект id-" + project.getIdNumber();
+            AllData.updateAllStatus();
+            AllData.logger.info(AllData.status);
+
+            Updater.update(UpdateType.CREATE_PROJECT, project);
+        }
 
         return project;
     }
+
+
 
 
     public synchronized static boolean deleteProject(int deadProject) {
@@ -755,7 +773,7 @@ public class AllData {
      * и его проверки на архивное состояние */
 
     public static boolean isProjectExist(int idProject) {
-        if (idProject <= 0 || idProject > getIdNumber()) {
+        if (idProject <= 0) {
             return false;
         }
         return allProjects.containsKey(idProject);

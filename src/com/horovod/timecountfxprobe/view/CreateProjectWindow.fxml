@@ -2,14 +2,21 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="350.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CreateProjectWindowController">
+<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CreateProjectWindowController">
    <children>
-      <AnchorPane layoutX="-20.0" layoutY="-23.0" prefWidth="180.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane layoutX="-37.0" layoutY="-71.0" prefHeight="55.0" prefWidth="180.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Получить id-номер" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" />
+         </children>
+      </AnchorPane>
+      <Separator prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="55.0" />
+      <AnchorPane prefWidth="180.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="60.0">
          <children>
             <Label text="Скопировать проект" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="15.0" />
             <Label text="Компания" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0" />
@@ -17,17 +24,23 @@
             <Label text="Описание проекта" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="215.0" />
          </children>
       </AnchorPane>
-      <TextField fx:id="existingProjectTextField" alignment="CENTER" onAction="#handleExistingProjectTextField" onKeyTyped="#handleExistingProjectTextField" promptText="Номер проекта" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
-      <TextField fx:id="companyTextField" layoutX="10.0" layoutY="10.0" onAction="#checkButtons" onKeyTyped="#checkButtons" promptText="Название компании-заказчика" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
-      <TextArea fx:id="managerTextArea" layoutX="10.0" layoutY="10.0" onKeyTyped="#checkButtons" prefHeight="50.0" promptText="Имя менеджера, приславшего задание (можно несколько человек через запятую)" wrapText="true" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0" />
-      <TextArea fx:id="descriptionTextArea" layoutX="10.0" layoutY="10.0" onKeyTyped="#checkButtons" prefHeight="150.0" promptText="Описание проекта согласно шаблону: название папки - информация о дате мейла - описание проекта" wrapText="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="150.0" />
-      <Label minHeight="30.0" text="Номер нового проекта появится после создания проекта" textFill="#909090" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="240.0">
-         <font>
-            <Font size="11.0" />
-         </font>
-      </Label>
-      <Button fx:id="cancelButton" minWidth="100.0" mnemonicParsing="false" onAction="#handleCancelButton" text="Отмена" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="120.0" />
-      <Button fx:id="createButton" minWidth="100.0" mnemonicParsing="false" onAction="#handleCreateButton" text="Создать" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="clearExistingProjectButton" layoutX="388.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleClearExistingProjectButton" text="X" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="10.0" />
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+         <children>
+            <TextField fx:id="existingProjectTextField" alignment="CENTER" onAction="#handleExistingProjectTextField" onKeyTyped="#handleExistingProjectTextField" promptText="Номер проекта" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="10.0" />
+            <TextField fx:id="companyTextField" onAction="#checkButtons" onKeyTyped="#checkButtons" promptText="Название компании-заказчика" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <TextArea fx:id="managerTextArea" onKeyTyped="#checkButtons" prefHeight="50.0" promptText="Имя менеджера, приславшего задание (можно несколько человек через запятую)" wrapText="true" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="90.0" />
+            <TextArea fx:id="descriptionTextArea" onKeyTyped="#checkButtons" prefHeight="150.0" promptText="Описание проекта согласно шаблону: название папки - информация о дате мейла - описание проекта" wrapText="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="150.0" />
+            <Label minHeight="30.0" text="Номер нового проекта появится после создания проекта, либо его можно получить заранее, нажав кнопку «Получить»" textFill="#909090" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="240.0">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+            <Button fx:id="clearExistingProjectButton" mnemonicParsing="false" onAction="#handleClearExistingProjectButton" text="X" textAlignment="CENTER" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="10.0" />
+            <Button fx:id="cancelButton" minWidth="100.0" mnemonicParsing="false" onAction="#handleCancelButton" text="Отмена" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="120.0" />
+            <Button fx:id="createButton" minWidth="100.0" mnemonicParsing="false" onAction="#handleCreateButton" text="Создать" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+         </children>
+      </AnchorPane>
+      <TextField layoutX="158.0" layoutY="17.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="15.0" />
+      <Button fx:id="getProjectID" layoutX="380.0" layoutY="18.0" mnemonicParsing="false" text="Получить" textAlignment="CENTER" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="15.0" />
    </children>
 </AnchorPane>

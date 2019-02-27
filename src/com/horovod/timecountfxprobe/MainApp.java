@@ -5,7 +5,6 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.Generator;
-import com.horovod.timecountfxprobe.threads.ThreadRunCheckWaitingTasks;
 import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
 import com.horovod.timecountfxprobe.threads.ThreadUtil;
 import com.horovod.timecountfxprobe.user.AllUsers;
@@ -16,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -43,15 +43,20 @@ public class MainApp extends Application {
         AllData.resetStatus();
 
         Loader loader = new Loader();
-        loader.load();
+        boolean readBase = loader.load();
+        if (!readBase) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Ошибка чтения базы");
+            alert.setHeaderText("Не удалось прочитать базу из файла");
+            alert.showAndWait();
+        }
+        loader.loadWaitingTasks();
 
         /** TODO убрать эту строчку в рабочем варианте */
         //Generator.generateUsers2();
         Generator.generateProjects2();
 
         Updater.getService().submit(new ThreadStartCheckingWaitingTasks());
-        /*Thread th = new Thread(new ThreadRunCheckWaitingTasks());
-        th.start();*/
 
         initRootLayut();
 

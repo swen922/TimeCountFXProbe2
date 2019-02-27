@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe.serialize;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.user.AllUsers;
+import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import com.horovod.timecountfxprobe.serialize.AllDataWrapper;
 import javafx.scene.control.Alert;
@@ -31,123 +32,158 @@ public class Loader {
     private Path pathToFile = Paths.get(pathBase);
     private Path pathToBackupFile = Paths.get(backupPathBase);
     private Path pathToWaitingTasks = Paths.get(pathWaitingTasks);
+
     private File fileBase = new File(pathBase);
     private File backupFileBase = new File(backupPathBase);
     private File waitingTasksFile = new File(pathWaitingTasks);
 
 
-    public boolean save() throws IOException, JAXBException {
+    public boolean save() {
 
-        AllDataWrapper allDataWrapper = new AllDataWrapper();
+        try {
+            AllDataWrapper allDataWrapper = new AllDataWrapper();
 
-        if (this.fileBase.exists() && this.backupFileBase.exists()) {
-            Files.copy(pathToFile, pathToBackupFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-        else if (this.fileBase.exists()) {
-            Files.createFile(pathToBackupFile);
-            Files.copy(pathToFile, pathToBackupFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-        else {
-            Files.createDirectories(pathToFile.getParent());
-            Files.createFile(pathToFile);
-        }
+            if (this.fileBase.exists() && this.backupFileBase.exists()) {
+                Files.copy(pathToFile, pathToBackupFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            else if (this.fileBase.exists()) {
+                Files.createFile(pathToBackupFile);
+                Files.copy(pathToFile, pathToBackupFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+            else {
+                Files.createDirectories(pathToFile.getParent());
+                Files.createFile(pathToFile);
+            }
 
-        JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-        marshaller.marshal(allDataWrapper, this.fileBase);
+            marshaller.marshal(allDataWrapper, this.fileBase);
 
-        AllData.status = Loader.class.getSimpleName() + " - База успешно сохранена.";
-        AllData.updateAllStatus();
-        AllData.logger.info(AllData.status);
-
-        return true;
-    }
-
-
-    public boolean load() throws JAXBException {
-
-        if (!this.fileBase.exists()) {
-            // TODO здесь записа логгера добавить, когда напишу логгер
-            AllData.status = Loader.class.getSimpleName() + " - Ошибка загрузки базы. Отсутствует файл базы.";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            return false;
-        }
-
-        JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(this.fileBase);
-
-        if (allDataWrapper != null) {
-
-            AllData.getAllProjects().clear();
-            AllData.getActiveProjects().clear();
-            AllData.setIdNumber(0);
-            AllData.setWorkSumProjects(0);
-
-            AllUsers.getUsers().clear();
-            AllUsers.setIDCounterAllUsers(0);
-            AllUsers.getUsersPass().clear();
-            AllUsers.setCurrentUser(0);
-            AllUsers.getUsersLogged().clear();
-
-            AllUsers.setIDCounterAllUsers(allDataWrapper.getIDCounterAllUsers());
-
-            AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
-            AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
-            AllUsers.getUsers().putAll(allDataWrapper.getSaveAdmins());
-            AllUsers.getUsers().putAll(allDataWrapper.getSaveSurveyors());
-            //System.out.println(AllUsers.getUsers().size());
-
-            AllUsers.setUsersPass(allDataWrapper.getSaveUsersPass());
-            //System.out.println(AllUsers.getUsersPass().size());
-
-            AllUsers.setCurrentUser(allDataWrapper.getCurrentUser());
-            //AllUsers.setCurrentUser(10);
-            /*System.out.println("allDataWrapper.getCurrentUser() = " + allDataWrapper.getCurrentUser());
-            System.out.println("cuurrent user = " + AllUsers.getCurrentUser());*/
-
-            AllUsers.setUsersLogged(allDataWrapper.getSaveUsersLogged());
-            //System.out.println(AllUsers.getUsersLogged());
-
-            AllData.setIdNumber(allDataWrapper.getAllProjectsIdNumber());
-            /*System.out.println("allDataWrapper.getAllProjectsIdNumber() = " + allDataWrapper.getAllProjectsIdNumber());
-            System.out.println("AllData idNumber = " + AllData.getIdNumber());*/
-
-            AllData.setAllProjects(allDataWrapper.getAllProjects());
-            //System.out.println("AllData.getAllProjects().size() = " + AllData.getAllProjects().size());
-
-            AllData.rebuildWorkSum();
-            //System.out.println(AllData.getWorkSumProjects());
-
-            AllData.rebuildActiveProjects();
-            //System.out.println(AllData.getActiveProjects().size());
-
-            AllData.status = Loader.class.getSimpleName() + " - База успешно прочитана.";
+            AllData.status = Loader.class.getSimpleName() + " - База успешно сохранена.";
             AllData.updateAllStatus();
             AllData.logger.info(AllData.status);
 
             return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать базу в файл: IOException";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
         }
 
         return false;
     }
 
 
-    public boolean saveWatingTasks() throws IOException, JAXBException {
+    public boolean load() {
+
+        if (!this.fileBase.exists()) {
+            AllData.status = Loader.class.getSimpleName() + " - Ошибка загрузки базы. Отсутствует файл базы.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            return false;
+        }
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(this.fileBase);
+
+            if (allDataWrapper != null) {
+
+                AllData.getAllProjects().clear();
+                AllData.getActiveProjects().clear();
+                AllData.setIdNumber(0);
+                AllData.setWorkSumProjects(0);
+
+                AllUsers.getUsers().clear();
+                AllUsers.setIDCounterAllUsers(0);
+                AllUsers.getUsersPass().clear();
+                AllUsers.setCurrentUser(0);
+                AllUsers.getUsersLogged().clear();
+
+                AllUsers.setIDCounterAllUsers(allDataWrapper.getIDCounterAllUsers());
+
+                AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
+                AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
+                AllUsers.getUsers().putAll(allDataWrapper.getSaveAdmins());
+                AllUsers.getUsers().putAll(allDataWrapper.getSaveSurveyors());
+                //System.out.println(AllUsers.getUsers().size());
+
+                AllUsers.setUsersPass(allDataWrapper.getSaveUsersPass());
+                //System.out.println(AllUsers.getUsersPass().size());
+
+                AllUsers.setCurrentUser(allDataWrapper.getCurrentUser());
+                //AllUsers.setCurrentUser(10);
+                /*System.out.println("allDataWrapper.getCurrentUser() = " + allDataWrapper.getCurrentUser());
+                System.out.println("cuurrent user = " + AllUsers.getCurrentUser());*/
+
+                AllUsers.setUsersLogged(allDataWrapper.getSaveUsersLogged());
+                //System.out.println(AllUsers.getUsersLogged());
+
+                AllData.setIdNumber(allDataWrapper.getAllProjectsIdNumber());
+                /*System.out.println("allDataWrapper.getAllProjectsIdNumber() = " + allDataWrapper.getAllProjectsIdNumber());
+                System.out.println("AllData idNumber = " + AllData.getIdNumber());*/
+
+                AllData.setAllProjects(allDataWrapper.getAllProjects());
+                //System.out.println("AllData.getAllProjects().size() = " + AllData.getAllProjects().size());
+
+                AllData.rebuildWorkSum();
+                //System.out.println(AllData.getWorkSumProjects());
+
+                AllData.rebuildActiveProjects();
+                //System.out.println(AllData.getActiveProjects().size());
+
+                AllData.status = Loader.class.getSimpleName() + " - База успешно прочитана.";
+                AllData.updateAllStatus();
+                AllData.logger.info(AllData.status);
+
+                if (AllUsers.getCurrentUser() == 0) {
+                    if (!AllUsers.getUsers().isEmpty()) {
+                        for (User u : AllUsers.getUsers().values()) {
+                            if (u.getRole().equals(Role.DESIGNER)) {
+                                AllUsers.setCurrentUser(u.getIDNumber());
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+        } catch (JAXBException e) {
+            e.printStackTrace();
+            AllData.status = Loader.class.getSimpleName() + " - Не удалось прочитать базу из файла. Ошибка десериализации из XML: JAXBException";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+
+        return false;
+    }
+
+
+    public boolean saveWatingTasks() {
 
         try {
             if (!AllData.waitingTasks.isEmpty()) {
-
-                WaitingTasksWrapper wrapper = new WaitingTasksWrapper();
 
                 if (!this.waitingTasksFile.exists()) {
                     Files.createDirectories(pathToWaitingTasks.getParent());
                     Files.createFile(pathToWaitingTasks);
                 }
 
+                WaitingTasksWrapper wrapper = new WaitingTasksWrapper();
 
                 JAXBContext context = JAXBContext.newInstance(WaitingTasksWrapper.class);
                 Marshaller marshaller = context.createMarshaller();
@@ -155,21 +191,22 @@ public class Loader {
 
                 marshaller.marshal(wrapper, this.waitingTasksFile);
 
-                AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы сохранен.";
+                AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы сохранен в файл.";
                 AllData.updateAllStatus();
                 AllData.logger.info(AllData.status);
-                return true;
             }
             else {
                 if (this.waitingTasksFile.exists()) {
                     Files.delete(pathToWaitingTasks);
 
-                    AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы очищен и удален.";
+                    AllData.status = Loader.class.getSimpleName() + " - Файл со списком неисполненных обновлений базы удален.";
                     AllData.updateAllStatus();
                     AllData.logger.info(AllData.status);
-                    return true;
                 }
             }
+
+            return true;
+
         } catch (IOException e) {
             e.printStackTrace();
             AllData.status = Loader.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл: IOException";
@@ -183,11 +220,14 @@ public class Loader {
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
+
         return false;
     }
 
     public boolean loadWaitingTasks() {
 
+        // Здесь на входе не нужно записывать ошибку в лог, если файла нет,
+        // т.к. если его нет – значит просто нет неисполненных задач, и ничего читать не нужно
         if (this.waitingTasksFile.exists()) {
             try {
                 JAXBContext context = JAXBContext.newInstance(WaitingTasksWrapper.class);
@@ -197,15 +237,22 @@ public class Loader {
                 if (wrapper != null) {
                     AllData.waitingTasks.clear();
                     AllData.waitingTasks.addAll(wrapper.getWaitingTasks());
+
+                    AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы прочитан из файла.";
+                    AllData.updateAllStatus();
+                    AllData.logger.info(AllData.status);
+
+                    return true;
                 }
             } catch (JAXBException e) {
                 e.printStackTrace();
-                AllData.status = Loader.class.getSimpleName() + " - Не удалось прочитать список неисполненных обновлений базы в файл. Ошибка десериализации из XML: JAXBException";
+                AllData.status = Loader.class.getSimpleName() + " - Не удалось прочитать список неисполненных обновлений базы из файла. Ошибка десериализации из XML: JAXBException";
                 AllData.updateAllStatus();
                 AllData.logger.error(AllData.status);
                 AllData.logger.error(e.getMessage(), e);
             }
         }
+
         return false;
 
     }

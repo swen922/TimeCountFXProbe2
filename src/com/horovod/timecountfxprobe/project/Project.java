@@ -79,8 +79,8 @@ public class Project {
     private List<WorkTime> work = new ArrayList<>();
 
 
-    public Project(String comp, String manager, String description) {
-        this.idNumber = AllData.incrementIdNumberAndGet();
+    public Project(Integer projectID, String comp, String manager, String description) {
+        this.idNumber = projectID;
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);
@@ -93,8 +93,8 @@ public class Project {
         //this.workSumProperty = new SimpleDoubleProperty(AllData.intToDouble(workSum));
     }
 
-    public Project(String comp, String manager, String description, LocalDate newDate) {
-        this.idNumber = AllData.incrementIdNumberAndGet();
+    public Project(Integer projectID, String comp, String manager, String description, LocalDate newDate) {
+        this.idNumber = projectID;
         this.idNumberProperty = new SimpleIntegerProperty(idNumber);
         this.company = comp;
         this.companyProperty = new SimpleStringProperty(comp);

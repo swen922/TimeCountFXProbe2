@@ -11,13 +11,9 @@ public class ThreadStartCheckingWaitingTasks extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
 
-        System.out.println("starting ThreadStartCheckingWaitingTasks...");
-
         try {
             ThreadCheckWaitingTasks task = new ThreadCheckWaitingTasks();
-            Thread thread = new Thread(task);
-            thread.setDaemon(true);
-            Updater.getRepeatUpdater().scheduleAtFixedRate(thread, 5, 10, TimeUnit.SECONDS);
+            Updater.getRepeatUpdater().scheduleAtFixedRate(task, 5, 10, TimeUnit.SECONDS);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

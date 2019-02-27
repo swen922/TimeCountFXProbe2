@@ -915,29 +915,16 @@ public class TableProjectsDesignerController {
 
     private void saveBase() {
         Loader loader = new Loader();
-        try {
-            loader.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-            AllData.status = "Не удалось записать базу в файл: IOException";
-            AllData.updateAllStatus();
-            alertSerialize(e.getMessage());
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = "Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
-            AllData.updateAllStatus();
-            alertSerialize(e.getMessage());
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
+        boolean writed = loader.save();
+        if (!writed) {
+            alertSerialize();
         }
     }
 
-    private void alertSerialize(String exceptionName) {
+    private void alertSerialize() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Ошибка записи в файл");
-        alert.setHeaderText("Не удалось записать базу в файл: " + exceptionName);
+        alert.setHeaderText("Не удалось записать базу в файл");
         alert.showAndWait();
     }
 

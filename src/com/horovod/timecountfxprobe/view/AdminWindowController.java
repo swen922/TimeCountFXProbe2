@@ -177,52 +177,31 @@ public class AdminWindowController {
 
     private void saveBase() {
         Loader loader = new Loader();
-        try {
-            loader.save();
-        } catch (IOException e) {
-            e.printStackTrace();
-            AllData.status = "Не удалось записать базу в файл: IOException";
-            AllData.updateAllStatus();
-            alertSerialize(e.getMessage());
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = "Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
-            AllData.updateAllStatus();
-            alertSerialize(e.getMessage());
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-
+        boolean writed = loader.save();
+        if (!writed) {
+            alertSerialize();
         }
     }
 
-    private void alertSerialize(String exceptionName) {
+    private void alertSerialize() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Ошибка записи в файл");
-        alert.setHeaderText("Не удалось записать базу в файл: " + exceptionName);
+        alert.setTitle("Ошибка записи базы");
+        alert.setHeaderText("Не удалось записать базу в файл");
         alert.showAndWait();
     }
 
     private void loadBase() {
-
         Loader loader = new Loader();
-        try {
-            loader.load();
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = "Ошибка чтения XML: " + e.toString();
-            updateStatus();
-            alertDeSerialize(e.toString());
-            AllData.logger.error(e.getMessage(), e);
-
+        boolean loaded = loader.load();
+        if (!loaded) {
+            alertDeSerialize();
         }
     }
 
-    private void alertDeSerialize(String exceptionName) {
+    private void alertDeSerialize() {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Ошибка чтения файла");
-        alert.setHeaderText("Не удалось прочесть базу из файла: " + exceptionName);
+        alert.setTitle("Ошибка чтения базы");
+        alert.setHeaderText("Не удалось прочитать базу из файла");
         alert.showAndWait();
     }
 

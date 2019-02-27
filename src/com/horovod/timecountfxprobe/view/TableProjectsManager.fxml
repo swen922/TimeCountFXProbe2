@@ -238,7 +238,7 @@
             <ChoiceBox fx:id="exportChoiceBox" prefWidth="150.0" />
          </children>
       </HBox>
-      <AnchorPane layoutX="321.0" layoutY="769.0" prefHeight="35.0" AnchorPane.bottomAnchor="-4.0" AnchorPane.leftAnchor="321.0" AnchorPane.rightAnchor="475.0">
+      <AnchorPane layoutX="321.0" layoutY="769.0" prefHeight="35.0" AnchorPane.bottomAnchor="-4.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="375.0">
          <children>
             <Label fx:id="statusLabel" alignment="TOP_LEFT" prefHeight="30.0" text="Статус: все нормально" textFill="#666666" wrapText="true" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="3.0">
                <font>
