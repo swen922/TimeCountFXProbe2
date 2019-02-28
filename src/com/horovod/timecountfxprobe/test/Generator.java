@@ -177,7 +177,7 @@ public class Generator {
         for (int i = 100; i >=1; i--) {
             String descr = "project-" + i;
 
-            AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
+            AllData.createProject(i,"Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
 
             /*Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(25));
             AllData.addNewProject(project);*/
@@ -211,10 +211,10 @@ public class Generator {
 
     public static void generateProjects2() {
 
-        for (int i = 251; i >=1; i--) {
+        for (int i = 1; i <=251; i++) {
             String descr = "project-" + i;
             //Project project = new Project("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
-            Project project = AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
+            Project project = AllData.createProject(i,"Nestle", "Ivanov", descr, LocalDate.now().minusDays(90));
             project.setBudget((int) (Math.random() * 90000));
             if (i == 5) {
                 project.setPONumber("PO 2345676");
@@ -229,13 +229,13 @@ public class Generator {
         String descr03 = "Nescafe Gold label doypack 150g 250g 2018_12 - мейл от Климовой 06.12.2018 в 12.52 - корректировка текстов упаковок Нескафе Голд дойпак 150 г и 250 г";
         String descr04 = "Rossia leaflet NEW";
 
-        Project p12 = AllData.createProject("Nestle", "Сидоренко Юлия", descr01, null);
+        Project p12 = AllData.createProject(252,"Nestle", "Сидоренко Юлия", descr01, null);
         p12.setBudget((int) (Math.random() * 90000));
-        Project p13 = AllData.createProject("Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
+        Project p13 = AllData.createProject(253,"Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
         p13.setBudget((int) (Math.random() * 90000));
-        Project p14 = AllData.createProject("Nestle", "Климова Дарья", descr03, null);
+        Project p14 = AllData.createProject(254,"Nestle", "Климова Дарья", descr03, null);
         p14.setBudget((int) (Math.random() * 90000));
-        Project p15 = AllData.createProject("Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
+        Project p15 = AllData.createProject(255,"Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
         p15.setBudget((int) (Math.random() * 90000));
 
 
@@ -276,9 +276,9 @@ public class Generator {
 
     public static void generateProjects3() {
 
-        for (int i = 25; i >=1; i--) {
+        for (int i = 1; i <=25; i--) {
             String descr = "project-" + i;
-            Project project = AllData.createProject("Nestle", "Ivanov", descr, LocalDate.now().minusDays(30));
+            Project project = AllData.createProject(i,"Nestle", "Ivanov", descr, LocalDate.now().minusDays(30));
             project.setBudget((int) (Math.random() * 90000));
             if (i == 5) {
                 project.setPONumber("PO 2345676");
@@ -295,13 +295,13 @@ public class Generator {
         String descr03 = "Nescafe Gold label doypack 150g 250g 2018_12 - мейл от Климовой 06.12.2018 в 12.52 - корректировка текстов упаковок Нескафе Голд дойпак 150 г и 250 г";
         String descr04 = "Rossia leaflet NEW";
 
-        Project p12 = AllData.createProject("Nestle", "Сидоренко Юлия", descr01, null);
+        Project p12 = AllData.createProject(26,"Nestle", "Сидоренко Юлия", descr01, null);
         p12.setBudget((int) (Math.random() * 90000));
-        Project p13 = AllData.createProject("Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
+        Project p13 = AllData.createProject(27,"Nestle", "Гладченко Наталья, Елагина Мария", descr02, null);
         p13.setBudget((int) (Math.random() * 90000));
-        Project p14 = AllData.createProject("Nestle", "Климова Дарья", descr03, null);
+        Project p14 = AllData.createProject(28,"Nestle", "Климова Дарья", descr03, null);
         p14.setBudget((int) (Math.random() * 90000));
-        Project p15 = AllData.createProject("Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
+        Project p15 = AllData.createProject(29,"Nestle", "Сидоренко Юлия, Климова Дарья", descr04, null);
         p15.setBudget((int) (Math.random() * 90000));
 
 

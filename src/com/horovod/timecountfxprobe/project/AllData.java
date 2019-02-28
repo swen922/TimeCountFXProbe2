@@ -51,6 +51,8 @@ public class AllData {
     private static volatile AtomicInteger workSumProjects = new AtomicInteger(0);
     private static volatile DoubleProperty workSumProjectsProperty = new SimpleDoubleProperty(AllData.intToDouble(workSumProjects.get()));
 
+    public static volatile IntegerProperty createProjectID = new SimpleIntegerProperty(0);
+
     private static DoubleProperty todayWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty weekWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty monthWorkSumProperty = new SimpleDoubleProperty(0);
@@ -69,6 +71,8 @@ public class AllData {
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
     // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
     public static String httpUpdate = "http://localhost:8088/receiveupdate";
+    public static String httpGetProjectID = "http://localhost:8088/projectid";
+
 
 
 
@@ -643,7 +647,7 @@ public class AllData {
 
     /** Методы добавления, удаления проектов */
 
-    public synchronized static Project createProject(Integer projectID, String company, String manager, String description, LocalDate newDate) {
+    public synchronized static Project createProject(int projectID, String company, String manager, String description, LocalDate newDate) {
 
         if (company == null || company.isEmpty()) {
             return null;
@@ -655,33 +659,16 @@ public class AllData {
             return null;
         }
 
-        Project project = null;
+        Project project = new Project(projectID, company, manager, description, newDate);
 
-        if (projectID == null) {
-            Integer id = Updater.getProjectID();
-            if (id != null) {
-                if (newDate == null) {
-                    project = new Project(id, company, manager, description);
-                }
-                else {
-                    project = new Project(id, company, manager, description, newDate);
-                }
-            }
-        }
-        else {
-            project = new Project(projectID, company, manager, description, newDate);
-        }
+        allProjects.put(project.getIdNumber(), project);
+        activeProjects.put(project.getIdNumber(), project);
 
-        if (project != null) {
-            allProjects.put(project.getIdNumber(), project);
-            activeProjects.put(project.getIdNumber(), project);
+        AllData.status = "Локально создан новый проект id-" + project.getIdNumber();
+        AllData.updateAllStatus();
+        AllData.logger.info(AllData.status);
 
-            AllData.status = "Локально создан новый проект id-" + project.getIdNumber();
-            AllData.updateAllStatus();
-            AllData.logger.info(AllData.status);
-
-            Updater.update(UpdateType.CREATE_PROJECT, project);
-        }
+        Updater.update(UpdateType.CREATE_PROJECT, project);
 
         return project;
     }

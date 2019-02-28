@@ -103,7 +103,7 @@ public class Loader {
 
                 AllData.getAllProjects().clear();
                 AllData.getActiveProjects().clear();
-                AllData.setIdNumber(0);
+                //AllData.setIdNumber(0);
                 AllData.setWorkSumProjects(0);
 
                 AllUsers.getUsers().clear();
@@ -131,7 +131,7 @@ public class Loader {
                 AllUsers.setUsersLogged(allDataWrapper.getSaveUsersLogged());
                 //System.out.println(AllUsers.getUsersLogged());
 
-                AllData.setIdNumber(allDataWrapper.getAllProjectsIdNumber());
+                //AllData.setIdNumber(allDataWrapper.getAllProjectsIdNumber());
                 /*System.out.println("allDataWrapper.getAllProjectsIdNumber() = " + allDataWrapper.getAllProjectsIdNumber());
                 System.out.println("AllData idNumber = " + AllData.getIdNumber());*/
 

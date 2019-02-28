@@ -48,7 +48,7 @@ public class AllDataWrapper {
 
     public AllDataWrapper() {
 
-        this.allProjectsIdNumber = AllData.getIdNumber();
+        //this.allProjectsIdNumber = AllData.getIdNumber();
         this.allProjects.putAll(AllData.getAllProjects());
 
         this.IDCounterAllUsers = AllUsers.getIDCounterAllUsers();

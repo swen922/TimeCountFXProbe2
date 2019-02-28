@@ -4,17 +4,17 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.concurrent.Task;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.Callable;
 
-public class ThreadGetProjectID implements Callable<Integer> {
+public class ThreadSetProjectID extends Task<Integer> {
 
     @Override
     public Integer call() {
 
-        Integer result = 0;
+        Integer result = null;
 
         try {
             URL url = new URL(AllData.httpGetProjectID);
@@ -39,17 +39,20 @@ public class ThreadGetProjectID implements Callable<Integer> {
                 if (!received.isEmpty()) {
                     result = Integer.parseInt(received);
                 }
+
+                if (result != null) {
+                    AllData.createProjectID.set(result);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            AllData.status = ThreadGetProjectID.class.getSimpleName() + " - Ошибка получения нового ID-номера для проекта. Выброшено исключение! " +
+            AllData.status = ThreadSetProjectID.class.getSimpleName() + " - Ошибка получения нового ID-номера для проекта. Выброшено исключение! " +
                     "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
                     AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
-
         return result;
     }
 }

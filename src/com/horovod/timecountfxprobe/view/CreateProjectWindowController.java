@@ -2,6 +2,12 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
+import com.horovod.timecountfxprobe.serialize.Updater;
+import com.horovod.timecountfxprobe.threads.ThreadGetProjectID;
+import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,6 +15,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -25,10 +32,16 @@ public class CreateProjectWindowController {
     private String existingDescription = "";
 
     @FXML
-    private TextField existingProjectTextField;
+    private AnchorPane anchorPane;
 
     @FXML
-    private Button getProjectID;
+    private TextField createIDTextField;
+
+    @FXML
+    private Button getProjectIDButton;
+
+    @FXML
+    private TextField existingProjectTextField;
 
     @FXML
     private Button clearExistingProjectButton;
@@ -54,6 +67,10 @@ public class CreateProjectWindowController {
         initButtons();
         initTextFields();
         checkButtons();
+        createIDTextField.textProperty().bind(AllData.createProjectID.asString());
+        createIDTextField.setDisable(true);
+        getProjectIDButton.setDisable(false);
+
     }
 
 
@@ -102,6 +119,38 @@ public class CreateProjectWindowController {
     }
 
 
+    public void createProjectID() {
+        getProjectIDButton.setDisable(true);
+
+        AllData.createProjectID.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                createIDTextField.setDisable(false);
+            }
+        });
+
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        ThreadSetProjectID threadSetProjectID = new ThreadSetProjectID();
+        threadSetProjectID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                progressIndicator.progressProperty().unbind();
+                anchorPane.getChildren().remove(progressIndicator);
+            }
+        });
+
+        progressIndicator.setPrefSize(30, 30);
+        anchorPane.getChildren().add(progressIndicator);
+        progressIndicator.setLayoutX(470);
+        progressIndicator.setLayoutY(15);
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(threadSetProjectID.progressProperty());
+
+        Thread th = new Thread(threadSetProjectID);
+        th.start();
+
+    }
+
 
     public void handleExistingProjectTextField() {
         existingDescription = "";
@@ -111,7 +160,6 @@ public class CreateProjectWindowController {
             try {
                 projectID = Integer.parseInt(input);
             } catch (NumberFormatException e) {
-
             }
             if (projectID != null) {
                 if (AllData.isProjectExist(projectID)) {
@@ -122,9 +170,11 @@ public class CreateProjectWindowController {
 
                     existingDescription = existingProject.getDescription();
                 }
-                else {
+                /*else {
                     handleClearExistingProjectButton();
-                }
+                    Убрано, потому что юзер не поймет, что происходит: текст не набирвается,
+                    проверил при пустой базе проектов
+                }*/
             }
         }
     }
@@ -191,20 +241,38 @@ public class CreateProjectWindowController {
                 return;
             }
 
+            Integer newID = null;
+            if (createIDTextField.isDisabled()) {
+                newID = Updater.getProjectID();
+                if (newID == null) {
+                    createIDTextField.setText("Ошибка!");
+                    return;
+                }
+            }
+            else {
+                try {
+                    newID = Integer.parseInt(createIDTextField.getText());
+                } catch (NumberFormatException e) {
 
-
-            Project result = AllData.createProject(null, companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
-            AllData.tableProjectsManagerController.initializeTable();
-            if (AllData.staffWindowController != null) {
-                AllData.staffWindowController.initializeTable();
+                }
             }
 
-            AllData.createProjectWindow.close();
+            if (newID != null) {
+                Project result = AllData.createProject(newID, companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
+                AllData.tableProjectsManagerController.initializeTable();
+                if (AllData.staffWindowController != null) {
+                    AllData.staffWindowController.initializeTable();
+                }
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Создан проект id-" + result.getIdNumber());
-            alert.setHeaderText("Создан проект id-" + result.getIdNumber());
-            alert.show();
+                getProjectIDButton.setDisable(false);
+
+                AllData.createProjectWindow.close();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Создан проект id-" + result.getIdNumber());
+                alert.setHeaderText("Создан проект id-" + result.getIdNumber());
+                alert.show();
+            }
         }
     }
 }

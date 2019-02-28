@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CreateProjectWindowController">
+<AnchorPane fx:id="anchorPane" prefHeight="450.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.CreateProjectWindowController">
    <children>
       <AnchorPane layoutX="-37.0" layoutY="-71.0" prefHeight="55.0" prefWidth="180.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -40,7 +40,7 @@
             <Button fx:id="createButton" minWidth="100.0" mnemonicParsing="false" onAction="#handleCreateButton" text="Создать" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
          </children>
       </AnchorPane>
-      <TextField layoutX="158.0" layoutY="17.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="15.0" />
-      <Button fx:id="getProjectID" layoutX="380.0" layoutY="18.0" mnemonicParsing="false" text="Получить" textAlignment="CENTER" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="15.0" />
+      <TextField fx:id="createIDTextField" editable="false" layoutX="158.0" layoutY="17.0" AnchorPane.leftAnchor="200.0" AnchorPane.topAnchor="15.0" />
+      <Button fx:id="getProjectIDButton" layoutX="380.0" layoutY="18.0" mnemonicParsing="false" onAction="#createProjectID" prefWidth="80.0" text="Получить" textAlignment="CENTER" AnchorPane.leftAnchor="375.0" AnchorPane.topAnchor="15.0" />
    </children>
 </AnchorPane>

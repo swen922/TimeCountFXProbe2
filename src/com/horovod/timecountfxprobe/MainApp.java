@@ -54,7 +54,7 @@ public class MainApp extends Application {
 
         /** TODO убрать эту строчку в рабочем варианте */
         //Generator.generateUsers2();
-        Generator.generateProjects2();
+        //Generator.generateProjects2();
 
         Updater.getService().submit(new ThreadStartCheckingWaitingTasks());
 

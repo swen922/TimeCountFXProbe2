@@ -60,7 +60,7 @@ public class AdminWindowController {
     @FXML
     public void initialize() {
         AllData.resetStatus();
-        currentIDprojectsTextField.setText(String.valueOf(AllData.getIdNumber()));
+        //currentIDprojectsTextField.setText(String.valueOf(AllData.getIdNumber()));
         currentIDUsersTextField.setText(String.valueOf(AllUsers.getIDCounterAllUsers()));
         initLoggedUsersChoiceBox();
         initPathToHomeFolder();
