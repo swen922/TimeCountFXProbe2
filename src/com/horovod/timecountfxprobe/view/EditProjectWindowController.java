@@ -48,6 +48,7 @@ import java.util.List;
 public class EditProjectWindowController {
 
     private Project myProject;
+    private int myProjectID;
     private Stage myStage;
 
     private ObservableMap<String, WorkDay> workDays;
@@ -145,12 +146,46 @@ public class EditProjectWindowController {
     @FXML
     private void initialize() {
 
+        myProjectID = AllData.IDnumberForEdit;
+
         if (myProject == null) {
-            myProject = AllData.getAnyProject(AllData.IDnumberForEdit);
+            myProject = AllData.getAnyProject(myProjectID);
         }
 
+        initProjectFields();
+
+        //стартовая инициализация чекбокса Архивный согласно состоянию проекта
+        initializeArchiveCheckBox();
+
+        initSaveButtons();
+
+        initSelectFormatChoiceBox();
+
+        initializeTable();
+
+    }
+
+    public void updateProject() {
+        myProject = AllData.getAnyProject(myProjectID);
+
+        initProjectFields();
+
+        //стартовая инициализация чекбокса Архивный согласно состоянию проекта
+        initializeArchiveCheckBox();
+
+        initSaveButtons();
+
+        initSelectFormatChoiceBox();
+
+        initializeTable();
+
+    }
+
+
+    private void initProjectFields() {
+
         // id-номер проекта
-        idNumberLabel.setText(String.valueOf(myProject.getIdNumber()));
+        idNumberLabel.setText(String.valueOf(myProjectID));
 
         dateCreationLabel.setText(myProject.getDateCreationString());
 
@@ -158,9 +193,6 @@ public class EditProjectWindowController {
         textAreas.put(descriptionTextArea, descriptionTextArea.getText());
 
         // инициализация кнопки открытия папки – прописано в FXML
-
-        //стартовая инициализация чекбокса Архивный согласно состоянию проекта
-        initializeArchiveCheckBox();
 
         companyNameTextArea.setText(myProject.getCompany());
         textAreas.put(companyNameTextArea, companyNameTextArea.getText());
@@ -191,12 +223,6 @@ public class EditProjectWindowController {
         workSum.textProperty().bind(myProject.workSumProperty());
         // Эта строчка перенесена в initializeTable()
         //hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
-
-        initSaveButtons();
-
-        initSelectFormatChoiceBox();
-
-        initializeTable();
 
     }
 
@@ -290,8 +316,8 @@ public class EditProjectWindowController {
                     double current = myProject.getWorkSumForDesignerAndDate(i, AllData.parseDate(dateString));
                     double newTimeDouble = AllData.getDoubleFromText(current, event.getNewValue(), 1);
 
-                    AllData.addWorkTime(myProject.getIdNumber(), AllData.parseDate(dateString), i, newTimeDouble);
-                    AllData.deleteZeroTime(myProject.getIdNumber());
+                    AllData.addWorkTime(myProjectID, AllData.parseDate(dateString), i, newTimeDouble);
+                    AllData.deleteZeroTime(myProjectID);
                     AllData.tableProjectsManagerController.initializeTable();
                     if (AllData.staffWindowController != null) {
                         AllData.staffWindowController.initializeTable();
@@ -370,7 +396,7 @@ public class EditProjectWindowController {
 
     public void initOpenFolderButton() {
         String startPath = "/Volumes/design/";
-        String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProject.getIdNumber();
+        String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProjectID;
         String path = startPath + myProject.getCompany() + "/" + projectName;
 
         if (myProject.getFolderPath() != null) {
@@ -381,7 +407,7 @@ public class EditProjectWindowController {
                 try {
                     browsDir(path);
                 } catch (Exception e1) {
-                    showAlertOpenFolder(myProject.getIdNumber());
+                    showAlertOpenFolder(myProjectID);
                 }
             }
         }
@@ -389,7 +415,7 @@ public class EditProjectWindowController {
             try {
                 browsDir(path);
             } catch (Exception e) {
-                showAlertOpenFolder(myProject.getIdNumber());
+                showAlertOpenFolder(myProjectID);
             }
         }
     }
@@ -443,29 +469,29 @@ public class EditProjectWindowController {
         if (archiveCheckBox.isSelected()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Подтверждение перевода в архив");
-            alert.setHeaderText("Перевести проект id-" + myProject.getIdNumber() + " в архив?");
+            alert.setHeaderText("Перевести проект id-" + myProjectID + " в архив?");
 
             Optional<ButtonType> option = alert.showAndWait();
 
             if (option.get() == ButtonType.OK) {
-                AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
+                AllData.changeProjectArchiveStatus(myProjectID, true);
             }
             else {
-                AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
+                AllData.changeProjectArchiveStatus(myProjectID, false);
             }
         }
         else {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Подтверждение вывода из архива");
-            alert.setHeaderText("Вывести проект id-" + myProject.getIdNumber() + " из архива?");
+            alert.setHeaderText("Вывести проект id-" + myProjectID + " из архива?");
 
             Optional<ButtonType> option = alert.showAndWait();
 
             if (option.get() == ButtonType.OK) {
-                AllData.changeProjectArchiveStatus(myProject.getIdNumber(), false);
+                AllData.changeProjectArchiveStatus(myProjectID, false);
             }
             else if (option.get() == ButtonType.CANCEL) {
-                AllData.changeProjectArchiveStatus(myProject.getIdNumber(), true);
+                AllData.changeProjectArchiveStatus(myProjectID, true);
             }
         }
         initializeArchiveCheckBox();
@@ -473,7 +499,7 @@ public class EditProjectWindowController {
     }
 
     public void handleAddWorkDayButton() {
-        AllData.mainApp.showAddWorkDayDialog(myProject.getIdNumber(), myStage, this);
+        AllData.mainApp.showAddWorkDayDialog(myProjectID, myStage, this);
     }
 
     private void initSelectFormatChoiceBox() {
@@ -501,7 +527,7 @@ public class EditProjectWindowController {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("CSV file", "*.csv");
         chooser.getExtensionFilters().add(extFilter);
         chooser.setInitialDirectory(new File(AllData.pathToDownloads));
-        String fileName = "Проект id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
+        String fileName = "Проект id-" + myProjectID + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
         chooser.setInitialFileName(fileName);
 
         File file = chooser.showSaveDialog(myStage);
@@ -518,7 +544,7 @@ public class EditProjectWindowController {
 
 
 
-                StringBuilder sb = new StringBuilder("Проект id-").append(myProject.getIdNumber()).append("\n\n");
+                StringBuilder sb = new StringBuilder("Проект id-").append(myProjectID).append("\n\n");
 
                 String[] descr = myProject.getDescription().split(" - ");
 
@@ -633,7 +659,7 @@ public class EditProjectWindowController {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
         chooser.getExtensionFilters().add(extFilter);
         chooser.setInitialDirectory(new File(AllData.pathToDownloads));
-        String fileName = "Проект id-" + myProject.getIdNumber() + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
+        String fileName = "Проект id-" + myProjectID + " на " + AllData.formatDate(LocalDate.now()).replaceAll("\\.", "_");
         chooser.setInitialFileName(fileName);
 
         File file = chooser.showSaveDialog(myStage);
@@ -648,7 +674,7 @@ public class EditProjectWindowController {
 
             try (Writer writer = new BufferedWriter(new FileWriter(file))) {
 
-                StringBuilder sb = new StringBuilder("Проект id-").append(myProject.getIdNumber()).append("\n\n");
+                StringBuilder sb = new StringBuilder("Проект id-").append(myProjectID).append("\n\n");
 
                 String[] descr = myProject.getDescription().split(" - ");
 
@@ -668,7 +694,7 @@ public class EditProjectWindowController {
                 sb.append("Сумма по смете: ").append(sum).append("\n");
                 sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
 
-                sb.append("Рабочее время по проекту id-").append(myProject.getIdNumber()).append(" на ").append(AllData.formatDate(LocalDate.now())).append("\n\n");
+                sb.append("Рабочее время по проекту id-").append(myProjectID).append(" на ").append(AllData.formatDate(LocalDate.now())).append("\n\n");
 
                 for (WorkDay wd : workDaysList) {
                     sb.append(wd.getDateString()).append("\n");
@@ -880,7 +906,7 @@ public class EditProjectWindowController {
         initSaveButtons();
         AllData.tableProjectsManagerController.initializeTable();
 
-        AllData.status = "Локально изменены свойства проекта id-" + myProject.getIdNumber();
+        AllData.status = "Локально изменены свойства проекта id-" + myProjectID;
         AllData.updateAllStatus();
         AllData.logger.info(AllData.status);
 
@@ -896,11 +922,11 @@ public class EditProjectWindowController {
     public void handleCloseButton() {
 
         if (!isChanged) {
-            if (AllData.openEditProjectStages.containsKey(myProject.getIdNumber())) {
-                AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            if (AllData.openEditProjectStages.containsKey(myProjectID)) {
+                AllData.openEditProjectStages.remove(myProjectID);
             }
-            if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
-                AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+            if (AllData.editProjectWindowControllers.containsKey(myProjectID)) {
+                AllData.editProjectWindowControllers.remove(myProjectID);
             }
             myStage.close();
         }
@@ -912,7 +938,7 @@ public class EditProjectWindowController {
     private void handleAlerts() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение закрытия");
-        alert.setHeaderText("В текст полей проекта id-" + myProject.getIdNumber() + " были внесены изменения.\nСохранить их или проигнорировать?");
+        alert.setHeaderText("В текст полей проекта id-" + myProjectID + " были внесены изменения.\nСохранить их или проигнорировать?");
 
         ButtonType returnButton = new ButtonType("Вернуться обратно");
         ButtonType dontSaveButton = new ButtonType("Не сохранять");
@@ -929,11 +955,11 @@ public class EditProjectWindowController {
         }
         else if (option.get() == dontSaveButton) {
             handleRevertButton();
-            if (AllData.openEditProjectStages.containsKey(myProject.getIdNumber())) {
-                AllData.openEditProjectStages.remove(myProject.getIdNumber());
+            if (AllData.openEditProjectStages.containsKey(myProjectID)) {
+                AllData.openEditProjectStages.remove(myProjectID);
             }
-            if (AllData.editProjectWindowControllers.containsKey(myProject.getIdNumber())) {
-                AllData.editProjectWindowControllers.remove(myProject.getIdNumber());
+            if (AllData.editProjectWindowControllers.containsKey(myProjectID)) {
+                AllData.editProjectWindowControllers.remove(myProjectID);
 
             }
             alert.close();

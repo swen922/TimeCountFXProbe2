@@ -61,7 +61,7 @@ public class AdminWindowController {
     public void initialize() {
         AllData.resetStatus();
         //currentIDprojectsTextField.setText(String.valueOf(AllData.getIdNumber()));
-        currentIDUsersTextField.setText(String.valueOf(AllUsers.getIDCounterAllUsers()));
+        currentIDUsersTextField.setText(String.valueOf(AllUsers.createUserID));
         initLoggedUsersChoiceBox();
         initPathToHomeFolder();
         initClosing();

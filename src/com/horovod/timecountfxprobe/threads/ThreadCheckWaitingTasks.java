@@ -15,6 +15,8 @@ public class ThreadCheckWaitingTasks implements Runnable {
     @Override
     public void run() {
 
+        System.out.println("starting ThreadCheckWaitingTasks...");
+
         try {
             if (!AllData.waitingTasks.isEmpty()) {
 
@@ -38,6 +40,9 @@ public class ThreadCheckWaitingTasks implements Runnable {
                 AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - активировано " + counter + " задач из списка неисполненных обновлений базы.";
                 AllData.updateAllStatus();
                 AllData.logger.info(AllData.status);
+
+                System.out.println("waiting tasks OK");
+
             }
         } catch (Exception e) {
             e.printStackTrace();

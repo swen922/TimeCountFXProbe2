@@ -105,11 +105,8 @@ public class Generator {
 
 
     public static void generateUsers() {
-        /*for (int i = 1; i <= 5; i++) {
-            AllUsers.createUser("des" + i, "pass", Role.DESIGNER);
-            AllUsers.getOneUser("des"+i).setFullName("Good Designer" + i);
-        }*/
-        AllUsers.createUser("des1", "pass", Role.DESIGNER);
+
+        /*AllUsers.createUser("des1", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des1").setFullName("Семенова Прасковья");
         AllUsers.createUser("des2", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des2").setFullName("Анисимов Сергей");
@@ -127,20 +124,10 @@ public class Generator {
         AllUsers.createUser("des8", "pass", Role.DESIGNER);
         AllUsers.getOneUser("des8").setFullName("Восьмой Артем");
         AllUsers.createUser("des9", "pass", Role.DESIGNER);
-        AllUsers.getOneUser("des9").setFullName("Девятый Валерий Павлович");
-        /*AllUsers.createUser("des10", "pass", Role.DESIGNER);
-        AllUsers.getOneUser("des10").setFullName("Десятый Кирилл Андреевич");
-        AllUsers.createUser("des11", "pass", Role.DESIGNER);
-        AllUsers.getOneUser("des11").setFullName("Одиннадцатый Павел");
-        AllUsers.createUser("des12", "pass", Role.DESIGNER);
-        AllUsers.getOneUser("des12").setFullName("Денадцатый Поль Элюар");*/
+        AllUsers.getOneUser("des9").setFullName("Девятый Валерий Павлович");*/
 
 
-        /*for (int i = 1; i <= 2; i++) {
-            AllUsers.createUser("man" + i, "pass", Role.MANAGER);
-            AllUsers.getOneUser("man"+i).setFullName("Good Manager" + i);
-        }*/
-        AllUsers.createUser("man1", "pass", Role.MANAGER);
+        /*AllUsers.createUser("man1", "pass", Role.MANAGER);
         AllUsers.getOneUser("man1").setFullName("Анисимова Инесса");
         AllUsers.createUser("man2", "pass", Role.MANAGER);
         AllUsers.getOneUser("man2").setFullName("Анисимов Сергей-админ");
@@ -148,7 +135,7 @@ public class Generator {
         AllUsers.getOneUser("admin").setFullName("Админ ващета");
 
         AllUsers.addLoggedUser(AllUsers.getOneUser(2).getFullName());
-        AllUsers.addLoggedUser(AllUsers.getOneUser(3).getFullName());
+        AllUsers.addLoggedUser(AllUsers.getOneUser(3).getFullName());*/
     }
 
     public static void generateUsers2() {
@@ -158,11 +145,11 @@ public class Generator {
         String pass = "pass";
 
         for (int i = 1; i <= 9; i++) {
-            AllUsers.createUser(partName + i, pass, Role.DESIGNER);
+            AllUsers.createUser(i, partName + i, pass, Role.DESIGNER);
         }
 
         for (int i = 1; i <= 2; i++) {
-            AllUsers.createUser(partNameManager + i, pass, Role.MANAGER);
+            AllUsers.createUser(9+i, partNameManager + i, pass, Role.MANAGER);
         }
 
         AllUsers.setCurrentUser(5);

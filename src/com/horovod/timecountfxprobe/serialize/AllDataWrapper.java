@@ -48,10 +48,10 @@ public class AllDataWrapper {
 
     public AllDataWrapper() {
 
-        //this.allProjectsIdNumber = AllData.getIdNumber();
+        this.allProjectsIdNumber = AllData.createProjectID.get();
         this.allProjects.putAll(AllData.getAllProjects());
 
-        this.IDCounterAllUsers = AllUsers.getIDCounterAllUsers();
+        this.IDCounterAllUsers = AllUsers.createUserID.get();
 
         for (User usr : AllUsers.getUsers().values()) {
             if (usr.getRole().equals(Role.DESIGNER)) {

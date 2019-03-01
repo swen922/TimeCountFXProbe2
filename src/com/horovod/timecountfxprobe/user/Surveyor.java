@@ -36,8 +36,8 @@ public class Surveyor implements User {
     @JsonDeserialize(as = SecurePassword.class)
     private SecurePassword securePassword;
 
-    public Surveyor(String nameLogin, SecurePassword newSecurePass) {
-        this.IDNumber = AllUsers.incrementIdNumberAndGet();
+    public Surveyor(int userID, String nameLogin, SecurePassword newSecurePass) {
+        this.IDNumber = userID;
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
         this.securePassword = newSecurePass;

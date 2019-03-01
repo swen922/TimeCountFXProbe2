@@ -3,6 +3,8 @@ package com.horovod.timecountfxprobe.user;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -15,7 +17,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AllUsers {
 
-    private static volatile AtomicInteger IDCounterAllUsers = new AtomicInteger(0);
+    //private static volatile AtomicInteger IDCounterAllUsers = new AtomicInteger(0);
+    public static volatile IntegerProperty createUserID = new SimpleIntegerProperty(0);
+
 
     private static Map<Integer, User> users = new ConcurrentHashMap<>();
 
@@ -31,7 +35,7 @@ public class AllUsers {
 
     /** Стандартные геттеры и сеттеры */
 
-    public static int getIDCounterAllUsers() {
+    /*public static int getIDCounterAllUsers() {
         return IDCounterAllUsers.get();
     }
 
@@ -41,7 +45,7 @@ public class AllUsers {
 
     public static synchronized int incrementIdNumberAndGet() {
         return IDCounterAllUsers.incrementAndGet();
-    }
+    }*/
 
     public static Map<Integer, User> getUsers() {
         return users;
@@ -185,7 +189,7 @@ public class AllUsers {
 
     /** @return null !!!
      * */
-    public static User createUser(String login, String password, Role role) {
+    public static User createUser(int userID, String login, String password, Role role) {
 
         if (login == null || login.isEmpty()) {
             return null;
@@ -207,16 +211,16 @@ public class AllUsers {
         User result = null;
         if (!isNameLoginExist(login)) {
             if (role.equals(Role.DESIGNER)) {
-                result = new Designer(login, sp);
+                result = new Designer(userID, login, sp);
             }
             else if (role.equals(Role.MANAGER)) {
-                result = new Manager(login, sp);
+                result = new Manager(userID, login, sp);
             }
             else if (role.equals(Role.ADMIN)) {
-                result = new Admin(login, sp);
+                result = new Admin(userID, login, sp);
             }
             else if (role.equals(Role.SURVEYOR)) {
-                result = new Surveyor(login, sp);
+                result = new Surveyor(userID, login, sp);
             }
 
             if (result == null) {
@@ -288,7 +292,7 @@ public class AllUsers {
      * * с данным ID и nameLogin
      */
     public static boolean isUserExist(int idNumber) {
-        if (idNumber <= 0 || idNumber > getIDCounterAllUsers()) {
+        if (idNumber <= 0 || idNumber > createUserID.get()) {
             return false;
         }
         return users.containsKey(idNumber);

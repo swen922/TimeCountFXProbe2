@@ -248,6 +248,9 @@ public class CreateProjectWindowController {
                     createIDTextField.setText("Ошибка!");
                     return;
                 }
+                else {
+                    AllData.createProjectID.set(newID);
+                }
             }
             else {
                 try {
@@ -272,6 +275,13 @@ public class CreateProjectWindowController {
                 alert.setTitle("Создан проект id-" + result.getIdNumber());
                 alert.setHeaderText("Создан проект id-" + result.getIdNumber());
                 alert.show();
+            }
+            else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Ошибка создания проекта");
+                alert.setHeaderText("Не удалось создать новый проект – не удалось получить от сервера новый ID-номер проекта");
+                alert.showAndWait();
+                return;
             }
         }
     }

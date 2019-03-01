@@ -33,6 +33,7 @@ import java.util.List;
 public class InfoProjectWindowController {
 
     private Project myProject;
+    private int myProjectID;
     private Stage myStage;
 
     private ObservableMap<String, WorkDay> workDays;
@@ -109,20 +110,38 @@ public class InfoProjectWindowController {
 
     @FXML
     public void initialize() {
+        myProjectID = AllData.IDnumberForEdit;
 
         if (myProject == null) {
-            myProject = AllData.getAnyProject(AllData.IDnumberForEdit);
+            myProject = AllData.getAnyProject(myProjectID);
         }
 
+        initProjectFields();
+        checkArchives();
+        initializeTable();
+        initSaveButtons();
+        initClosing();
+
+    }
+
+
+    private void initProjectFields() {
         // id-номер проекта
-        idNumberLabel.setText(String.valueOf(myProject.getIdNumber()));
+        idNumberLabel.setText(String.valueOf(myProjectID));
         dateCreationLabel.setText(myProject.getDateCreationString());
         descriptionTextArea.setText(myProject.getDescription());
         companyNameTextArea.setText(myProject.getCompany());
         managerTextArea.setText(myProject.getManager());
         commentTextArea.setText(myProject.getComment());
         linkedProjectsTextField.setText(myProject.getLinkedProjects());
+    }
 
+
+    public void updateProject() {
+
+        myProject = AllData.getAnyProject(myProjectID);
+
+        initProjectFields();
         checkArchives();
         initializeTable();
         initSaveButtons();
@@ -131,7 +150,7 @@ public class InfoProjectWindowController {
     }
 
     private void checkArchives() {
-        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired() || AllData.getAnyProject(myProject.getIdNumber()).isArchive()) {
+        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired() || AllData.getAnyProject(myProjectID).isArchive()) {
             openFolderButton.setDisable(true);
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
@@ -148,7 +167,7 @@ public class InfoProjectWindowController {
             linkedProjectsTextField.setEditable(true);
         }
 
-        if (AllData.getAnyProject(myProject.getIdNumber()).isArchive()) {
+        if (AllData.getAnyProject(myProjectID).isArchive()) {
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
         }
         else {
@@ -240,7 +259,7 @@ public class InfoProjectWindowController {
 
     public void handleOpenFolderButton() {
         String startPath = "/Volumes/design/";
-        String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProject.getIdNumber();
+        String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProjectID;
         String path = startPath + myProject.getCompany() + "/" + projectName;
 
         if (myProject.getFolderPath() != null) {
@@ -251,7 +270,7 @@ public class InfoProjectWindowController {
                 try {
                     browsDir(path);
                 } catch (Exception e1) {
-                    showAlertOpenFolder(myProject.getIdNumber());
+                    showAlertOpenFolder(myProjectID);
 
                 }
             }
@@ -260,7 +279,7 @@ public class InfoProjectWindowController {
             try {
                 browsDir(path);
             } catch (Exception e) {
-                showAlertOpenFolder(myProject.getIdNumber());
+                showAlertOpenFolder(myProjectID);
             }
         }
     }
@@ -323,7 +342,7 @@ public class InfoProjectWindowController {
             myProject.setComment(commentTextArea.getText());
         }
         initSaveButtons();
-        AllData.status = "Текст комментария в проекте id-" + myProject.getIdNumber() + " изменен";
+        AllData.status = "Текст комментария в проекте id-" + myProjectID + " изменен";
         AllData.updateAllStatus();
         AllData.logger.info(AllData.status);
     }
@@ -356,19 +375,19 @@ public class InfoProjectWindowController {
     }
 
     private void procedeClosing() {
-        if (AllData.openInfoProjectStages.containsKey(myProject.getIdNumber())) {
-            AllData.openInfoProjectStages.get(myProject.getIdNumber()).close();
-            AllData.openInfoProjectStages.remove(myProject.getIdNumber());
+        if (AllData.openInfoProjectStages.containsKey(myProjectID)) {
+            AllData.openInfoProjectStages.get(myProjectID).close();
+            AllData.openInfoProjectStages.remove(myProjectID);
         }
-        if (AllData.infoProjectWindowControllers.containsKey(myProject.getIdNumber())) {
-            AllData.infoProjectWindowControllers.remove(myProject.getIdNumber());
+        if (AllData.infoProjectWindowControllers.containsKey(myProjectID)) {
+            AllData.infoProjectWindowControllers.remove(myProjectID);
         }
     }
 
     private void handleAlerts() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение закрытия");
-        alert.setHeaderText("В текст комментария в проекте id-" + myProject.getIdNumber() + " были внесены изменения.\nСохранить их или проигнорировать?");
+        alert.setHeaderText("В текст комментария в проекте id-" + myProjectID + " были внесены изменения.\nСохранить их или проигнорировать?");
 
         ButtonType returnButton = new ButtonType("Вернуться обратно");
         ButtonType dontSaveButton = new ButtonType("Не сохранять");

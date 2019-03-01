@@ -72,8 +72,8 @@ public class AllData {
     // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
     public static String httpUpdate = "http://localhost:8088/receiveupdate";
     public static String httpGetProjectID = "http://localhost:8088/projectid";
-
-
+    public static String httpGetUserID = "http://localhost:8088/userid";
+    public static String httpGlobalUpdate = "http://localhost:8088/globalupdate";
 
 
 
@@ -117,7 +117,6 @@ public class AllData {
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
     public static BlockingQueue<Runnable> tasksQueue = new LinkedBlockingQueue<>();
-    //public static BlockingQueue<Task> waitingTasks = new LinkedBlockingQueue<>();
 
     // TODO для начала будем хранить в списке не абстрактные Task, а наши SerializeWrapper'ы
     public static BlockingQueue<SerializeWrapper> waitingTasks = new LinkedBlockingQueue<>();
@@ -723,6 +722,47 @@ public class AllData {
         }
     }
 
+    public static synchronized void updateAllWindows() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (AllData.tableProjectsManagerController != null) {
+                    AllData.tableProjectsManagerController.initialize();
+                }
+                if (AllData.tableProjectsDesignerController != null) {
+                    AllData.tableProjectsDesignerController.initialize();
+                }
+                if (AllData.adminWindowController != null) {
+                    AllData.adminWindowController.initialize();
+                }
+                // TODO сюда добавить сюрвеора, когда будет написан
+                if (AllData.statisticManagerWindowController != null) {
+                    AllData.statisticManagerWindowController.initialize();
+                }
+                if (AllData.statisticWindowController != null) {
+                    AllData.statisticWindowController.initialize();
+                }
+                if (AllData.staffWindowController != null) {
+                    AllData.staffWindowController.initializeTable();
+                }
+                if (!AllData.editProjectWindowControllers.isEmpty()) {
+                    for (EditProjectWindowController controller : AllData.editProjectWindowControllers.values()) {
+                        if (controller != null) {
+                            controller.updateProject();
+                        }
+                    }
+                }
+                if (!AllData.infoProjectWindowControllers.isEmpty()) {
+                    for (InfoProjectWindowController controller : AllData.infoProjectWindowControllers.values()) {
+                        if (controller != null) {
+                            controller.updateProject();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
 
     public static synchronized void updateAllStatus() {
 
@@ -741,9 +781,12 @@ public class AllData {
                 if (AllData.tableProjectsDesignerController != null) {
                     AllData.tableProjectsDesignerController.updateStatus();
                 }
+                // TODO сюда добавить сюрвеора, когда будет написан
             }
         });
     }
+
+
 
     public static void updateTimeStamp() {
         timeStamp = formatDateTime(LocalDateTime.now()) + " - ";

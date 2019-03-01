@@ -1,15 +1,20 @@
 package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.serialize.Updater;
+import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
+import com.horovod.timecountfxprobe.threads.ThreadSetUserID;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -21,6 +26,16 @@ import javafx.util.StringConverter;
 public class CreateUserWindowController {
 
     String latinForPass = "1234567890abcdefghijklmnopqrstuvwxyz@.-_";
+
+
+    @FXML
+    private AnchorPane anchorPane;
+
+    @FXML
+    private TextField createIDTextField;
+
+    @FXML
+    private Button getUserIDButton;
 
     @FXML
     private TextField loginTextField;
@@ -55,6 +70,9 @@ public class CreateUserWindowController {
         initRoleChoiceBox();
         initButtons();
         checkButtons();
+        createIDTextField.textProperty().bind(AllUsers.createUserID.asString());
+        createIDTextField.setDisable(true);
+        getUserIDButton.setDisable(false);
     }
 
 
@@ -90,6 +108,42 @@ public class CreateUserWindowController {
         }
         createButton.setDisable(false);
     }
+
+
+    public void createUserID() {
+        getUserIDButton.setDisable(true);
+
+        /*AllUsers.createUserID.addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                createIDTextField.setDisable(false);
+            }
+        });*/
+
+        ProgressIndicator progressIndicator = new ProgressIndicator();
+        ThreadSetUserID threadSetUserID = new ThreadSetUserID();
+        threadSetUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                createIDTextField.setDisable(false);
+                progressIndicator.progressProperty().unbind();
+                anchorPane.getChildren().remove(progressIndicator);
+            }
+        });
+
+        progressIndicator.setPrefSize(30, 30);
+        anchorPane.getChildren().add(progressIndicator);
+        progressIndicator.setLayoutX(400);
+        progressIndicator.setLayoutY(40);
+        progressIndicator.progressProperty().unbind();
+        progressIndicator.progressProperty().bind(threadSetUserID.progressProperty());
+
+        Thread th = new Thread(threadSetUserID);
+        th.start();
+
+    }
+
+
 
     public void handleCancelButton() {
         AllData.createUserWindow.close();
@@ -160,28 +214,55 @@ public class CreateUserWindowController {
             }
         }
 
-        User user = AllUsers.createUser(login, pass, role);
-
-        if (user == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Ошибка создания пользователя");
-            alert.setHeaderText("Не удалось создать пользователя.\nОбратитесь к Анисимову");
-            alert.showAndWait();
-            return;
+        Integer newID = null;
+        if (createIDTextField.isDisabled()) {
+            newID = Updater.getUserID();
+            if (newID == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Ошибка создания пользователя");
+                alert.setHeaderText("Не удалось создать пользователя.\nНе удалось получить новый ID-номер.");
+                alert.showAndWait();
+                return;
+            }
+            else {
+                AllUsers.createUserID.set(newID);
+            }
+        }
+        else {
+            try {
+                newID = Integer.parseInt(createIDTextField.getText());
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Ошибка создания пользователя");
+                alert.setHeaderText("Не удалось создать пользователя.\nНе удалось получить новый ID-номер.");
+                alert.showAndWait();
+            }
         }
 
-        if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
-            user.setFullName(fullNameTextField.getText());
+        if (newID != null) {
+            User user = AllUsers.createUser(newID, login, pass, role);
+
+            if (user == null) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Ошибка создания пользователя");
+                alert.setHeaderText("Не удалось создать пользователя.\nОшибка в методе AllUsers.createUser().");
+                alert.showAndWait();
+                return;
+            }
+
+            if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
+                user.setFullName(fullNameTextField.getText());
+            }
+
+            AllData.staffWindowController.initializeTable();
+
+            AllData.createUserWindow.close();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Создан пользователь id-" + user.getIDNumber());
+            alert.setHeaderText("Создан пользователь id-" + user.getIDNumber() + "\nлогин = " + user.getNameLogin() + "\nимя = " + user.getFullName());
+            alert.show();
         }
-
-        AllData.staffWindowController.initializeTable();
-
-        AllData.createUserWindow.close();
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Создан пользователь id-" + user.getIDNumber());
-        alert.setHeaderText("Создан пользователь id-" + user.getIDNumber() + "\nлогин = " + user.getNameLogin() + "\nимя = " + user.getFullName());
-        alert.show();
     }
 
     private boolean hasOtherSymbols(String input) {

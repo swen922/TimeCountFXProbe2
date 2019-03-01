@@ -37,8 +37,8 @@ public class Admin implements User {
     @JsonDeserialize(as = SecurePassword.class)
     private SecurePassword securePassword;
 
-    public Admin(String nameLogin, SecurePassword newSecurePass) {
-        this.IDNumber = AllUsers.incrementIdNumberAndGet();
+    public Admin(int userID, String nameLogin, SecurePassword newSecurePass) {
+        this.IDNumber = userID;
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
         this.securePassword = newSecurePass;

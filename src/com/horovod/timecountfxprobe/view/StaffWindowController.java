@@ -124,15 +124,21 @@ public class StaffWindowController {
 
 
     @FXML
-    public void initialize() {
+    private void initialize() {
 
         // Эти пункты надо отрабатывать только один раз, при запуске программы,
         // поэтому во время работы initialize() снова запускать нельзя
         designersOnlyCheckBox.setSelected(true);
 
-        initYearChoiceBox();
-        initMonthChoiceBox();
+        initRadioButtons();
+        initTimeLimitTextField();
+        initMoneyLimitTextField();
+        initializeTable();
+        initExportChoiceBox();
 
+    }
+
+    private void initRadioButtons() {
         ToggleGroup daysMonthsGroup = new ToggleGroup();
         daysRadioButton.setToggleGroup(daysMonthsGroup);
         monthsRadioButton.setToggleGroup(daysMonthsGroup);
@@ -141,12 +147,6 @@ public class StaffWindowController {
         timeRadioButton.setToggleGroup(timeMoneyGroup);
         moneyRadioButton.setToggleGroup(timeMoneyGroup);
         timeRadioButton.setSelected(true);
-
-        initTimeLimitTextField();
-        initMoneyLimitTextField();
-        initializeTable();
-        initExportChoiceBox();
-
     }
 
     private void initExportChoiceBox() {

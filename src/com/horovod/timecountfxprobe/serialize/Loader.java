@@ -13,6 +13,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,17 +26,26 @@ public class Loader {
     private final String fileBaseName = "/CLIENT_BASE.xml";
     private final String fileBackupBaseName = "/CLIENT_BASE_Backup.xml";
     private final String fileWaitingTasksName = "/CLIENT_WAITING_TASKS.xml";
+    private final String updateBaseName = "/UPDATE_CLIENT_BASE.xml";
+
+
     private String pathBase = AllData.pathToHomeFolder + fileBaseName;
     private String backupPathBase = AllData.pathToHomeFolder + fileBackupBaseName;
     private String pathWaitingTasks = AllData.pathToHomeFolder + fileWaitingTasksName;
+    private String updatePathBase = AllData.pathToHomeFolder + updateBaseName;
+
 
     private Path pathToFile = Paths.get(pathBase);
     private Path pathToBackupFile = Paths.get(backupPathBase);
     private Path pathToWaitingTasks = Paths.get(pathWaitingTasks);
+    private Path pathToUpdateFile = Paths.get(updatePathBase);
+
 
     private File fileBase = new File(pathBase);
     private File backupFileBase = new File(backupPathBase);
     private File waitingTasksFile = new File(pathWaitingTasks);
+    private File updateFileBase = new File(updatePathBase);
+
 
 
     public boolean save() {
@@ -103,16 +113,17 @@ public class Loader {
 
                 AllData.getAllProjects().clear();
                 AllData.getActiveProjects().clear();
-                //AllData.setIdNumber(0);
+                AllData.createProjectID.set(0);
                 AllData.setWorkSumProjects(0);
 
                 AllUsers.getUsers().clear();
-                AllUsers.setIDCounterAllUsers(0);
+                AllUsers.createUserID.set(0);
                 AllUsers.getUsersPass().clear();
                 AllUsers.setCurrentUser(0);
                 AllUsers.getUsersLogged().clear();
 
-                AllUsers.setIDCounterAllUsers(allDataWrapper.getIDCounterAllUsers());
+                AllUsers.createUserID.set(allDataWrapper.getIDCounterAllUsers());
+                AllData.createProjectID.set(allDataWrapper.getAllProjectsIdNumber());
 
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
@@ -254,7 +265,7 @@ public class Loader {
         }
 
         return false;
-
     }
+
 
 }

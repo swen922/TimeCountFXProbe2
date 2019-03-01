@@ -37,8 +37,8 @@ public class Manager implements User {
     private SecurePassword securePassword;
 
 
-    public Manager(String nameLogin, SecurePassword newSecurePass) {
-        this.IDNumber = AllUsers.incrementIdNumberAndGet();
+    public Manager(int userID, String nameLogin, SecurePassword newSecurePass) {
+        this.IDNumber = userID;
         this.nameLogin = nameLogin.toLowerCase();
         this.fullName = nameLogin;
         this.securePassword = newSecurePass;
