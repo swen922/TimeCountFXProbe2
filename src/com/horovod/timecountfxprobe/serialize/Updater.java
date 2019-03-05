@@ -32,9 +32,9 @@ public class Updater {
     private static ScheduledExecutorService globalUpdateTaskService = Executors.newSingleThreadScheduledExecutor();
 
 
-    public static ExecutorService getService() {
+    /*public static ExecutorService getService() {
         return service;
-    }
+    }*/
 
     public static ScheduledExecutorService getRepeatWaitingTaskService() {
         return repeatWaitingTaskService;
@@ -44,15 +44,47 @@ public class Updater {
         return globalUpdateTaskService;
     }
 
+
     public static void update(UpdateType updateType, Object object) {
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);
         Task task = new ThreadUpdate(wrapper);
-        service.submit(task);
+        try {
+            service.submit(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
     }
 
 
+    public static void update(Task task) {
+        try {
+            service.submit(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+    }
+
     public static Integer getProjectID() {
-        Future<Integer> resultFuture = service.submit(new ThreadGetProjectID());
+        Future<Integer> resultFuture = null;
+        try {
+            resultFuture = service.submit(new ThreadGetProjectID());
+        } catch (Exception e) {
+            e.printStackTrace();
+            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+            return null;
+        }
+
         Integer result = null;
         try {
             result = resultFuture.get();
@@ -73,19 +105,30 @@ public class Updater {
     }
 
     public static Integer getUserID() {
-        Future<Integer> resultFuture = service.submit(new ThreadGetUserID());
+        Future<Integer> resultFuture = null;
+        try {
+            resultFuture = service.submit(new ThreadGetUserID());
+        } catch (Exception e) {
+            e.printStackTrace();
+            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+            return null;
+        }
+
         Integer result = null;
         try {
             result = resultFuture.get();
         } catch (InterruptedException e) {
             e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение InterruptedException";
+            AllData.status = "Ошибка получения нового ID-номера юзера. Выброшено исключение InterruptedException";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (ExecutionException e) {
             e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение ExecutionException";
+            AllData.status = "Ошибка получения нового ID-номера юзера. Выброшено исключение ExecutionException";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);

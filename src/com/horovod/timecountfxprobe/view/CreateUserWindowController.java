@@ -138,8 +138,7 @@ public class CreateUserWindowController {
         progressIndicator.progressProperty().unbind();
         progressIndicator.progressProperty().bind(threadSetUserID.progressProperty());
 
-        Thread th = new Thread(threadSetUserID);
-        th.start();
+        Updater.update(threadSetUserID);
 
     }
 

@@ -17,13 +17,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AllUsers {
 
+
+
+
+
+
     //private static volatile AtomicInteger IDCounterAllUsers = new AtomicInteger(0);
     public static volatile IntegerProperty createUserID = new SimpleIntegerProperty(0);
 
 
     private static Map<Integer, User> users = new ConcurrentHashMap<>();
 
-    private static Map<Integer, SecurePassword> usersPass = new ConcurrentHashMap<>();
+    // TODO убрать список паролей – лишние, все теперь прямо в юзерах
+    /*private static Map<Integer, SecurePassword> usersPass = new ConcurrentHashMap<>();*/
 
     /** Это поле надо сохранять в XML, чтобы при загрузке утром сразу грузился нужный пользователь */
     private static int currentUser = 0;
@@ -56,7 +62,7 @@ public class AllUsers {
     }
 
 
-    public static Map<Integer, SecurePassword> getUsersPass() {
+    /*public static Map<Integer, SecurePassword> getUsersPass() {
         return usersPass;
     }
 
@@ -73,7 +79,7 @@ public class AllUsers {
 
     public static synchronized void setUsersPass(Map<Integer, SecurePassword> newUsersPass) {
         AllUsers.usersPass = newUsersPass;
-    }
+    }*/
 
     public static int getCurrentUser() {
         return currentUser;
@@ -228,7 +234,7 @@ public class AllUsers {
             }
 
             users.put(result.getIDNumber(), result);
-            usersPass.put(result.getIDNumber(), sp);
+            //usersPass.put(result.getIDNumber(), sp);
 
             // Статус и Логирование
             AllData.status = "Локально создан новый работник id-" + result.getIDNumber() + " = " + AllUsers.getOneUser(result.getIDNumber()).getFullName();
@@ -332,24 +338,24 @@ public class AllUsers {
 
     /** Методы работы с паролями и хранения паролей */
 
-    public static boolean isPassExistForUser(int IDuser) {
+    /*public static boolean isPassExistForUser(int IDuser) {
         return usersPass.containsKey(IDuser);
-    }
+    }*/
 
-    public static boolean deletePassForUser(int IDuser) {
+    /*public static boolean deletePassForUser(int IDuser) {
         if (isPassExistForUser(IDuser)) {
             usersPass.remove(IDuser);
             return true;
         }
         return false;
-    }
+    }*/
 
     public static boolean isPassCorrectForUser(int IDuser, String password) {
-        if (!users.containsKey(IDuser) || !usersPass.containsKey(IDuser)) {
+        if (!users.containsKey(IDuser)) {
             return false;
         }
-        String securePass = usersPass.get(IDuser).getSecurePass();
-        String salt = usersPass.get(IDuser).getSalt();
+        String securePass = AllUsers.getOneUser(IDuser).getSecurePassword().getSecurePass();
+        String salt = AllUsers.getOneUser(IDuser).getSecurePassword().getSalt();
         boolean result;
         try {
             result = PasswordUtil.verifyUserPassword(password, securePass, salt);

@@ -146,8 +146,7 @@ public class CreateProjectWindowController {
         progressIndicator.progressProperty().unbind();
         progressIndicator.progressProperty().bind(threadSetProjectID.progressProperty());
 
-        Thread th = new Thread(threadSetProjectID);
-        th.start();
+        Updater.update(threadSetProjectID);
 
     }
 

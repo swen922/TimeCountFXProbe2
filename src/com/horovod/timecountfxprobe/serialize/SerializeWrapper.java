@@ -67,9 +67,8 @@ public class SerializeWrapper {
         }
 
         if (AllUsers.getCurrentUser() == 0) {
-
-            this.login = AllUsers.getOneUser(1).getNameLogin();
-            this.securePassword = AllUsers.getSecurePassForUser(1);
+            this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
+            this.securePassword = AllUsers.getSecurePassForUser(AllUsers.getCurrentUser());
         }
         else {
             this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
@@ -115,6 +114,7 @@ public class SerializeWrapper {
     public Surveyor getSurveyor() {
         return surveyor;
     }
+
 
 
     @XmlElement(name = "userlogininwrapper")

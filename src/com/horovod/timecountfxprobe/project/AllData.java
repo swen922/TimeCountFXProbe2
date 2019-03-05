@@ -35,10 +35,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.horovod.timecountfxprobe.serialize.Updater.getService;
-
-
 public class AllData {
+
 
     public static final Logger logger = Logger.getLogger(AllData.class);
 
@@ -70,11 +68,13 @@ public class AllData {
     public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX";
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
     // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
-    public static String httpUpdate = "http://localhost:8088/receiveupdate";
-    public static String httpGetProjectID = "http://localhost:8088/projectid";
-    public static String httpGetUserID = "http://localhost:8088/userid";
-    public static String httpGlobalUpdate = "http://localhost:8088/globalupdate";
-
+    public static String pathToHomeFolderOnServer = "/Users/admin/TimeCountProbeFX";
+    public static String httpAddress = "http://localhost:8088";
+    public static String httpUpdate = httpAddress + "/receiveupdate";
+    public static String httpGetProjectID = httpAddress + "/projectid";
+    public static String httpGetUserID = httpAddress + "/userid";
+    public static String httpGlobalUpdate = httpAddress + "/globalupdate";
+    public static String httpSendBaseToServer = httpAddress + "/sendbasetoserver";
 
 
 
@@ -129,6 +129,13 @@ public class AllData {
     public static String timeStamp = formatDateTime(LocalDateTime.now()) + " - ";
     public static String status = "Все нормально";
 
+
+    public void rebuildHTTPAddresses() {
+        httpUpdate = httpAddress + "/receiveupdate";
+        httpGetProjectID = httpAddress + "/projectid";
+        httpGetUserID = httpAddress + "/userid";
+        httpGlobalUpdate = httpAddress + "/globalupdate";
+    }
 
     /** Стандартные геттеры и сеттеры */
 

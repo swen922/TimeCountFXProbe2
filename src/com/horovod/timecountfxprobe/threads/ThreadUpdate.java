@@ -76,83 +76,53 @@ public class ThreadUpdate extends Task<Boolean> {
                         String received = sb.toString();
 
                         if (received.equalsIgnoreCase("true")) {
-                            AllData.status = "Обновление успешно отправлено на сервер." +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Обновление успешно отправлено на сервер. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.info(AllData.status);
                             result = true;
                         }
                         else if (received.equalsIgnoreCase("false input")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Отправленная строка равна null или пуста. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Отправленная строка равна null или пуста. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false wrapper")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Не удалось восстановить serializeWrapper. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Не удалось восстановить serializeWrapper. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false login")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Инициатор обновления не существует, либо уволен. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Инициатор обновления не существует, либо уволен. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false pass")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пароль пользователя неверен. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Пароль пользователя неверен. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false project")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Проект равен null или имеет место другая ошибка в объекте проекта. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Проект равен null или имеет место другая ошибка в объекте проекта. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false addtime")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime на сервере вернул false. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime на сервере вернул false. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false user")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пользователь отсутствует/присутствует в списке. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Пользователь отсутствует/присутствует в списке. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false user null")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пользователь равен null. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Пользователь равен null. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else {
-                            AllData.status = "Не удалось обновить данные на сервере. " +
-                                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                                    ", Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере. Объект = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
@@ -167,10 +137,7 @@ public class ThreadUpdate extends Task<Boolean> {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    AllData.status = "Ошибка обновления. Выброшено исключение! " +
-                            "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                            AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin() +
-                            ", Объект = " + serializeWrapper;
+                    AllData.status = "Ошибка обновления. Выброшено исключение! Объект = " + serializeWrapper;
                     AllData.updateAllStatus();
                     AllData.logger.error(AllData.status);
                     AllData.logger.error(e.getMessage(), e);

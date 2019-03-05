@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 
 @JsonAutoDetect
@@ -53,6 +54,21 @@ public class SecurePassword {
 
     public void setSalt(String newSalt) {
         this.salt = newSalt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SecurePassword that = (SecurePassword) o;
+        return Objects.equals(securePass, that.securePass) &&
+                Objects.equals(salt, that.salt);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(securePass, salt);
     }
 
 }

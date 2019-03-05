@@ -11,6 +11,7 @@ import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -56,7 +57,7 @@ public class MainApp extends Application {
         //Generator.generateUsers2();
         //Generator.generateProjects2();
 
-        Updater.getService().submit(new ThreadStartCheckingWaitingTasks());
+        Updater.update(new ThreadStartCheckingWaitingTasks());
 
         initRootLayut();
 
@@ -310,6 +311,28 @@ public class MainApp extends Application {
 
         }
 
+    }
+
+    public void showProgressBarWindow(Task task, Stage masterStage) {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(MainApp.class.getResource("view/ProgressBarWindow.fxml"));
+            AnchorPane progressPane = (AnchorPane) loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Работаю...");
+            stage.initOwner(masterStage);
+            stage.initModality(Modality.WINDOW_MODAL);
+            Scene scene = new Scene(progressPane);
+            stage.setScene(scene);
+
+            ProgressBarWindowController controller = loader.getController();
+            controller.setMyStage(stage);
+            controller.setTask(task);
+        } catch (IOException e) {
+            e.printStackTrace();
+            AllData.logger.error(e.getMessage(), e);
+        }
     }
 
     public void showCountSalaryWindow() {

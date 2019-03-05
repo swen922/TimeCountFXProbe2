@@ -2,10 +2,15 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.threads.ThreadSendBaseToServer;
+import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
+import com.horovod.timecountfxprobe.threads.ThreadSetServerProjectID;
+import com.horovod.timecountfxprobe.threads.ThreadSetServerUserID;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.application.Platform;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -21,6 +26,13 @@ import java.nio.file.Paths;
 
 public class AdminWindowController {
 
+
+    // Server fields
+
+    @FXML
+    private Label userListSizeLabel;
+    @FXML
+    private Label projectListSizeLabel;
     @FXML
     private TextField currentIDprojectsTextField;
     @FXML
@@ -30,93 +42,112 @@ public class AdminWindowController {
     @FXML
     private Button setCurrentIDUsersButton;
     @FXML
-    private Button saveProjectsListButton;
+    private Button sendBaseToServerButton;
     @FXML
-    private Button loadProjectsListButton;
+    private Button getBaseFromServerButton;
     @FXML
-    private Button saveUsersListButton;
+    private Button loaderSaveOnServerButton;
     @FXML
-    private Button loadUsersListButton;
+    private Button loaderLoadOnServerButton;
     @FXML
-    private Button loaderSave;
+    private Button setHomeFolderOnServerButton;
     @FXML
-    private Button loaderLoad;
+    private TextField homeFolderOnServerTextField;
     @FXML
-    private Button clearLoggedUsers;
+    private Button setHTTPAddressServerButton;
+    @FXML
+    private TextField HTTPAddressServerTextField;
 
 
+    // Client fields
+
+    @FXML
+    private Label taskQueueSizeLabel;
+    @FXML
+    private Label waitingTaskSizeLabel;
+    @FXML
+    private Button uploadBaseToClientButton;
+    @FXML
+    private Button getBaseFromClientButton;
+    @FXML
+    private Button loaderSaveOnClientButton;
+    @FXML
+    private Button loaderLoadOnClientButton;
+    @FXML
+    private Button startGlobalUpdateFromServerButton;
+    @FXML
+    private Button checkWaitingTasksButton;
+    @FXML
+    private Button importFromSQLButton;
+    @FXML
+    private Button saveSQLToXMLButton;
+    @FXML
+    private CheckBox usersCheckBox;
+    @FXML
+    private CheckBox projectsCheckBox;
+    @FXML
+    private CheckBox timeCheckBox;
     @FXML
     private Button setHomeFolderButton;
-
     @FXML
     private TextField homeFolderTextField;
 
-    @FXML
-    private Label statusLabel;
+
+    // Window fields
 
     @FXML
+    private Label statusLabel;
+    @FXML
+    private Button clearLoggedUsersButton;
+    @FXML
     private ChoiceBox<String> usersLoggedChoiceBox;
+    @FXML
+    private Button ExitNoSaveButton;
+    @FXML
+    private Button ExitButton;
+
 
     @FXML
     public void initialize() {
+
         AllData.resetStatus();
-        //currentIDprojectsTextField.setText(String.valueOf(AllData.getIdNumber()));
-        currentIDUsersTextField.setText(String.valueOf(AllUsers.createUserID));
+
+        initStatistcTextFields();
+        initProjectIDTextField();
+        initUserIDTextField();
+        initHomeFolderOnServer();
+        initHTTPAddressServer();
+        initHomeFolder();
         initLoggedUsersChoiceBox();
-        initPathToHomeFolder();
         initClosing();
     }
 
-    private void initPathToHomeFolder() {
-        homeFolderTextField.setText(AllData.pathToHomeFolder);
+    private void initStatistcTextFields() {
+        this.userListSizeLabel.setText(String.valueOf(AllUsers.getUsers().size()));
+        this.projectListSizeLabel.setText(String.valueOf(AllData.getAllProjects().size()));
+        this.taskQueueSizeLabel.setText(String.valueOf(AllData.tasksQueue.size()));
+        this.waitingTaskSizeLabel.setText(String.valueOf(AllData.waitingTasks.size()));
     }
 
-    public void handleSetHomeFolderButton() {
-        String oldHome = homeFolderTextField.getText();
-        String newHome = "";
-        FileChooser chooser = new FileChooser();
-        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
-        //chooser.getExtensionFilters().add(extFilter);
-        chooser.setInitialDirectory(new File(oldHome));
-        File file = chooser.showSaveDialog(AllData.primaryStage);
-
-        if (file != null) {
-            newHome = file.getParent();
-        }
-        if (!newHome.isEmpty()) {
-            homeFolderTextField.setText(newHome);
-            AllData.pathToHomeFolder = newHome;
-        }
-
-        /*if (homeFolderTextField.getText() != null && !homeFolderTextField.getText().isEmpty()) {
-            String newHome = homeFolderTextField.getText();
-            File file = null;
-            try {
-                Files.createDirectories(Paths.get(newHome));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (file != null) {
-                AllData.pathToHomeFolder = newHome;
-            }
-        }*/
+    private void initProjectIDTextField() {
+        this.currentIDprojectsTextField.setText(String.valueOf(AllData.createProjectID.get()));
     }
 
-    private synchronized void initClosing() {
-
-        if (AllData.primaryStage != null) {
-
-            AllData.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
-                    saveBase();
-                    Platform.exit();
-                    System.exit(0);
-                }
-            });
-        }
+    private void initUserIDTextField() {
+        this.currentIDUsersTextField.setText(String.valueOf(AllUsers.createUserID.get()));
     }
 
+    private void initHomeFolderOnServer() {
+        this.homeFolderOnServerTextField.setText(AllData.pathToHomeFolderOnServer);
+    }
+
+    private void initHTTPAddressServer() {
+        this.HTTPAddressServerTextField.setText(AllData.httpAddress);
+    }
+
+    private void initHomeFolder() {
+        this.homeFolderTextField.setText(AllData.pathToHomeFolder);
+    }
 
     public void initLoggedUsersChoiceBox() {
 
@@ -164,6 +195,90 @@ public class AdminWindowController {
             }
         });
     }
+
+    private synchronized void initClosing() {
+        if (AllData.primaryStage != null) {
+            AllData.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    saveBase();
+                    Platform.exit();
+                    System.exit(0);
+                }
+            });
+        }
+    }
+
+    public void handleSetCurrentIDProjectsButton() {
+        ThreadSetServerProjectID threadSetServerProjectID = new ThreadSetServerProjectID();
+        threadSetServerProjectID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                initProjectIDTextField();
+            }
+        });
+    }
+
+    public void handleSetCurrentUDUsersButton() {
+        ThreadSetServerUserID threadSetServerUserID = new ThreadSetServerUserID();
+        threadSetServerUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                initUserIDTextField();
+            }
+        });
+    }
+
+    public void handleSendBaseToServerButton() {
+        ThreadSendBaseToServer threadSendBaseToServer = new ThreadSendBaseToServer();
+        AllData.mainApp.showProgressBarWindow(threadSendBaseToServer, AllData.primaryStage);
+
+    }
+
+
+
+
+
+
+
+
+
+
+    public void handleSetHomeFolderButton() {
+        String oldHome = homeFolderTextField.getText();
+        String newHome = "";
+        FileChooser chooser = new FileChooser();
+        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+        //chooser.getExtensionFilters().add(extFilter);
+        chooser.setInitialDirectory(new File(oldHome));
+        File file = chooser.showSaveDialog(AllData.primaryStage);
+
+        if (file != null) {
+            newHome = file.getParent();
+        }
+        if (!newHome.isEmpty()) {
+            homeFolderTextField.setText(newHome);
+            AllData.pathToHomeFolder = newHome;
+        }
+
+        /*if (homeFolderTextField.getText() != null && !homeFolderTextField.getText().isEmpty()) {
+            String newHome = homeFolderTextField.getText();
+            File file = null;
+            try {
+                Files.createDirectories(Paths.get(newHome));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (file != null) {
+                AllData.pathToHomeFolder = newHome;
+            }
+        }*/
+    }
+
+
+
+
+
 
 
     public void handleLoaderSaveButton() {

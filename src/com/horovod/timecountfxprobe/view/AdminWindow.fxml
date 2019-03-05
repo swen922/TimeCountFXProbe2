@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="680.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.AdminWindowController">
+<AnchorPane prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/9.0.4" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.horovod.timecountfxprobe.view.AdminWindowController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -52,22 +52,22 @@
                </children>
             </HBox>
             <Separator layoutX="46.0" layoutY="39.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
-            <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+            <AnchorPane prefHeight="280.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
                <children>
-                  <HBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
+                  <HBox alignment="CENTER_LEFT" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" minHeight="30.0" prefWidth="140.0" text="Текущий ID-номер проектов" textAlignment="CENTER" wrapText="true" />
                               <TextField fx:id="currentIDprojectsTextField" alignment="CENTER" prefWidth="140.0" />
-                              <Button fx:id="setCurrentIDProjectsButton" mnemonicParsing="false" prefWidth="140.0" text="Установить новый" />
+                              <Button fx:id="setCurrentIDProjectsButton" mnemonicParsing="false" onAction="#handleSetCurrentIDProjectsButton" prefWidth="140.0" text="Установить новый" />
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" minHeight="30.0" prefWidth="140.0" text="Текущий ID-номер юзеров" textAlignment="CENTER" wrapText="true" />
                               <TextField fx:id="currentIDUsersTextField" alignment="CENTER" prefWidth="140.0" />
-                              <Button fx:id="setCurrentIDUsersButton" mnemonicParsing="false" prefWidth="140.0" text="Установить новый" />
+                              <Button fx:id="setCurrentIDUsersButton" mnemonicParsing="false" onAction="#handleSetCurrentUDUsersButton" prefWidth="140.0" text="Установить новый" />
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
@@ -80,26 +80,28 @@
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="140.0" text="Прочитать / записать текущую базу" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="loaderLoad" mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Loader.load" />
-                              <Button fx:id="loaderSave" mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="140.0" text="Loader.save" />
+                              <Button mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Loader.load" />
+                              <Button mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="140.0" text="Loader.save" />
                            </children>
                         </VBox>
                      </children>
                   </HBox>
-                  <Separator layoutX="217.0" layoutY="168.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0" />
-                  <Button fx:id="setHomeFolderButton" layoutX="20.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleSetHomeFolderButton" prefWidth="140.0" text="Назначить папку..." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="180.0" />
-                  <TextField fx:id="homeFolderTextField" editable="false" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="180.0" />
-                  <Label layoutX="42.0" layoutY="152.0" text="Папка для сохранения настроек, баз, отчетов и логов" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="155.0" />
-                  <Separator layoutX="227.0" layoutY="178.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0" />
+                  <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefHeight="50.0" prefWidth="80.0" text="Обновить данные" textAlignment="CENTER" wrapText="true" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="58.0" />
+                  <Label layoutX="42.0" layoutY="152.0" text="Папка для сохранения настроек, баз, отчетов и логов" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="135.0" />
+                  <Button layoutX="20.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleSetHomeFolderButton" prefWidth="140.0" text="Назначить папку..." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="160.0" />
+                  <TextField editable="false" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0" />
+                  <Label layoutX="52.0" layoutY="162.0" text="Http или IP-адрес сервера" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="205.0" />
+                  <Button layoutX="30.0" layoutY="190.0" mnemonicParsing="false" onAction="#handleSetHomeFolderButton" prefWidth="140.0" text="Установить адрес" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="230.0" />
+                  <TextField editable="false" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0" />
                </children>
             </AnchorPane>
-            <Label layoutX="10.0" layoutY="10.0" prefHeight="30.0" text="Управление клиентом" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="300.0">
+            <Separator prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="335.0" />
+            <Label layoutX="10.0" layoutY="10.0" prefHeight="30.0" text="Управление клиентом" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="355.0">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <Separator prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="340.0" />
-            <HBox alignment="CENTER_RIGHT" layoutX="20.0" layoutY="20.0" spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="300.0">
+            <HBox alignment="CENTER_RIGHT" layoutX="20.0" layoutY="20.0" spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="355.0">
                <children>
                   <HBox alignment="CENTER_RIGHT">
                      <children>
@@ -129,22 +131,23 @@
                   </HBox>
                </children>
             </HBox>
-            <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="350.0">
+            <Separator prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="390.0" />
+            <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="400.0">
                <children>
                   <HBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Загрузить / получить базу в / из клиента" textAlignment="CENTER" wrapText="true" />
-                              <Button mnemonicParsing="false" prefWidth="140.0" text="Отправить" />
-                              <Button mnemonicParsing="false" prefWidth="140.0" text="Скачать" />
+                              <Button mnemonicParsing="false" prefWidth="140.0" text="Загрузить" />
+                              <Button mnemonicParsing="false" prefWidth="140.0" text="Получить" />
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Прочитать / записать текущую базу" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="loaderLoad1" mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Loader.load" />
-                              <Button fx:id="loaderSave1" mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="140.0" text="Loader.save" />
+                              <Button mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Loader.load" />
+                              <Button mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="140.0" text="Loader.save" />
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
@@ -173,7 +176,7 @@
                   </HBox>
                   <Separator layoutX="217.0" layoutY="168.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0" />
                   <Button fx:id="setHomeFolderButton1" layoutX="20.0" layoutY="180.0" mnemonicParsing="false" onAction="#handleSetHomeFolderButton" prefWidth="140.0" text="Назначить папку..." AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="180.0" />
-                  <TextField fx:id="homeFolderTextField1" editable="false" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="180.0" />
+                  <TextField editable="false" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="180.0" />
                   <Label layoutX="42.0" layoutY="152.0" text="Папка для сохранения настроек, баз, отчетов и логов" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="155.0" />
                   <Separator layoutX="227.0" layoutY="178.0" prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0" />
                </children>
@@ -191,7 +194,7 @@
       </AnchorPane>
       <HBox layoutX="305.0" layoutY="700.0" prefHeight="30.0" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0">
          <children>
-            <Button fx:id="clearLoggedUsers" mnemonicParsing="false" onAction="#handleClearLoggedUsersButton" text="x" />
+            <Button fx:id="clearLoggedUsersButton" mnemonicParsing="false" onAction="#handleClearLoggedUsersButton" text="x" />
             <ChoiceBox fx:id="usersLoggedChoiceBox" prefWidth="240.0">
                <padding>
                   <Insets left="10.0" right="10.0" />
