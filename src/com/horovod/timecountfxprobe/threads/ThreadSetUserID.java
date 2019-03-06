@@ -6,6 +6,7 @@ import javafx.concurrent.Task;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -23,7 +24,15 @@ public class ThreadSetUserID extends Task<Integer> {
             connection.setDoOutput(true);
             connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
-            int responceCode = connection.getResponseCode();
+            int responceCode = 0;
+            try {
+                responceCode = connection.getResponseCode();
+            } catch (ConnectException e) {
+                AllData.status = ThreadSetUserID.class.getSimpleName() + " - Ошибка соединения: java.net.ConnectException";
+                AllData.updateAllStatus();
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
 
             if (responceCode == 200) {
                 StringBuilder sb = new StringBuilder("");

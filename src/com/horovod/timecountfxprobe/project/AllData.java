@@ -113,6 +113,8 @@ public class AllData {
     public static CreateProjectWindowController createProjectWindowController;
     public static Stage deleteLoggedUserStage;
     public static DeleteLoggedUsersWindowController deleteLoggedUsersWindowController;
+    public static Task taskForProgressBar;
+    public static Stage progressBarStage;
 
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();

@@ -422,7 +422,7 @@ public class EditUserWindowController {
             }
 
             SecurePassword sp = SecurePassword.getInstance(passwordField.getText().trim());
-            AllUsers.getUsersPass().put(userID, sp);
+            //AllUsers.getUsersPass().put(userID, sp);
             user.setSecurePassword(sp);
             passwordField.setText(null);
         }

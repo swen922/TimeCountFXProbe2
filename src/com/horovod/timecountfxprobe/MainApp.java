@@ -313,22 +313,20 @@ public class MainApp extends Application {
 
     }
 
-    public void showProgressBarWindow(Task task, Stage masterStage) {
+    public void showProgressBarWindow(Stage masterStage) {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/ProgressBarWindow.fxml"));
             AnchorPane progressPane = (AnchorPane) loader.load();
 
-            Stage stage = new Stage();
-            stage.setTitle("Работаю...");
-            stage.initOwner(masterStage);
-            stage.initModality(Modality.WINDOW_MODAL);
+            AllData.progressBarStage = new Stage();
+            AllData.progressBarStage.setTitle("Работаю...");
+            AllData.progressBarStage.initOwner(masterStage);
+            AllData.progressBarStage.initModality(Modality.WINDOW_MODAL);
             Scene scene = new Scene(progressPane);
-            stage.setScene(scene);
+            AllData.progressBarStage.setScene(scene);
 
             ProgressBarWindowController controller = loader.getController();
-            controller.setMyStage(stage);
-            controller.setTask(task);
         } catch (IOException e) {
             e.printStackTrace();
             AllData.logger.error(e.getMessage(), e);

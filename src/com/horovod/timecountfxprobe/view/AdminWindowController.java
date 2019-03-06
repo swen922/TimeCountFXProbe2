@@ -231,15 +231,9 @@ public class AdminWindowController {
 
     public void handleSendBaseToServerButton() {
         ThreadSendBaseToServer threadSendBaseToServer = new ThreadSendBaseToServer();
-        AllData.mainApp.showProgressBarWindow(threadSendBaseToServer, AllData.primaryStage);
-
+        AllData.taskForProgressBar = threadSendBaseToServer;
+        AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
     }
-
-
-
-
-
-
 
 
 

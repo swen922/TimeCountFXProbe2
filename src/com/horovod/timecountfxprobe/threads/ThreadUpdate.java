@@ -12,6 +12,7 @@ import javafx.concurrent.Task;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.*;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,7 +62,15 @@ public class ThreadUpdate extends Task<Boolean> {
                     out.write(jsonSerialize);
                     out.close();
 
-                    int responceCode = connection.getResponseCode();
+                    int responceCode = 0;
+                    try {
+                        responceCode = connection.getResponseCode();
+                    } catch (ConnectException e) {
+                        AllData.status = ThreadUpdate.class.getSimpleName() + " - Ошибка соединения: java.net.ConnectException";
+                        AllData.updateAllStatus();
+                        AllData.logger.error(AllData.status);
+                        AllData.logger.error(e.getMessage(), e);
+                    }
 
                     if (responceCode == 200) {
 

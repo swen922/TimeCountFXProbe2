@@ -34,14 +34,13 @@ public class ThreadCheckWaitingTasks implements Runnable {
                     }
                 }
 
+                // Запускаем процесс сохранения. Если все задачи ушли на исполнение, то файл списка неисполненных задач с диска удалится.
                 Loader loader = new Loader();
                 loader.saveWatingTasks();
 
                 AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - активировано " + counter + " задач из списка неисполненных обновлений базы.";
                 AllData.updateAllStatus();
                 AllData.logger.info(AllData.status);
-
-                System.out.println("waiting tasks OK");
 
             }
         } catch (Exception e) {

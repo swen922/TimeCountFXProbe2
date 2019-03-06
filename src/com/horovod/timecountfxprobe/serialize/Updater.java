@@ -51,7 +51,6 @@ public class Updater {
         try {
             service.submit(task);
         } catch (Exception e) {
-            e.printStackTrace();
             AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
@@ -64,13 +63,26 @@ public class Updater {
         try {
             service.submit(task);
         } catch (Exception e) {
-            e.printStackTrace();
             AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
     }
+
+
+    public static void update(Runnable runnable) {
+        try {
+            service.submit(runnable);
+        } catch (Exception e) {
+            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+    }
+
+
 
     public static Integer getProjectID() {
         Future<Integer> resultFuture = null;
@@ -144,13 +156,13 @@ public class Updater {
             Unmarshaller unmarshaller = context.createUnmarshaller();
             AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(new StringReader(updatedBase));
 
-            if (allDataWrapper != null) {
+            if (allDataWrapper != null && !allDataWrapper.getAllProjects().isEmpty()) {
 
                 AllData.getAllProjects().clear();
                 AllData.getActiveProjects().clear();
                 AllData.setWorkSumProjects(0);
 
-                //AllUsers.getUsers().clear();
+                AllUsers.getUsers().clear();
                 //AllUsers.getUsersPass().clear();
                 //AllUsers.setCurrentUser(0);
                 //AllUsers.getUsersLogged().clear();

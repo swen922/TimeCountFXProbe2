@@ -6,9 +6,7 @@ import com.horovod.timecountfxprobe.user.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @XmlRootElement(name = "basetoserverwrapper")
@@ -18,14 +16,14 @@ public class BaseToServerWrapper {
     private SecurePassword securePassword;
 
     //поля класса AllData
-    @XmlElement(name = "allprojectsidnumber")
-    private int allProjectsIdNumber;
+    //@XmlElement(name = "allprojectsidnumber")
+    //private int allProjectsIdNumber;
 
     private Map<Integer, Project> allProjects = new HashMap<>();
 
     //поля класса AllUsers
-    @XmlElement(name = "allusersidcounter")
-    private int IDCounterAllUsers;
+    //@XmlElement(name = "allusersidcounter")
+    //private int IDCounterAllUsers;
 
     private Map<Integer, Designer> saveDesigners = new HashMap<>();
     private Map<Integer, Manager> saveManagers = new HashMap<>();
@@ -34,15 +32,14 @@ public class BaseToServerWrapper {
 
     public BaseToServerWrapper() {
 
-        this.allProjectsIdNumber = AllData.createProjectID.get();
+        //this.allProjectsIdNumber = AllData.createProjectID.get();
 
         this.allProjects.putAll(AllData.getAllProjects());
 
-        this.IDCounterAllUsers = AllUsers.createUserID.get();
+        //this.IDCounterAllUsers = AllUsers.createUserID.get();
 
         for (User usr : AllUsers.getUsers().values()) {
             if (usr.getRole().equals(Role.DESIGNER)) {
-                //System.out.println(usr);
                 Designer des = (Designer) usr;
                 this.saveDesigners.put(des.getIDNumber(), des);
             }
@@ -72,18 +69,20 @@ public class BaseToServerWrapper {
         return securePassword;
     }
 
+    /*@XmlElement(name = "allprojectsidnumber")
     public int getAllProjectsIdNumber() {
         return allProjectsIdNumber;
-    }
+    }*/
 
     @XmlElement(name = "allprojects")
     public Map<Integer, Project> getAllProjects() {
         return allProjects;
     }
 
+    /*@XmlElement(name = "allusersidcounter")
     public int getIDCounterAllUsers() {
         return IDCounterAllUsers;
-    }
+    }*/
 
     @XmlElement(name = "designers")
     public Map<Integer, Designer> getSaveDesigners() {

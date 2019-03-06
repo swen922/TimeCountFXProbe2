@@ -38,7 +38,7 @@ public class AllDataWrapper {
     private Map<Integer, Admin> saveAdmins = new HashMap<>();
     private Map<Integer, Surveyor> saveSurveyors = new HashMap<>();
 
-    private Map<Integer, SecurePassword> saveUsersPass = new HashMap<>();
+    /*private Map<Integer, SecurePassword> saveUsersPass = new HashMap<>();*/
 
     @XmlElement(name = "currentuser")
     private int currentUser;
@@ -72,7 +72,7 @@ public class AllDataWrapper {
                 this.saveSurveyors.put(sur.getIDNumber(), sur);
             }
         }
-        this.saveUsersPass.putAll(AllUsers.getUsersPass());
+        //this.saveUsersPass.putAll(AllUsers.getUsersPass());
         this.currentUser = AllUsers.getCurrentUser();
         this.saveUsersLogged.addAll(AllUsers.getUsersLogged());
 
@@ -114,10 +114,10 @@ public class AllDataWrapper {
         return saveSurveyors;
     }
 
-    @XmlElement(name = "userspass")
+    /*@XmlElement(name = "userspass")
     public Map<Integer, SecurePassword> getSaveUsersPass() {
         return saveUsersPass;
-    }
+    }*/
 
     //@XmlElement(name = "currentuser")
     public int getCurrentUser() {

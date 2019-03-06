@@ -74,6 +74,9 @@ public class Loader {
             AllData.status = Loader.class.getSimpleName() + " - База успешно сохранена.";
             AllData.updateAllStatus();
             AllData.logger.info(AllData.status);
+            AllData.logger.info("---");
+            AllData.logger.info("---");
+            AllData.logger.info("---");
 
             return true;
 
@@ -118,7 +121,7 @@ public class Loader {
 
                 AllUsers.getUsers().clear();
                 AllUsers.createUserID.set(0);
-                AllUsers.getUsersPass().clear();
+                //AllUsers.getUsersPass().clear();
                 AllUsers.setCurrentUser(0);
                 AllUsers.getUsersLogged().clear();
 
@@ -131,7 +134,7 @@ public class Loader {
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveSurveyors());
                 //System.out.println(AllUsers.getUsers().size());
 
-                AllUsers.setUsersPass(allDataWrapper.getSaveUsersPass());
+                //AllUsers.setUsersPass(allDataWrapper.getSaveUsersPass());
                 //System.out.println(AllUsers.getUsersPass().size());
 
                 AllUsers.setCurrentUser(allDataWrapper.getCurrentUser());

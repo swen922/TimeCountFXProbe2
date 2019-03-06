@@ -1,5 +1,6 @@
 package com.horovod.timecountfxprobe.view;
 
+import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.threads.ThreadSendBaseToServer;
 import javafx.concurrent.Task;
@@ -12,28 +13,21 @@ import javafx.stage.Stage;
 
 public class ProgressBarWindowController {
 
-    private Stage myStage;
     private Task task;
 
     @FXML
     private ProgressBar progressBar;
 
-    public void setMyStage(Stage myStage) {
-        this.myStage = myStage;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
-
     @FXML
     public void initialize() {
+
+        task = AllData.taskForProgressBar;
 
         task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
                 progressBar.progressProperty().unbind();
-                myStage.close();
+                AllData.progressBarStage.close();
             }
         });
 

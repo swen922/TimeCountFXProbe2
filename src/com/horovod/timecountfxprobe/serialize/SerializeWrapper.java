@@ -66,13 +66,16 @@ public class SerializeWrapper {
             this.surveyor = (Surveyor) object;
         }
 
+
+        // TODO Странный код, проверить, нужна ли такая проверка и такиее значения в if
+
         if (AllUsers.getCurrentUser() == 0) {
-            this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
-            this.securePassword = AllUsers.getSecurePassForUser(AllUsers.getCurrentUser());
+            this.login = AllUsers.getOneUser(1).getNameLogin();
+            this.securePassword = AllUsers.getOneUser(1).getSecurePassword();
         }
         else {
             this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
-            this.securePassword = AllUsers.getSecurePassForUser(AllUsers.getCurrentUser());
+            this.securePassword = AllUsers.getOneUser(AllUsers.getCurrentUser()).getSecurePassword();
         }
 
     }
