@@ -3,20 +3,13 @@ package com.horovod.timecountfxprobe.threads;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horovod.timecountfxprobe.project.AllData;
-import com.horovod.timecountfxprobe.serialize.AllDataWrapper;
-import com.horovod.timecountfxprobe.serialize.BaseToServerTest;
 import com.horovod.timecountfxprobe.serialize.BaseToServerWrapper;
-import com.horovod.timecountfxprobe.user.*;
 import javafx.concurrent.Task;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ThreadSendBaseToServer extends Task<Boolean> {
 
@@ -25,7 +18,7 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
 
         boolean result = false;
 
-        BaseToServerTest wrapper = new BaseToServerTest();
+        BaseToServerWrapper wrapper = new BaseToServerWrapper();
 
         /*JAXBContext context = JAXBContext.newInstance(BaseToServerTest.class);
         Marshaller marshaller = context.createMarshaller();

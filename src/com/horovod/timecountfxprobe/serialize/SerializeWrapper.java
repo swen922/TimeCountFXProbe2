@@ -2,6 +2,7 @@ package com.horovod.timecountfxprobe.serialize;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.user.*;
@@ -66,14 +67,25 @@ public class SerializeWrapper {
             this.surveyor = (Surveyor) object;
         }
 
-
-        // TODO Странный код, проверить, нужна ли такая проверка и такиее значения в if
-
-        if (AllUsers.getCurrentUser() == 0) {
-            this.login = AllUsers.getOneUser(1).getNameLogin();
-            this.securePassword = AllUsers.getOneUser(1).getSecurePassword();
+        if (AllData.tableProjectsManagerController == null && AllData.adminWindowController == null) {
+            if (updateType.equals(UpdateType.CREATE_ADMIN)) {
+                this.login = this.admin.getNameLogin();
+                this.securePassword = this.admin.getSecurePassword();
+            }
+            else if (updateType.equals(UpdateType.CREATE_MANAGER)) {
+                this.login = this.manager.getNameLogin();
+                this.securePassword = this.manager.getSecurePassword();
+            }
+            else if (updateType.equals(UpdateType.CREATE_DESIGNER)) {
+                this.login = this.designer.getNameLogin();
+                this.securePassword = this.designer.getSecurePassword();
+            }
+            else if (updateType.equals(UpdateType.CREATE_SURVEYOR)) {
+                this.login = this.surveyor.getNameLogin();
+                this.securePassword = this.surveyor.getSecurePassword();
+            }
         }
-        else {
+        else if (AllUsers.isUserExist(AllUsers.getCurrentUser())) {
             this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
             this.securePassword = AllUsers.getOneUser(AllUsers.getCurrentUser()).getSecurePassword();
         }
@@ -170,21 +182,22 @@ public class SerializeWrapper {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SerializeWrapper that = (SerializeWrapper) o;
-        return updateType == that.updateType &&
-                Objects.equals(workTime, that.workTime) &&
-                Objects.equals(project, that.project) &&
-                Objects.equals(designer, that.designer) &&
-                Objects.equals(manager, that.manager) &&
-                Objects.equals(admin, that.admin) &&
-                Objects.equals(surveyor, that.surveyor) &&
-                Objects.equals(login, that.login);
+        SerializeWrapper wrapper = (SerializeWrapper) o;
+        return updateType == wrapper.updateType &&
+                Objects.equals(workTime, wrapper.workTime) &&
+                Objects.equals(project, wrapper.project) &&
+                Objects.equals(designer, wrapper.designer) &&
+                Objects.equals(manager, wrapper.manager) &&
+                Objects.equals(admin, wrapper.admin) &&
+                Objects.equals(surveyor, wrapper.surveyor) &&
+                Objects.equals(login, wrapper.login) &&
+                Objects.equals(securePassword, wrapper.securePassword);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(updateType, workTime, project, designer, manager, admin, surveyor, login);
+        return Objects.hash(updateType, workTime, project, designer, manager, admin, surveyor, login, securePassword);
     }
 
     @Override
@@ -198,6 +211,7 @@ public class SerializeWrapper {
                 ", admin=" + admin +
                 ", surveyor=" + surveyor +
                 ", login='" + login + '\'' +
+                ", securePassword=" + securePassword +
                 '}';
     }
 }

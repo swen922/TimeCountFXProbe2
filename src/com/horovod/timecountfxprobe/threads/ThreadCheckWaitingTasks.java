@@ -29,7 +29,7 @@ public class ThreadCheckWaitingTasks implements Runnable {
                 for (int i = 0; i < AllData.waitingTasks.size(); i++) {
                     SerializeWrapper wrapper = AllData.waitingTasks.poll();
                     if (wrapper != null) {
-                        Updater.update(wrapper.getUpdateType(), wrapper);
+                        Updater.update(wrapper);
                         counter++;
                     }
                 }

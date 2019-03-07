@@ -91,6 +91,10 @@ public class AdminWindowController {
     private Button setHomeFolderButton;
     @FXML
     private TextField homeFolderTextField;
+    @FXML
+    private Button createUserButton;
+    @FXML
+    private Button createProjectButton;
 
 
     // Window fields
@@ -233,6 +237,12 @@ public class AdminWindowController {
         ThreadSendBaseToServer threadSendBaseToServer = new ThreadSendBaseToServer();
         AllData.taskForProgressBar = threadSendBaseToServer;
         AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+    }
+
+
+
+    public void handleCreateUserButton() {
+        AllData.mainApp.showCreateUserWindow();
     }
 
 

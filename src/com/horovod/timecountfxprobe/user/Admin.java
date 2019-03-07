@@ -148,7 +148,10 @@ public class Admin implements User {
                 ", nameLogin='" + nameLogin + '\'' +
                 ", role=" + role +
                 ", fullName='" + fullName + '\'' +
-                '}' + "\n";
+                ", email='" + email + '\'' +
+                ", workHourValue=" + workHourValue +
+                ", isRetired=" + isRetired +
+                ", securePassword=" + securePassword +
+                '}';
     }
-
 }

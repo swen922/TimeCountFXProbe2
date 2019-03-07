@@ -47,6 +47,24 @@ public class Updater {
 
     public static void update(UpdateType updateType, Object object) {
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);
+
+        System.out.println("SerializeWrapper created = " + wrapper);
+
+        Task task = new ThreadUpdate(wrapper);
+        try {
+            service.submit(task);
+        } catch (Exception e) {
+            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+    }
+
+    public static void update(SerializeWrapper wrapper) {
+
+        System.out.println("SerializeWrapper received = " + wrapper);
+
         Task task = new ThreadUpdate(wrapper);
         try {
             service.submit(task);

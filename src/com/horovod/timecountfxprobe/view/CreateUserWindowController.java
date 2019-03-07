@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
 import com.horovod.timecountfxprobe.threads.ThreadSetUserID;
+import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
@@ -134,7 +135,7 @@ public class CreateUserWindowController {
         progressIndicator.setPrefSize(30, 30);
         anchorPane.getChildren().add(progressIndicator);
         progressIndicator.setLayoutX(400);
-        progressIndicator.setLayoutY(40);
+        progressIndicator.setLayoutY(37);
         progressIndicator.progressProperty().unbind();
         progressIndicator.progressProperty().bind(threadSetUserID.progressProperty());
 
@@ -253,9 +254,27 @@ public class CreateUserWindowController {
                 user.setFullName(fullNameTextField.getText());
             }
 
-            AllData.staffWindowController.initializeTable();
+
+            System.out.println("!!!");
+            System.out.println("user created = " + user);
+            System.out.println("!!!");
+
+
+            if (AllUsers.getUsers().size() == 1) {
+                AllUsers.setCurrentUser(user.getIDNumber());
+            }
+
+            if (AllData.staffWindowController != null) {
+                AllData.staffWindowController.initializeTable();
+            }
 
             AllData.createUserWindow.close();
+
+            if (AllData.tableProjectsManagerController == null && AllData.adminWindowController == null) {
+                AllData.mainApp.showLoginWindowOnStart();
+                Updater.update(new ThreadStartCheckingWaitingTasks());
+            }
+
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Создан пользователь id-" + user.getIDNumber());

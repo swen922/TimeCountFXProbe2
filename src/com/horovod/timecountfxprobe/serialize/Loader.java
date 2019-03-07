@@ -250,7 +250,7 @@ public class Loader {
 
                 if (wrapper != null) {
                     AllData.waitingTasks.clear();
-                    AllData.waitingTasks.addAll(wrapper.getWaitingTasks());
+                    AllData.waitingTasks.addAll(wrapper.getWaitingTasks().keySet());
 
                     AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы прочитан из файла.";
                     AllData.updateAllStatus();

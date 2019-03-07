@@ -711,6 +711,11 @@ public class AllData {
     public static synchronized void changeProjectArchiveStatus(int changedProject, boolean projectIsArchive) {
         if (isProjectExist(changedProject)) {
             Project chProject = allProjects.get(changedProject);
+
+            if (chProject.isArchive() == projectIsArchive) {
+                return;
+            }
+
             chProject.setArchive(projectIsArchive);
 
             if (projectIsArchive) {

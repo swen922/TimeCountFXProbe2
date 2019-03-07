@@ -5,6 +5,8 @@ import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.TestBackgroundUpdate01;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -351,14 +353,12 @@ public class TableProjectsManagerController {
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 if (!project.isArchive()) {
                     int oldValue = 0;
-                    if (event.getOldValue() == null || event.getOldValue().isEmpty()) {
-                    }
-                    else {
+                    if (event.getOldValue() != null && !event.getOldValue().isEmpty()) {
                         oldValue = AllData.parseMoney(0, event.getOldValue());
                     }
                     int budget = AllData.parseMoney(oldValue, event.getNewValue());
-                    //Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                     project.setBudget(budget);
+                    Updater.update(UpdateType.UPDATE_PROJECT, project);
 
                 /*Integer budget = null;
                 try {
@@ -1303,6 +1303,8 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
                                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+                                Updater.update(UpdateType.UPDATE_PROJECT, AllData.getAnyProject(entry.getKey()));
+
                             }
                             else {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
@@ -1319,6 +1321,7 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
                                 setStyle(null);
+                                Updater.update(UpdateType.UPDATE_PROJECT, AllData.getAnyProject(entry.getKey()));
                             }
                             else if (option.get() == ButtonType.CANCEL) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);

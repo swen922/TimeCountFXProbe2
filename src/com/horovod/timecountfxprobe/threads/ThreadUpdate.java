@@ -165,7 +165,13 @@ public class ThreadUpdate extends Task<Boolean> {
         }
         if (!result) {
 
+            System.out.println("!result inside ThreadUpdate!");
+            System.out.println(serializeWrapper);
+            System.out.println("AllData.waitingTasks.contains(serializeWrapper) = " + AllData.waitingTasks.contains(serializeWrapper));
+            System.out.println("");
+
             if (!AllData.waitingTasks.contains(serializeWrapper)) {
+
                 AllData.waitingTasks.offer(serializeWrapper);
                 Loader loader = new Loader();
                 loader.saveWatingTasks();

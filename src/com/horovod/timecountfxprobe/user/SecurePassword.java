@@ -71,4 +71,11 @@ public class SecurePassword {
         return Objects.hash(securePass, salt);
     }
 
+    @Override
+    public String toString() {
+        return "SecurePassword{" +
+                "securePass='" + securePass + '\'' +
+                ", salt='" + salt + '\'' +
+                '}';
+    }
 }

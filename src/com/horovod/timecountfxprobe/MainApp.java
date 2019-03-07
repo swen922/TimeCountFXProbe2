@@ -57,11 +57,22 @@ public class MainApp extends Application {
         //Generator.generateUsers2();
         //Generator.generateProjects2();
 
-        Updater.update(new ThreadStartCheckingWaitingTasks());
+
+        /** После создания первого юзера надо будет перезапустить клиента,
+         * чтобы начали нормально запускаться нити по автообновлению */
+        if (!AllUsers.getUsers().isEmpty()) {
+            Updater.update(new ThreadStartCheckingWaitingTasks());
+        }
+
+
+        AllData.mainApp = this;
 
         initRootLayut();
 
-        if (AllUsers.getCurrentUser() == 0) {
+        if (AllUsers.getUsers().isEmpty()) {
+            showCreateUserWindow();
+        }
+        else if (AllUsers.getCurrentUser() == 0) {
             showLoginWindowOnStart();
         }
         else {
@@ -76,9 +87,6 @@ public class MainApp extends Application {
                 showAdminWindow();
             }
         }
-        AllData.mainApp = this;
-
-
     }
 
     public void initRootLayut() {
@@ -327,6 +335,9 @@ public class MainApp extends Application {
             AllData.progressBarStage.setScene(scene);
 
             ProgressBarWindowController controller = loader.getController();
+
+            AllData.progressBarStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
             AllData.logger.error(e.getMessage(), e);
