@@ -312,8 +312,11 @@ public class TableProjectsDesignerController {
                 }
                 else {
                     // TODO Написать алерт или еще как-то показать, что не добавлено
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Ошибка добавления времени");
+                    alert.setHeaderText("Не удалось добавить / изменить рабочее время в проекте id-" + project.getIdNumber());
+                    alert.showAndWait();
                 }
-
 
                 /*filterField.setText("-");
                 filterField.clear();*/

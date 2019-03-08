@@ -547,6 +547,10 @@ public class EditUserWindowController {
         initSaveButtons();
         AllData.staffWindowController.initializeTable();
 
+        AllData.status = "Локально изменены свойства пользователя id-" + userID + " = " + user.getFullName();
+        AllData.updateAllStatus();
+        AllData.logger.info(AllData.status);
+
         if (user.getRole().equals(Role.DESIGNER)) {
             Updater.update(UpdateType.UPDATE_DESIGNER, user);
         }
@@ -560,9 +564,6 @@ public class EditUserWindowController {
             Updater.update(UpdateType.UPDATE_SURVEYOR, user);
         }
 
-        AllData.status = "Локально изменены свойства пользователя id-" + userID + " = " + user.getFullName();
-        AllData.updateAllStatus();
-        AllData.logger.info(AllData.status);
     }
 
 

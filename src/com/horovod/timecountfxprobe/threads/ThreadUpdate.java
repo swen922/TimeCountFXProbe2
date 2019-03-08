@@ -6,6 +6,7 @@ import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import javafx.concurrent.Task;
 
@@ -46,7 +47,7 @@ public class ThreadUpdate extends Task<Boolean> {
 
         if (serializeWrapper != null) {
 
-            String jsonSerialize = ThreadUtil.getJsonString(serializeWrapper);
+            String jsonSerialize = Updater.getJsonString(serializeWrapper);
 
             if (jsonSerialize != null && !jsonSerialize.isEmpty()) {
 
@@ -60,6 +61,7 @@ public class ThreadUpdate extends Task<Boolean> {
 
                     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
                     out.write(jsonSerialize);
+                    out.flush();
                     out.close();
 
                     int responceCode = 0;
@@ -85,53 +87,58 @@ public class ThreadUpdate extends Task<Boolean> {
                         String received = sb.toString();
 
                         if (received.equalsIgnoreCase("true")) {
-                            AllData.status = "Обновление успешно отправлено на сервер. Объект = " + serializeWrapper;
+                            AllData.status = "Обновление успешно отправлено на сервер. Update type = " + serializeWrapper.getUpdateType();
                             AllData.updateAllStatus();
                             AllData.logger.info(AllData.status);
                             result = true;
                         }
                         else if (received.equalsIgnoreCase("false input")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Отправленная строка равна null или пуста. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Отправленная строка равна null или пуста. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false wrapper")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Не удалось восстановить serializeWrapper. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Не удалось восстановить serializeWrapper. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false login")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Инициатор обновления не существует, либо уволен. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Инициатор обновления не существует, либо уволен. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false pass")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пароль пользователя неверен. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Пароль пользователя неверен. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false project")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Проект равен null или имеет место другая ошибка в объекте проекта. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Проект равен null или имеет место другая ошибка в объекте проекта. SerializeWrapper = " + serializeWrapper;
+                            AllData.updateAllStatus();
+                            AllData.logger.error(AllData.status);
+                        }
+                        else if (received.equalsIgnoreCase("false deleteprojectid")){
+                            AllData.status = "Не удалось обновить данные на сервере: Полученный id проекта равен null или имеет место другая ошибка в объекте Integer id. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false addtime")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime на сервере вернул false. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Метод AllData.addWorkTime на сервере вернул false. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false user")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пользователь отсутствует/присутствует в списке. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Пользователь отсутствует/присутствует в списке. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false user null")) {
-                            AllData.status = "Не удалось обновить данные на сервере: Пользователь равен null. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере: Пользователь равен null. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                         else {
-                            AllData.status = "Не удалось обновить данные на сервере. Объект = " + serializeWrapper;
+                            AllData.status = "Не удалось обновить данные на сервере. SerializeWrapper = " + serializeWrapper;
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
@@ -146,35 +153,31 @@ public class ThreadUpdate extends Task<Boolean> {
 
                 } catch (IOException e) {
                     e.printStackTrace();
-                    AllData.status = "Ошибка обновления. Выброшено исключение! Объект = " + serializeWrapper;
+                    AllData.status = "Ошибка обновления. Выброшено исключение! SerializeWrapper = " + serializeWrapper;
                     AllData.updateAllStatus();
                     AllData.logger.error(AllData.status);
                     AllData.logger.error(e.getMessage(), e);
                 }
             }
             else {
-                AllData.status = "Отмена отправки обновления на сервер из-за ошибки сериализации объекта serializeWrapper.";
+                AllData.status = "Отмена отправки обновления на сервер из-за ошибки сериализации объекта SerializeWrapper в JSON-string.";
                 AllData.updateAllStatus();
                 AllData.logger.error(AllData.status);
             }
         }
         else {
-            AllData.status = "Ошибка обновления. Не удалось создать объект serializeWrapper.";
+            AllData.status = "Ошибка обновления. Полученный объект SerializeWrapper равен null.";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
         }
         if (!result) {
-
-            System.out.println("!result inside ThreadUpdate!");
-            System.out.println(serializeWrapper);
-            System.out.println("AllData.waitingTasks.contains(serializeWrapper) = " + AllData.waitingTasks.contains(serializeWrapper));
-            System.out.println("");
 
             if (!AllData.waitingTasks.contains(serializeWrapper)) {
 
                 AllData.waitingTasks.offer(serializeWrapper);
                 Loader loader = new Loader();
                 loader.saveWatingTasks();
+
             }
         }
         return result;

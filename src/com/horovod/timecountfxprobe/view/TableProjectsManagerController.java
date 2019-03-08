@@ -358,7 +358,6 @@ public class TableProjectsManagerController {
                     }
                     int budget = AllData.parseMoney(oldValue, event.getNewValue());
                     project.setBudget(budget);
-                    Updater.update(UpdateType.UPDATE_PROJECT, project);
 
                 /*Integer budget = null;
                 try {
@@ -379,6 +378,8 @@ public class TableProjectsManagerController {
 
                     filterField.setText("-");
                     filterField.clear();
+
+                    Updater.update(UpdateType.UPDATE_PROJECT, project);
                 }
             }
         });
@@ -404,6 +405,7 @@ public class TableProjectsManagerController {
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
                 project.setPONumber(event.getNewValue());
+                Updater.update(UpdateType.UPDATE_PROJECT, project);
             }
         });
 
@@ -1303,11 +1305,8 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), true);
                                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                                Updater.update(UpdateType.UPDATE_PROJECT, AllData.getAnyProject(entry.getKey()));
-
                             }
                             else {
-                                AllData.changeProjectArchiveStatus(entry.getKey(), false);
                                 setStyle(null);
                             }
                         }
@@ -1321,10 +1320,8 @@ public class TableProjectsManagerController {
                             if (option.get() == ButtonType.OK) {
                                 AllData.changeProjectArchiveStatus(entry.getKey(), false);
                                 setStyle(null);
-                                Updater.update(UpdateType.UPDATE_PROJECT, AllData.getAnyProject(entry.getKey()));
                             }
                             else if (option.get() == ButtonType.CANCEL) {
-                                AllData.changeProjectArchiveStatus(entry.getKey(), true);
                                 setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
                             }
                         }

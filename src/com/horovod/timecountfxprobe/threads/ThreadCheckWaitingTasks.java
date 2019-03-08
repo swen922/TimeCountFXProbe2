@@ -15,7 +15,8 @@ public class ThreadCheckWaitingTasks implements Runnable {
     @Override
     public void run() {
 
-        System.out.println("starting ThreadCheckWaitingTasks...");
+        AllData.status = "Starting ThreadCheckWaitingTasks...";
+        AllData.updateAllStatus();
 
         try {
             if (!AllData.waitingTasks.isEmpty()) {

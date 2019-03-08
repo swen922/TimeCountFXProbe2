@@ -1,6 +1,8 @@
 package com.horovod.timecountfxprobe.serialize;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
@@ -48,8 +50,6 @@ public class Updater {
     public static void update(UpdateType updateType, Object object) {
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);
 
-        System.out.println("SerializeWrapper created = " + wrapper);
-
         Task task = new ThreadUpdate(wrapper);
         try {
             service.submit(task);
@@ -62,9 +62,6 @@ public class Updater {
     }
 
     public static void update(SerializeWrapper wrapper) {
-
-        System.out.println("SerializeWrapper received = " + wrapper);
-
         Task task = new ThreadUpdate(wrapper);
         try {
             service.submit(task);
@@ -169,7 +166,42 @@ public class Updater {
 
     public static boolean globalUpdate(String updatedBase) {
 
+        ServerToClientWrapper wrapper = null;
+
+        ObjectMapper mapper = new ObjectMapper();
         try {
+            wrapper = mapper.readValue(updatedBase, ServerToClientWrapper.class);
+        } catch (IOException e) {
+            AllData.status = "Updater - Ошибка чтения объекта ServerToClientWrapper.";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+
+
+        if (wrapper != null && !wrapper.getAllProjects().isEmpty()) {
+
+            AllData.getAllProjects().clear();
+            AllData.getActiveProjects().clear();
+            AllData.setWorkSumProjects(0);
+            AllUsers.getUsers().clear();
+
+            AllUsers.createUserID.set(wrapper.getIDCounterAllUsers());
+            AllData.createProjectID.set(wrapper.getAllProjectsIdNumber());
+            AllUsers.getUsers().putAll(wrapper.getSaveDesigners());
+            AllUsers.getUsers().putAll(wrapper.getSaveManagers());
+            AllUsers.getUsers().putAll(wrapper.getSaveAdmins());
+            AllUsers.getUsers().putAll(wrapper.getSaveSurveyors());
+            AllData.setAllProjects(wrapper.getAllProjects());
+
+            AllData.rebuildWorkSum();
+            AllData.rebuildActiveProjects();
+
+            return true;
+        }
+
+
+        /*try {
             JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
             AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(new StringReader(updatedBase));
@@ -179,48 +211,18 @@ public class Updater {
                 AllData.getAllProjects().clear();
                 AllData.getActiveProjects().clear();
                 AllData.setWorkSumProjects(0);
-
                 AllUsers.getUsers().clear();
-                //AllUsers.getUsersPass().clear();
-                //AllUsers.setCurrentUser(0);
-                //AllUsers.getUsersLogged().clear();
 
                 AllUsers.createUserID.set(allDataWrapper.getIDCounterAllUsers());
                 AllData.createProjectID.set(allDataWrapper.getAllProjectsIdNumber());
-
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveAdmins());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveSurveyors());
-                //System.out.println(AllUsers.getUsers().size());
-
-                //AllUsers.setUsersPass(allDataWrapper.getSaveUsersPass());
-                //System.out.println(AllUsers.getUsersPass().size());
-
-                //AllUsers.setCurrentUser(allDataWrapper.getCurrentUser());
-                //AllUsers.setCurrentUser(10);
-                    /*System.out.println("allDataWrapper.getCurrentUser() = " + allDataWrapper.getCurrentUser());
-                    System.out.println("cuurrent user = " + AllUsers.getCurrentUser());*/
-
-                //AllUsers.setUsersLogged(allDataWrapper.getSaveUsersLogged());
-                //System.out.println(AllUsers.getUsersLogged());
-
-                //AllData.setIdNumber(allDataWrapper.getAllProjectsIdNumber());
-                    /*System.out.println("allDataWrapper.getAllProjectsIdNumber() = " + allDataWrapper.getAllProjectsIdNumber());
-                    System.out.println("AllData idNumber = " + AllData.getIdNumber());*/
-
                 AllData.setAllProjects(allDataWrapper.getAllProjects());
-                //System.out.println("AllData.getAllProjects().size() = " + AllData.getAllProjects().size());
 
                 AllData.rebuildWorkSum();
-                //System.out.println(AllData.getWorkSumProjects());
-
                 AllData.rebuildActiveProjects();
-                //System.out.println(AllData.getActiveProjects().size());
-
-                AllData.status = Updater.class.getSimpleName() + " - Полное обновление базы с сервера успешно проведено.";
-                AllData.updateAllStatus();
-                AllData.logger.info(AllData.status);
 
                 return true;
             }
@@ -230,9 +232,23 @@ public class Updater {
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
-        }
+        }*/
 
         return false;
+    }
+
+    public static synchronized String getJsonString(Object object) {
+        String jsonSerialize = "";
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            jsonSerialize = mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            AllData.status = "Ошибка сериализации объекта!";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+        return jsonSerialize;
     }
 
 }

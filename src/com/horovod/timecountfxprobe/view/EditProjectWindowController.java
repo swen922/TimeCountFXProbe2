@@ -310,8 +310,6 @@ public class EditProjectWindowController {
                 @Override
                 public void handle(TableColumn.CellEditEvent<WorkDay, String> event) {
 
-                    /**м TODO Не забыть, что у дизайнеров должно обновляться после внесения правок.
-                     * TODO Видимо, тут нужен запуск thread с обновлением на сервер */
                     String dateString = event.getRowValue().getDateString();
                     double current = myProject.getWorkSumForDesignerAndDate(i, AllData.parseDate(dateString));
                     double newTimeDouble = AllData.getDoubleFromText(current, event.getNewValue(), 1);
@@ -436,9 +434,9 @@ public class EditProjectWindowController {
 
     public void initializeArchiveCheckBox() {
         if (myProject.isArchive()) {
+            archiveCheckBox.setSelected(true);
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
             openFolderButton.setDisable(true);
-            archiveCheckBox.setSelected(true);
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
             descriptionTextArea.setEditable(false);
@@ -450,9 +448,9 @@ public class EditProjectWindowController {
             addWorkDayButton.setDisable(true);
         }
         else {
+            archiveCheckBox.setSelected(false);
             topColoredPane.setStyle(null);
             openFolderButton.setDisable(false);
-            archiveCheckBox.setSelected(false);
             companyNameTextArea.setEditable(true);
             managerTextArea.setEditable(true);
             descriptionTextArea.setEditable(true);
@@ -475,9 +473,8 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProjectID, true);
-            }
-            else {
-                AllData.changeProjectArchiveStatus(myProjectID, false);
+                initializeArchiveCheckBox();
+                AllData.tableProjectsManagerController.initializeTable();
             }
         }
         else {
@@ -489,13 +486,10 @@ public class EditProjectWindowController {
 
             if (option.get() == ButtonType.OK) {
                 AllData.changeProjectArchiveStatus(myProjectID, false);
-            }
-            else if (option.get() == ButtonType.CANCEL) {
-                AllData.changeProjectArchiveStatus(myProjectID, true);
+                initializeArchiveCheckBox();
+                AllData.tableProjectsManagerController.initializeTable();
             }
         }
-        initializeArchiveCheckBox();
-        AllData.tableProjectsManagerController.initializeTable();
     }
 
     public void handleAddWorkDayButton() {
@@ -834,7 +828,6 @@ public class EditProjectWindowController {
 
     public void handleRevertButton() {
 
-        //projectNameTextArea.setText(textAreas.get(projectNameTextArea));
         companyNameTextArea.setText(textAreas.get(companyNameTextArea));
         managerTextArea.setText(textAreas.get(managerTextArea));
         descriptionTextArea.setText(textAreas.get(descriptionTextArea));
@@ -970,5 +963,4 @@ public class EditProjectWindowController {
             handleSaveAndCloseButton();
         }
     }
-
 }

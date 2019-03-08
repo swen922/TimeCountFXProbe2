@@ -24,6 +24,9 @@ public class SerializeWrapper {
     @JsonDeserialize(as = Project.class)
     private Project project;
 
+    @JsonDeserialize(as = Integer.class)
+    private Integer deletedProjectID;
+
     @JsonDeserialize(as = Designer.class)
     private Designer designer;
 
@@ -53,6 +56,9 @@ public class SerializeWrapper {
         }
         else if (updateType.equals(UpdateType.UPDATE_PROJECT) || updateType.equals(UpdateType.CREATE_PROJECT)) {
             this.project = (Project) object;
+        }
+        else if (updateType.equals(UpdateType.DELETE_PROJECT)) {
+            this.deletedProjectID = (Integer) object;
         }
         else if (updateType.equals(UpdateType.UPDATE_DESIGNER) || updateType.equals(UpdateType.CREATE_DESIGNER)) {
             this.designer = (Designer) object;
@@ -89,7 +95,6 @@ public class SerializeWrapper {
             this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
             this.securePassword = AllUsers.getOneUser(AllUsers.getCurrentUser()).getSecurePassword();
         }
-
     }
 
     public SerializeWrapper() {
@@ -108,6 +113,11 @@ public class SerializeWrapper {
     @XmlElement(name = "projectinwrapper")
     public Project getProject() {
         return project;
+    }
+
+    @XmlElement(name = "deletedprojectidinwrapper")
+    public Integer getDeletedProjectID() {
+        return deletedProjectID;
     }
 
     @XmlElement(name = "designerinwrapper")
@@ -154,6 +164,10 @@ public class SerializeWrapper {
         this.project = project;
     }
 
+    public void setDeletedProjectID(Integer deletedProjectID) {
+        this.deletedProjectID = deletedProjectID;
+    }
+
     public void setDesigner(Designer designer) {
         this.designer = designer;
     }
@@ -186,6 +200,7 @@ public class SerializeWrapper {
         return updateType == wrapper.updateType &&
                 Objects.equals(workTime, wrapper.workTime) &&
                 Objects.equals(project, wrapper.project) &&
+                Objects.equals(deletedProjectID, wrapper.deletedProjectID) &&
                 Objects.equals(designer, wrapper.designer) &&
                 Objects.equals(manager, wrapper.manager) &&
                 Objects.equals(admin, wrapper.admin) &&
@@ -197,7 +212,7 @@ public class SerializeWrapper {
     @Override
     public int hashCode() {
 
-        return Objects.hash(updateType, workTime, project, designer, manager, admin, surveyor, login, securePassword);
+        return Objects.hash(updateType, workTime, project, deletedProjectID, designer, manager, admin, surveyor, login, securePassword);
     }
 
     @Override
@@ -206,6 +221,7 @@ public class SerializeWrapper {
                 "updateType=" + updateType +
                 ", workTime=" + workTime +
                 ", project=" + project +
+                ", deletedProjectID=" + deletedProjectID +
                 ", designer=" + designer +
                 ", manager=" + manager +
                 ", admin=" + admin +

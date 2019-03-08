@@ -49,6 +49,7 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
 
         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
         out.write(baseToSend);
+        out.flush();
         out.close();
 
         int responceCode = 0;

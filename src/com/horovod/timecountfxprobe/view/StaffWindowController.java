@@ -5,9 +5,9 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.project.WorkDay;
 import com.horovod.timecountfxprobe.project.WorkTime;
-import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.Role;
-import com.horovod.timecountfxprobe.user.User;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
+import com.horovod.timecountfxprobe.serialize.Updater;
+import com.horovod.timecountfxprobe.user.*;
 import com.sun.jdi.IntegerValue;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -415,6 +415,20 @@ public class StaffWindowController {
                 int hourPay = AllData.getIntFromText(AllUsers.getOneUser(ub.getUserID()).getWorkHourValue(), event.getNewValue());
                 AllUsers.getOneUser(ub.getUserID()).setWorkHourValue(hourPay);
                 initializeTable();
+                User user = AllUsers.getOneUser(ub.getUserID());
+                if (user.getRole().equals(Role.DESIGNER)) {
+                    Updater.update(UpdateType.UPDATE_DESIGNER, user);
+                }
+                else if (user.getRole().equals(Role.MANAGER)) {
+                    Updater.update(UpdateType.UPDATE_MANAGER, user);
+                }
+                else if (user.getRole().equals(Role.ADMIN)) {
+                    Updater.update(UpdateType.UPDATE_ADMIN, user);
+                }
+                else if (user.getRole().equals(Role.SURVEYOR)) {
+                    Updater.update(UpdateType.UPDATE_SURVEYOR, user);
+                }
+
             }
         });
 

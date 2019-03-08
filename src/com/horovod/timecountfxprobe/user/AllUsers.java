@@ -267,12 +267,26 @@ public class AllUsers {
 
     public static synchronized boolean deleteUser(int idUser) {
         if (isUserExist(idUser)) {
-            users.get(idUser).setRetired(true);
+            User user = users.get(idUser);
+            user.setRetired(true);
 
             // Статус и Логирование
             AllData.status = "Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " уволен.";
             AllData.updateAllStatus();
             AllData.logger.info(AllData.status);
+
+            if (user.getRole().equals(Role.DESIGNER)) {
+                Updater.update(UpdateType.UPDATE_DESIGNER, user);
+            }
+            else if (user.getRole().equals(Role.MANAGER)) {
+                Updater.update(UpdateType.UPDATE_MANAGER, user);
+            }
+            else if (user.getRole().equals(Role.ADMIN)) {
+                Updater.update(UpdateType.UPDATE_ADMIN, user);
+            }
+            else if (user.getRole().equals(Role.SURVEYOR)) {
+                Updater.update(UpdateType.UPDATE_SURVEYOR, user);
+            }
 
             return true;
         }
@@ -281,12 +295,27 @@ public class AllUsers {
 
     public static synchronized boolean resurrectUser(int idUser) {
         if (isUserDeleted(idUser)) {
-            users.get(idUser).setRetired(false);
+            User user = users.get(idUser);
+            user.setRetired(false);
 
             // Статус и Логирование
             AllData.status = "Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " снова принят на работу.";
             AllData.updateAllStatus();
             AllData.logger.info(AllData.status);
+
+            if (user.getRole().equals(Role.DESIGNER)) {
+                Updater.update(UpdateType.UPDATE_DESIGNER, user);
+            }
+            else if (user.getRole().equals(Role.MANAGER)) {
+                Updater.update(UpdateType.UPDATE_MANAGER, user);
+            }
+            else if (user.getRole().equals(Role.ADMIN)) {
+                Updater.update(UpdateType.UPDATE_ADMIN, user);
+            }
+            else if (user.getRole().equals(Role.SURVEYOR)) {
+                Updater.update(UpdateType.UPDATE_SURVEYOR, user);
+            }
+
             return true;
         }
         return false;

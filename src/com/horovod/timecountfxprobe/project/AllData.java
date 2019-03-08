@@ -405,6 +405,7 @@ public class AllData {
             AllData.updateAllStatus();
 
             WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
+
             Updater.update(UpdateType.UPDATE_TIME, workTime);
 
             return true;
@@ -703,6 +704,8 @@ public class AllData {
             updateAllStatus();
             AllData.logger.info(AllData.status);
 
+            Updater.update(UpdateType.DELETE_PROJECT, deadProject);
+
             return true;
         }
         return false;
@@ -712,27 +715,26 @@ public class AllData {
         if (isProjectExist(changedProject)) {
             Project chProject = allProjects.get(changedProject);
 
-            if (chProject.isArchive() == projectIsArchive) {
-                return;
-            }
+            if (chProject.isArchive() != projectIsArchive) {
+                chProject.setArchive(projectIsArchive);
 
-            chProject.setArchive(projectIsArchive);
+                if (projectIsArchive) {
+                    activeProjects.remove(changedProject);
+                    AllData.status = "Локально проект id-" + changedProject + " переведен в архив.";
+                }
+                else {
+                    activeProjects.put(changedProject, chProject);
+                    AllData.status = "Локально проект id-" + changedProject + " возвращен из архива.";
+                }
 
-            if (projectIsArchive) {
-                activeProjects.remove(changedProject);
-                AllData.status = "Локально проект id-" + changedProject + " переведен в архив.";
-            }
-            else {
-                activeProjects.put(changedProject, chProject);
-                AllData.status = "Локально проект id-" + changedProject + " возвращен из архива.";
-            }
+                if (editProjectWindowControllers.containsKey(changedProject)) {
+                    editProjectWindowControllers.get(changedProject).initializeArchiveCheckBox();
+                }
 
-            if (editProjectWindowControllers.containsKey(changedProject)) {
-                editProjectWindowControllers.get(changedProject).initializeArchiveCheckBox();
+                updateAllStatus();
+                AllData.logger.info(AllData.status);
+                Updater.update(UpdateType.UPDATE_PROJECT, chProject);
             }
-
-            updateAllStatus();
-            AllData.logger.info(AllData.status);
         }
     }
 
