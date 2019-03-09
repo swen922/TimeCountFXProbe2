@@ -59,12 +59,12 @@
                </font>
             </Label>
             <TextArea fx:id="commentTextArea" layoutX="63.0" layoutY="16.0" onKeyTyped="#initSaveButtons" prefHeight="85.0" promptText="Впишите любой комментарий по этому проекту, например где брать исходник. Комментарий будет виден всем дизайнерам и менеджерам." wrapText="true" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="50.0" />
-            <Label layoutX="20.0" layoutY="173.0" prefWidth="70.0" text="Связанные проекты" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="140.0">
+            <Label layoutX="20.0" layoutY="173.0" prefWidth="70.0" text="Таги для поиска" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="140.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Label>
-            <TextField fx:id="linkedProjectsTextField" editable="false" layoutX="100.0" layoutY="165.0" promptText="id-номера связанных проектов" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0" />
+            <TextField fx:id="tagsTextField" editable="false" layoutX="100.0" layoutY="165.0" promptText="Ключевые слова и фразы для поиска" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0" />
          </children>
       </AnchorPane>
       <Separator layoutX="10.0" layoutY="10.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="245.0" />

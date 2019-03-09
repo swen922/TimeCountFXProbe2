@@ -15,17 +15,18 @@ public class ThreadSetUserID extends Task<Integer> {
     @Override
     public Integer call() {
 
-        Integer result = null;
+        int result = 0;
 
         try {
-            URL url = new URL(AllData.httpGetUserID);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
+            HttpURLConnection connection = null;
             int responceCode = 0;
             try {
+                URL url = new URL(AllData.httpGetUserID);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 responceCode = connection.getResponseCode();
             } catch (ConnectException e) {
                 AllData.status = ThreadSetUserID.class.getSimpleName() + " - Ошибка соединения: java.net.ConnectException";
@@ -45,19 +46,22 @@ public class ThreadSetUserID extends Task<Integer> {
 
                 String received = sb.toString();
 
-                if (!received.isEmpty()) {
+                if (!received.isEmpty() && !received.startsWith("false")) {
                     result = Integer.parseInt(received);
                 }
+                else {
+                    AllData.status = "ThreadSetProjectID - Ошибка получения нового ID-номера для пользователя. Выброшено исключение!";
+                    AllData.updateAllStatus();
+                    AllData.logger.error(AllData.status);
+                }
 
-                if (result != null) {
+                if (result != 0) {
                     AllUsers.createUserID.set(result);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            AllData.status = ThreadSetProjectID.class.getSimpleName() + " - Ошибка получения нового ID-номера для пользователя. Выброшено исключение! " +
-                    "Инициатор = userID-" + AllUsers.getCurrentUser() + "  " +
-                    AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
+            AllData.status = ThreadSetProjectID.class.getSimpleName() + " - Ошибка получения нового ID-номера для пользователя. Выброшено исключение!";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);

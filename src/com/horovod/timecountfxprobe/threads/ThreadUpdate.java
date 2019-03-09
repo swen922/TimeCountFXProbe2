@@ -53,19 +53,19 @@ public class ThreadUpdate extends Task<Boolean> {
 
                 try {
 
-                    URL url = new URL(AllData.httpUpdate);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setDoOutput(true);
-                    connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-                    out.write(jsonSerialize);
-                    out.flush();
-                    out.close();
-
+                    HttpURLConnection connection = null;
                     int responceCode = 0;
                     try {
+                        URL url = new URL(AllData.httpUpdate);
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.setRequestMethod("POST");
+                        connection.setDoOutput(true);
+                        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+                        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+                        out.write(jsonSerialize);
+                        out.flush();
+                        out.close();
                         responceCode = connection.getResponseCode();
                     } catch (ConnectException e) {
                         AllData.status = ThreadUpdate.class.getSimpleName() + " - Ошибка соединения: java.net.ConnectException";

@@ -6,7 +6,6 @@ import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
-import com.horovod.timecountfxprobe.threads.ThreadUtil;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.view.*;

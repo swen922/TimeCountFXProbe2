@@ -26,23 +26,24 @@ public class ThreadGlobalUpdate implements Runnable {
 
                 String jsonSerialize = Updater.getJsonString(loginWrapper);
 
-                if (jsonSerialize != null && !jsonSerialize.isEmpty()) {
-                    URL url = new URL(AllData.httpGlobalUpdate);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    connection.setDoOutput(true);
-                    connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-                    out.write(jsonSerialize);
-                    out.flush();
-                    out.close();
+                if (!jsonSerialize.isEmpty()) {
 
                     int responceCode = 0;
+                    HttpURLConnection connection = null;
                     try {
+                        URL url = new URL(AllData.httpGlobalUpdate);
+                        connection = (HttpURLConnection) url.openConnection();
+                        connection.setRequestMethod("POST");
+                        connection.setDoOutput(true);
+                        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+                        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+                        out.write(jsonSerialize);
+                        out.flush();
+                        out.close();
                         responceCode = connection.getResponseCode();
                     } catch (ConnectException e) {
-                        AllData.status = ThreadGlobalUpdate.class.getSimpleName() + " - Ошибка соединения: java.net.ConnectException";
+                        AllData.status = "ThreadGlobalUpdate - Ошибка соединения: java.net.ConnectException";
                         AllData.updateAllStatus();
                         AllData.logger.error(AllData.status);
                         AllData.logger.error(e.getMessage(), e);
@@ -59,33 +60,33 @@ public class ThreadGlobalUpdate implements Runnable {
 
                         String received = sb.toString();
 
-                        if (!received.isEmpty()) {
+                        if (!received.isEmpty() && !received.startsWith("false")) {
 
                             boolean success = Updater.globalUpdate(received);
 
                             if (success) {
                                 AllData.updateAllWindows();
 
-                                AllData.status = ThreadGlobalUpdate.class.getSimpleName() + " - Обновление базы с сервера успешно проведено.";
+                                AllData.status = "ThreadGlobalUpdate - Обновление базы с сервера проведено успешно.";
                                 AllData.updateAllStatus();
                                 AllData.logger.info(AllData.status);
 
                             }
                             else {
-                                AllData.status = ThreadGlobalUpdate.class.getSimpleName() + " - Ошибка обновления базы с сервера либо отказ из-за отсутствия базы на сервере.";
+                                AllData.status = "ThreadGlobalUpdate - Ошибка обновления базы с сервера либо отказ из-за отсутствия базы на сервере.";
                                 AllData.updateAllStatus();
                                 AllData.logger.error(AllData.status);
                             }
                         }
                         else {
-                            AllData.status = ThreadGlobalUpdate.class.getSimpleName() + " - Ошибка обновления базы с сервера.";
+                            AllData.status = "ThreadGlobalUpdate - Ошибка обновления базы с сервера.";
                             AllData.updateAllStatus();
                             AllData.logger.error(AllData.status);
                         }
                     }
                 }
                 else {
-                    AllData.status = "Отмена глобального обновления из-за ошибки сериализации объекта LoginWrapper в JSON-string.";
+                    AllData.status = "ThreadGlobalUpdate - Отмена глобального обновления из-за ошибки сериализации объекта LoginWrapper в JSON-string.";
                     AllData.updateAllStatus();
                     AllData.logger.error(AllData.status);
                 }
@@ -96,7 +97,7 @@ public class ThreadGlobalUpdate implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            AllData.status = ThreadGlobalUpdate.class.getSimpleName() + " - Ошибка обновления базы с сервера: выброшено исключение IOException.";
+            AllData.status = "ThreadGlobalUpdate - Ошибка обновления базы с сервера: выброшено исключение " + e.getMessage();
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);

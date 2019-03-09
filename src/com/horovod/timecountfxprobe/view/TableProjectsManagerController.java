@@ -209,7 +209,7 @@ public class TableProjectsManagerController {
             topColoredPane.setStyle(null);
         }
 
-        AllData.resetStatus();
+        //AllData.resetStatus();
 
 
 
@@ -244,8 +244,6 @@ public class TableProjectsManagerController {
         initLoggedUsersChoiceBox();
 
         initExportChoiceBox();
-
-        resetStatus();
 
     }
 
@@ -909,11 +907,7 @@ public class TableProjectsManagerController {
     }
 
     public void updateStatus() {
-        statusLabel.setText(AllData.timeStamp + AllData.status);
-    }
-
-    public void resetStatus() {
-        statusLabel.setText("Статус: все нормально");
+        statusLabel.setText(AllData.status);
     }
 
 

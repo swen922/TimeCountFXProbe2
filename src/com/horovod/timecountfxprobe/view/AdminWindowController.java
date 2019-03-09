@@ -112,10 +112,21 @@ public class AdminWindowController {
 
 
     @FXML
-    public void initialize() {
+    private void initialize() {
 
         AllData.resetStatus();
 
+        initStatistcTextFields();
+        initProjectIDTextField();
+        initUserIDTextField();
+        initHomeFolderOnServer();
+        initHTTPAddressServer();
+        initHomeFolder();
+        initLoggedUsersChoiceBox();
+        initClosing();
+    }
+
+    public void updateAdminWindow() {
         initStatistcTextFields();
         initProjectIDTextField();
         initUserIDTextField();
@@ -234,8 +245,7 @@ public class AdminWindowController {
     }
 
     public void handleSendBaseToServerButton() {
-        ThreadSendBaseToServer threadSendBaseToServer = new ThreadSendBaseToServer();
-        AllData.taskForProgressBar = threadSendBaseToServer;
+        AllData.taskForProgressBar = new ThreadSendBaseToServer();
         AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
     }
 
@@ -291,7 +301,7 @@ public class AdminWindowController {
 
     public void handleLoaderLoadButton() {
         loadBase();
-        initialize();
+        updateAdminWindow();
     }
 
     private void saveBase() {

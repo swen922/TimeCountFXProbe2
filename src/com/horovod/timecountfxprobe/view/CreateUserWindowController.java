@@ -239,26 +239,15 @@ public class CreateUserWindowController {
             }
         }
 
-        if (newID != null) {
-            User user = AllUsers.createUser(newID, login, pass, role);
+        User user = null;
+        if (newID != null && newID != 0) {
+            user = AllUsers.createUser(newID, login, pass, role);
+        }
 
-            if (user == null) {
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Ошибка создания пользователя");
-                alert.setHeaderText("Не удалось создать пользователя.\nОшибка в методе AllUsers.createUser().");
-                alert.showAndWait();
-                return;
-            }
-
+        if (user != null) {
             if (fullNameTextField.getText() != null && !fullNameTextField.getText().isEmpty()) {
                 user.setFullName(fullNameTextField.getText());
             }
-
-
-            System.out.println("!!!");
-            System.out.println("user created = " + user);
-            System.out.println("!!!");
-
 
             if (AllUsers.getUsers().size() == 1) {
                 AllUsers.setCurrentUser(user.getIDNumber());
@@ -275,11 +264,17 @@ public class CreateUserWindowController {
                 Updater.update(new ThreadStartCheckingWaitingTasks());
             }
 
-
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Создан пользователь id-" + user.getIDNumber());
             alert.setHeaderText("Создан пользователь id-" + user.getIDNumber() + "\nлогин = " + user.getNameLogin() + "\nимя = " + user.getFullName());
             alert.show();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Ошибка создания пользователя");
+            alert.setHeaderText("Не удалось создать пользователя.\nОшибка в методе AllUsers.createUser().");
+            alert.showAndWait();
+            return;
         }
     }
 

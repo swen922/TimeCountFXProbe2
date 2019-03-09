@@ -749,7 +749,7 @@ public class AllData {
                     AllData.tableProjectsDesignerController.initialize();
                 }
                 if (AllData.adminWindowController != null) {
-                    AllData.adminWindowController.initialize();
+                    AllData.adminWindowController.updateAdminWindow();
                 }
                 // TODO сюда добавить сюрвеора, когда будет написан
                 if (AllData.statisticManagerWindowController != null) {
@@ -810,7 +810,7 @@ public class AllData {
 
     public static void resetStatus() {
         updateTimeStamp();
-        AllData.status = timeStamp + "Все нормально";
+        AllData.status = "Все нормально";
     }
 
 

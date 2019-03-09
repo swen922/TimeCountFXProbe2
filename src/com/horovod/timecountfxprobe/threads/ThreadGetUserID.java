@@ -15,20 +15,21 @@ public class ThreadGetUserID implements Callable<Integer> {
     @Override
     public Integer call() {
 
-        Integer result = 0;
+        int result = 0;
 
         try {
-            URL url = new URL(AllData.httpGetUserID);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0");
 
+            HttpURLConnection connection = null;
             int responceCode = 0;
             try {
+                URL url = new URL(AllData.httpGetUserID);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 responceCode = connection.getResponseCode();
             } catch (ConnectException e) {
-                AllData.status = ThreadGetUserID.class.getSimpleName() + " - Ошибка соединения: java.net.ConnectException";
+                AllData.status = "ThreadGetUserID - Ошибка соединения: java.net.ConnectException";
                 AllData.updateAllStatus();
                 AllData.logger.error(AllData.status);
                 AllData.logger.error(e.getMessage(), e);
@@ -45,8 +46,14 @@ public class ThreadGetUserID implements Callable<Integer> {
 
                 String received = sb.toString();
 
-                if (!received.isEmpty()) {
+                if (!received.isEmpty() && !received.startsWith("false")) {
                     result = Integer.parseInt(received);
+                }
+
+                if (result == 0) {
+                    AllData.status = "ThreadGetUserID - Ошибка получения нового ID-номера для юзера.";
+                    AllData.updateAllStatus();
+                    AllData.logger.error(AllData.status);
                 }
             }
         } catch (Exception e) {

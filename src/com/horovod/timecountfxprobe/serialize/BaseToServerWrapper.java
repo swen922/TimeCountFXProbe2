@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 
 @JsonAutoDetect
-@XmlRootElement(name = "basetoserverwrapper")
 public class BaseToServerWrapper {
 
     // Поля для логина на сервер, если он не пустой
@@ -73,7 +72,6 @@ public class BaseToServerWrapper {
         }
     }
 
-    @XmlElement(name = "userlogininwrapper")
     public String getLogin() {
         return login;
     }
@@ -82,7 +80,6 @@ public class BaseToServerWrapper {
         this.login = login;
     }
 
-    @XmlElement(name = "securepassinwrapper")
     public SecurePassword getSecurePassword() {
         return securePassword;
     }
@@ -91,7 +88,6 @@ public class BaseToServerWrapper {
         this.securePassword = securePassword;
     }
 
-    @XmlElement(name = "allprojectsidnumber")
     public int getAllProjectsIdNumber() {
         return allProjectsIdNumber;
     }
@@ -100,7 +96,6 @@ public class BaseToServerWrapper {
         this.allProjectsIdNumber = allProjectsIdNumber;
     }
 
-    @XmlElement(name = "allusersidcounter")
     public int getIDCounterAllUsers() {
         return IDCounterAllUsers;
     }
@@ -109,7 +104,6 @@ public class BaseToServerWrapper {
         this.IDCounterAllUsers = IDCounterAllUsers;
     }
 
-    @XmlElement(name = "allprojects")
     public HashMap<Integer, Project> getAllProjects() {
         return allProjects;
     }
@@ -118,7 +112,6 @@ public class BaseToServerWrapper {
         this.allProjects = allProjects;
     }
 
-    @XmlElement(name = "designers")
     public HashMap<Integer, Designer> getSaveDesigners() {
         return saveDesigners;
     }
@@ -127,7 +120,6 @@ public class BaseToServerWrapper {
         this.saveDesigners = saveDesigners;
     }
 
-    @XmlElement(name = "managers")
     public HashMap<Integer, Manager> getSaveManagers() {
         return saveManagers;
     }
@@ -136,7 +128,6 @@ public class BaseToServerWrapper {
         this.saveManagers = saveManagers;
     }
 
-    @XmlElement(name = "admins")
     public HashMap<Integer, Admin> getSaveAdmins() {
         return saveAdmins;
     }
@@ -145,7 +136,6 @@ public class BaseToServerWrapper {
         this.saveAdmins = saveAdmins;
     }
 
-    @XmlElement(name = "surveyors")
     public HashMap<Integer, Surveyor> getSaveSurveyors() {
         return saveSurveyors;
     }

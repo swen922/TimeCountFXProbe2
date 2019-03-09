@@ -55,7 +55,7 @@ public class Project {
     private String folderPath;
 
     @JsonDeserialize(as = String.class)
-    private String linkedProjects;
+    private String tags;
 
     @JsonDeserialize(as = String.class)
     private String PONumber;
@@ -147,9 +147,6 @@ public class Project {
     public synchronized void setCompany(String newCompany) {
         this.company = newCompany;
         this.companyProperty.set(newCompany);
-        //updateAllStatus("Поле \"Компания\" проекта id-" + this.idNumber + " изменено.");
-        AllData.status = "Поле \"Компания\" проекта id-" + this.idNumber + " изменено.";
-        AllData.updateAllStatus();
     }
     //@XmlTransient
     public StringProperty companyProperty() {
@@ -229,13 +226,13 @@ public class Project {
         this.folderPath = folderPath;
     }
 
-    @XmlElement(name = "linkedprojects")
-    public String getLinkedProjects() {
-        return linkedProjects;
+    @XmlElement(name = "tags")
+    public String getTags() {
+        return tags;
     }
 
-    public synchronized void setLinkedProjects(String linkedProjects) {
-        this.linkedProjects = linkedProjects;
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
     @XmlElement(name = "ponumber")

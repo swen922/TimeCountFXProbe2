@@ -67,7 +67,7 @@ public class InfoProjectWindowController {
     private TextArea commentTextArea;
 
     @FXML
-    private TextField linkedProjectsTextField;
+    private TextField tagsTextField;
 
 
     @FXML
@@ -133,7 +133,7 @@ public class InfoProjectWindowController {
         companyNameTextArea.setText(myProject.getCompany());
         managerTextArea.setText(myProject.getManager());
         commentTextArea.setText(myProject.getComment());
-        linkedProjectsTextField.setText(myProject.getLinkedProjects());
+        tagsTextField.setText(myProject.getTags());
     }
 
 
@@ -156,7 +156,7 @@ public class InfoProjectWindowController {
             managerTextArea.setEditable(false);
             descriptionTextArea.setEditable(false);
             commentTextArea.setEditable(false);
-            linkedProjectsTextField.setEditable(false);
+            tagsTextField.setEditable(false);
         }
         else {
             openFolderButton.setDisable(false);
@@ -164,7 +164,7 @@ public class InfoProjectWindowController {
             managerTextArea.setEditable(true);
             descriptionTextArea.setEditable(true);
             commentTextArea.setEditable(true);
-            linkedProjectsTextField.setEditable(true);
+            tagsTextField.setEditable(true);
         }
 
         if (AllData.getAnyProject(myProjectID).isArchive()) {

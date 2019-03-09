@@ -93,7 +93,7 @@ public class EditProjectWindowController {
     private TextArea commentTextArea;
 
     @FXML
-    private TextField linkedProjectsTextField;
+    private TextField tagsTextField;
 
     @FXML
     private TextField budgetTextField;
@@ -203,8 +203,8 @@ public class EditProjectWindowController {
         commentTextArea.setText(myProject.getComment());
         textAreas.put(commentTextArea, commentTextArea.getText());
 
-        linkedProjectsTextField.setText(myProject.getLinkedProjects());
-        textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
+        tagsTextField.setText(myProject.getTags());
+        textAreas.put(tagsTextField, tagsTextField.getText());
 
         if (myProject.getBudget() == 0) {
             budgetTextField.setText("");
@@ -441,7 +441,7 @@ public class EditProjectWindowController {
             managerTextArea.setEditable(false);
             descriptionTextArea.setEditable(false);
             commentTextArea.setEditable(false);
-            linkedProjectsTextField.setEditable(false);
+            tagsTextField.setEditable(false);
             budgetTextField.setEditable(false);
             POnumberTextField.setEditable(false);
             pathToFolderTextField.setEditable(false);
@@ -455,7 +455,7 @@ public class EditProjectWindowController {
             managerTextArea.setEditable(true);
             descriptionTextArea.setEditable(true);
             commentTextArea.setEditable(true);
-            linkedProjectsTextField.setEditable(true);
+            tagsTextField.setEditable(true);
             budgetTextField.setEditable(true);
             POnumberTextField.setEditable(true);
             pathToFolderTextField.setEditable(true);
@@ -555,7 +555,7 @@ public class EditProjectWindowController {
                 sb.append("Компания: ").append(myProject.getCompany()).append("\n");
                 sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
                 sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
-                sb.append("Связанные проекты: ").append(myProject.getLinkedProjects() == null ? "нет" : myProject.getLinkedProjects().isEmpty() ? "нет" : myProject.getLinkedProjects()).append("\n");
+                sb.append("Таги для поиска: ").append(myProject.getTags() == null ? "нет" : myProject.getTags().isEmpty() ? "нет" : myProject.getTags()).append("\n");
                 String sum = myProject.getBudget() == 0 ? "нет" : (myProject.getBudget() + " руб.");
                 sb.append("Сумма по смете: ").append(sum).append("\n");
                 sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
@@ -683,7 +683,7 @@ public class EditProjectWindowController {
                 sb.append("Компания: ").append(myProject.getCompany()).append("\n");
                 sb.append("Менеджер: ").append(myProject.getManager()).append("\n");
                 sb.append("Комментарий: ").append(myProject.getComment() == null ? "нет" : myProject.getComment().isEmpty() ? "нет" : myProject.getComment()).append("\n");
-                sb.append("Связанные проекты: ").append(myProject.getLinkedProjects() == null ? "нет" : myProject.getLinkedProjects().isEmpty() ? "нет" : myProject.getLinkedProjects()).append("\n");
+                sb.append("Таги для поиска: ").append(myProject.getTags() == null ? "нет" : myProject.getTags().isEmpty() ? "нет" : myProject.getTags()).append("\n");
                 String sum = myProject.getBudget() == 0 ? "нет" : (myProject.getBudget() + " руб.");
                 sb.append("Сумма по смете: ").append(sum).append("\n");
                 sb.append("Номер РО: ").append(myProject.getPONumber() == null ? "нет" : myProject.getPONumber().isEmpty() ? "нет" : myProject.getPONumber()).append("\n\n\n");
@@ -770,7 +770,7 @@ public class EditProjectWindowController {
         changedAreas.put(managerTextArea, managerTextArea.getText());
         changedAreas.put(descriptionTextArea, descriptionTextArea.getText());
         changedAreas.put(commentTextArea, commentTextArea.getText());
-        changedAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
+        changedAreas.put(tagsTextField, tagsTextField.getText());
         changedAreas.put(budgetTextField, budgetTextField.getText());
         changedAreas.put(POnumberTextField, POnumberTextField.getText());
         changedAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
@@ -839,11 +839,11 @@ public class EditProjectWindowController {
             commentTextArea.setText(textAreas.get(commentTextArea));
         }
 
-        if (textAreas.get(linkedProjectsTextField) == null) {
-            linkedProjectsTextField.setText("");
+        if (textAreas.get(tagsTextField) == null) {
+            tagsTextField.setText("");
         }
         else {
-            linkedProjectsTextField.setText(textAreas.get(linkedProjectsTextField));
+            tagsTextField.setText(textAreas.get(tagsTextField));
         }
 
         if (textAreas.get(budgetTextField) == null) {
@@ -880,8 +880,8 @@ public class EditProjectWindowController {
         myProject.setManager(managerTextArea.getText());
         textAreas.put(commentTextArea, commentTextArea.getText());
         myProject.setComment(commentTextArea.getText());
-        textAreas.put(linkedProjectsTextField, linkedProjectsTextField.getText());
-        myProject.setLinkedProjects(linkedProjectsTextField.getText());
+        textAreas.put(tagsTextField, tagsTextField.getText());
+        myProject.setTags(tagsTextField.getText());
 
         if (budgetTextField.getText() != null && !budgetTextField.getText().isEmpty()) {
             myProject.setBudget(AllData.parseMoney(myProject.getBudget(), budgetTextField.getText()));

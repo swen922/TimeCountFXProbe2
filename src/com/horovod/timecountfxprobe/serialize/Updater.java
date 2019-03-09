@@ -114,7 +114,7 @@ public class Updater {
 
         Integer result = null;
         try {
-            result = resultFuture.get();
+            result = resultFuture.get(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
             AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение InterruptedException";
@@ -124,6 +124,12 @@ public class Updater {
         } catch (ExecutionException e) {
             e.printStackTrace();
             AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение ExecutionException";
+            AllData.updateAllStatus();
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+            AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение TimeoutException";
             AllData.updateAllStatus();
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);

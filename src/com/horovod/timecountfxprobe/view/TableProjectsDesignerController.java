@@ -203,7 +203,7 @@ public class TableProjectsDesignerController {
             topColoredPane.setStyle(null);
         }
 
-        AllData.resetStatus();
+        //AllData.resetStatus();
 
 
 
@@ -802,12 +802,9 @@ public class TableProjectsDesignerController {
     }
 
     public void updateStatus() {
-        statusLabel.setText("Статус: " + AllData.status);
+        statusLabel.setText(AllData.status);
     }
 
-    public void resetStatus() {
-        statusLabel.setText("Статус: все системы работают нормально");
-    }
 
 
     /** Вытащенный в отдельный метод кусок кода из метода initialize()
