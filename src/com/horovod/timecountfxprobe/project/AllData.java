@@ -142,6 +142,8 @@ public class AllData {
     /** Стандартные геттеры и сеттеры */
 
 
+
+
     /*public static int incrementIdNumberAndGet() {
         return idNumber.incrementAndGet();
 
@@ -779,13 +781,16 @@ public class AllData {
         });
     }
 
-
-    public static synchronized void updateAllStatus() {
-
+    public static synchronized void updateAllStatus(String stat) {
         updateTimeStamp();
-        AllData.status = timeStamp + AllData.status;
+        AllData.status = timeStamp + stat;
+        updateAllStatus();
+    }
 
-                Platform.runLater(new Runnable() {
+
+    private static void updateAllStatus() {
+
+        Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 if (AllData.adminWindowController != null) {

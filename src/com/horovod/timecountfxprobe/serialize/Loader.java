@@ -71,8 +71,7 @@ public class Loader {
 
             marshaller.marshal(allDataWrapper, this.fileBase);
 
-            AllData.status = Loader.class.getSimpleName() + " - База успешно сохранена.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.save() - База успешно сохранена.");
             AllData.logger.info(AllData.status);
             AllData.logger.info("---");
             AllData.logger.info("---");
@@ -81,15 +80,11 @@ public class Loader {
             return true;
 
         } catch (IOException e) {
-            e.printStackTrace();
-            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать базу в файл: IOException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.save() -  - Не удалось записать базу в файл: IOException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.save() -  - Не удалось записать базу в файл. Ошибка сериализации в XML: JAXBException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
@@ -101,8 +96,7 @@ public class Loader {
     public boolean load() {
 
         if (!this.fileBase.exists()) {
-            AllData.status = Loader.class.getSimpleName() + " - Ошибка загрузки базы. Отсутствует файл базы.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.load() - Ошибка загрузки базы. Отсутствует файл базы.");
             AllData.logger.error(AllData.status);
             return false;
         }
@@ -121,7 +115,6 @@ public class Loader {
 
                 AllUsers.getUsers().clear();
                 AllUsers.createUserID.set(0);
-                //AllUsers.getUsersPass().clear();
                 AllUsers.setCurrentUser(0);
                 AllUsers.getUsersLogged().clear();
 
@@ -132,34 +125,19 @@ public class Loader {
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveAdmins());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveSurveyors());
-                //System.out.println(AllUsers.getUsers().size());
-
-                //AllUsers.setUsersPass(allDataWrapper.getSaveUsersPass());
-                //System.out.println(AllUsers.getUsersPass().size());
 
                 AllUsers.setCurrentUser(allDataWrapper.getCurrentUser());
-                //AllUsers.setCurrentUser(10);
-                /*System.out.println("allDataWrapper.getCurrentUser() = " + allDataWrapper.getCurrentUser());
-                System.out.println("cuurrent user = " + AllUsers.getCurrentUser());*/
 
                 AllUsers.setUsersLogged(allDataWrapper.getSaveUsersLogged());
-                //System.out.println(AllUsers.getUsersLogged());
-
-                //AllData.setIdNumber(allDataWrapper.getAllProjectsIdNumber());
-                /*System.out.println("allDataWrapper.getAllProjectsIdNumber() = " + allDataWrapper.getAllProjectsIdNumber());
-                System.out.println("AllData idNumber = " + AllData.getIdNumber());*/
 
                 AllData.setAllProjects(allDataWrapper.getAllProjects());
-                //System.out.println("AllData.getAllProjects().size() = " + AllData.getAllProjects().size());
 
                 AllData.rebuildWorkSum();
-                //System.out.println(AllData.getWorkSumProjects());
 
                 AllData.rebuildActiveProjects();
-                //System.out.println(AllData.getActiveProjects().size());
 
-                AllData.status = Loader.class.getSimpleName() + " - База успешно прочитана.";
-                AllData.updateAllStatus();
+
+                AllData.updateAllStatus("Loader.load() - База успешно прочитана.");
                 AllData.logger.info(AllData.status);
 
                 if (AllUsers.getCurrentUser() == 0) {
@@ -176,9 +154,7 @@ public class Loader {
                 return true;
             }
         } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = Loader.class.getSimpleName() + " - Не удалось прочитать базу из файла. Ошибка десериализации из XML: JAXBException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.load() - Не удалось прочитать базу из файла. Ошибка десериализации из XML: JAXBException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
@@ -205,16 +181,14 @@ public class Loader {
 
                 marshaller.marshal(wrapper, this.waitingTasksFile);
 
-                AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы сохранен в файл.";
-                AllData.updateAllStatus();
+                AllData.updateAllStatus("Loader.saveWatingTasks() - Список неисполненных обновлений базы сохранен в файл.");
                 AllData.logger.info(AllData.status);
             }
             else {
                 if (this.waitingTasksFile.exists()) {
                     Files.delete(pathToWaitingTasks);
 
-                    AllData.status = Loader.class.getSimpleName() + " - Файл со списком неисполненных обновлений базы удален.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("Loader.saveWatingTasks() - Файл со списком неисполненных обновлений базы удален.");
                     AllData.logger.info(AllData.status);
                 }
             }
@@ -222,15 +196,11 @@ public class Loader {
             return true;
 
         } catch (IOException e) {
-            e.printStackTrace();
-            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл: IOException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.saveWatingTasks() - Не удалось записать список неисполненных обновлений базы в файл: IOException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = Loader.class.getSimpleName() + " - Не удалось записать список неисполненных обновлений базы в файл. Ошибка сериализации в XML: JAXBException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Loader.saveWatingTasks() - Не удалось записать список неисполненных обновлений базы в файл. Ошибка сериализации в XML: JAXBException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
@@ -252,16 +222,13 @@ public class Loader {
                     AllData.waitingTasks.clear();
                     AllData.waitingTasks.addAll(wrapper.getWaitingTasks().keySet());
 
-                    AllData.status = Loader.class.getSimpleName() + " - Список неисполненных обновлений базы прочитан из файла.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("Loader.loadWaitingTasks - Список неисполненных обновлений базы прочитан из файла.");
                     AllData.logger.info(AllData.status);
 
                     return true;
                 }
             } catch (JAXBException e) {
-                e.printStackTrace();
-                AllData.status = Loader.class.getSimpleName() + " - Не удалось прочитать список неисполненных обновлений базы из файла. Ошибка десериализации из XML: JAXBException";
-                AllData.updateAllStatus();
+                AllData.updateAllStatus("Loader.loadWaitingTasks - Не удалось прочитать список неисполненных обновлений базы из файла. Ошибка десериализации из XML: JAXBException");
                 AllData.logger.error(AllData.status);
                 AllData.logger.error(e.getMessage(), e);
             }
@@ -269,6 +236,5 @@ public class Loader {
 
         return false;
     }
-
 
 }

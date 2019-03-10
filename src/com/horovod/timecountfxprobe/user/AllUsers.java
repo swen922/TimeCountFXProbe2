@@ -237,8 +237,7 @@ public class AllUsers {
             //usersPass.put(result.getIDNumber(), sp);
 
             // Статус и Логирование
-            AllData.status = "Локально создан новый работник id-" + result.getIDNumber() + " = " + AllUsers.getOneUser(result.getIDNumber()).getFullName();
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("AllUsers.createUser - Локально создан новый работник id-" + result.getIDNumber() + " = " + AllUsers.getOneUser(result.getIDNumber()).getFullName());
             AllData.logger.info(AllData.status);
 
             if (role.equals(Role.DESIGNER)) {
@@ -271,8 +270,7 @@ public class AllUsers {
             user.setRetired(true);
 
             // Статус и Логирование
-            AllData.status = "Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " уволен.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("AllUsers.deleteUser - Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " уволен.");
             AllData.logger.info(AllData.status);
 
             if (user.getRole().equals(Role.DESIGNER)) {
@@ -299,8 +297,7 @@ public class AllUsers {
             user.setRetired(false);
 
             // Статус и Логирование
-            AllData.status = "Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " снова принят на работу.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("AllUsers.resurrectUser - Работник id-" + idUser + " " + AllUsers.getOneUser(idUser).getFullName() + " снова принят на работу.");
             AllData.logger.info(AllData.status);
 
             if (user.getRole().equals(Role.DESIGNER)) {

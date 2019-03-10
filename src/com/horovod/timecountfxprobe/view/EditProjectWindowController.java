@@ -899,8 +899,7 @@ public class EditProjectWindowController {
         initSaveButtons();
         AllData.tableProjectsManagerController.initializeTable();
 
-        AllData.status = "Локально изменены свойства проекта id-" + myProjectID;
-        AllData.updateAllStatus();
+        AllData.updateAllStatus("EditProjectWindowController.handleSaveButton() - Локально изменены свойства проекта id-" + myProjectID);
         AllData.logger.info(AllData.status);
 
         Updater.update(UpdateType.UPDATE_PROJECT, myProject);

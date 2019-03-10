@@ -20,7 +20,8 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
         boolean result = false;
 
         BaseToServerWrapper wrapper = new BaseToServerWrapper();
-        String baseToSend = Updater.getJsonString(wrapper);
+        Updater updater = new Updater();
+        String baseToSend = updater.getJsonString(wrapper);
 
         if (!baseToSend.isEmpty()) {
 
@@ -40,8 +41,7 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
                 out.close();
                 responceCode = connection.getResponseCode();
             } catch (ConnectException e) {
-                AllData.status = "ThreadSendBaseToServer - Ошибка соединения: java.net.ConnectException";
-                AllData.updateAllStatus();
+                AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка соединения: java.net.ConnectException");
                 AllData.logger.error(AllData.status);
                 AllData.logger.error(e.getMessage(), e);
             }
@@ -59,42 +59,39 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
                 String received = sb.toString();
 
                 if (received.equalsIgnoreCase("true")) {
-                    AllData.status = "ThreadSendBaseToServer - База успешно отправлена на сервер.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("ThreadSendBaseToServer - База успешно отправлена на сервер.");
                     AllData.logger.info(AllData.status);
                     result = true;
                 }
                 else if (received.equalsIgnoreCase("false pass")) {
-                    AllData.status = "ThreadSendBaseToServer - Ошибка отправки базы на сервер. Пароль пользователя неверен.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Пароль пользователя неверен.");
                     AllData.logger.error(AllData.status);
                 }
                 else if (received.equalsIgnoreCase("false user")) {
-                    AllData.status = "ThreadSendBaseToServer - Ошибка отправки базы на сервер. Пользователь отсутствует или уволен.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Пользователь отсутствует или уволен.");
                     AllData.logger.error(AllData.status);
                 }
                 else if (received.equalsIgnoreCase("false wrapper")) {
-                    AllData.status = "ThreadSendBaseToServer - Ошибка отправки базы на сервер. Ошибка чтения объекта BaseToServerWrapper.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Ошибка чтения объекта BaseToServerWrapper.");
                     AllData.logger.error(AllData.status);
                 }
                 else if (received.equalsIgnoreCase("false input")) {
-                    AllData.status = "ThreadSendBaseToServer - Ошибка отправки базы на сервер. Полученная сервером строка равна null или пуста.";
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Полученная сервером строка равна null или пуста.");
                     AllData.logger.error(AllData.status);
                 }
                 else {
-                    AllData.status = "ThreadSendBaseToServer - Ошибка отправки базы на сервер. Ответ сервера = " + received;
-                    AllData.updateAllStatus();
+                    AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Ответ сервера = " + received);
                     AllData.logger.error(AllData.status);
                 }
             }
             else {
-                AllData.status = "ThreadSendBaseToServer - Не удалось отправить базу на сервер. ResponceCode = " + responceCode;
-                AllData.updateAllStatus();
+                AllData.updateAllStatus("ThreadSendBaseToServer - Не удалось отправить базу на сервер. ResponceCode = " + responceCode);
                 AllData.logger.error(AllData.status);
             }
+        }
+        else {
+            AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Созданная JSON-строка пуста.");
+            AllData.logger.error(AllData.status);
         }
         return result;
     }

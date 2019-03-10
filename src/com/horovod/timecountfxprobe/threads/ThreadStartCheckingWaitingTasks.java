@@ -16,13 +16,11 @@ public class ThreadStartCheckingWaitingTasks extends Task<Boolean> {
             Updater.getRepeatWaitingTaskService().scheduleAtFixedRate(task, 20, 30, TimeUnit.SECONDS);
 
             ThreadGlobalUpdate globalUpdate = new ThreadGlobalUpdate();
-            Updater.getGlobalUpdateTaskService().scheduleAtFixedRate(globalUpdate, 60, 120, TimeUnit.SECONDS);
+            Updater.getGlobalUpdateTaskService().scheduleAtFixedRate(globalUpdate, 30, 120, TimeUnit.SECONDS);
 
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            AllData.status = ThreadStartCheckingWaitingTasks.class.getSimpleName() + " - Не удалось запустить регулярную обработку списка неисполненных обновлений базы.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("ThreadStartCheckingWaitingTasks - Не удалось запустить регулярную обработку списка неисполненных обновлений базы.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }

@@ -18,6 +18,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Queue;
@@ -25,13 +26,13 @@ import java.util.concurrent.*;
 
 public class Updater {
 
-    private static ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, AllData.tasksQueue);
+    private static final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, AllData.tasksQueue);
     //private static ExecutorService service = Executors.newFixedThreadPool(1);
 
-    private static ScheduledExecutorService repeatWaitingTaskService = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService repeatWaitingTaskService = Executors.newSingleThreadScheduledExecutor();
     //private static ScheduledExecutorService repeatUpdater = Executors.newScheduledThreadPool(5);
 
-    private static ScheduledExecutorService globalUpdateTaskService = Executors.newSingleThreadScheduledExecutor();
+    private static final ScheduledExecutorService globalUpdateTaskService = Executors.newSingleThreadScheduledExecutor();
 
 
     /*public static ExecutorService getService() {
@@ -51,62 +52,65 @@ public class Updater {
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);
 
         Task task = new ThreadUpdate(wrapper);
-        try {
-            service.submit(task);
-        } catch (Exception e) {
-            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
+        synchronized (service) {
+            try {
+                service.submit(task);
+            } catch (Exception e) {
+                AllData.updateAllStatus("Updater.update(UpdateType updateType, Object object) - Ошибка выполнения новой нити. Выброшено исключение.");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
         }
+
     }
 
     public static void update(SerializeWrapper wrapper) {
         Task task = new ThreadUpdate(wrapper);
-        try {
-            service.submit(task);
-        } catch (Exception e) {
-            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
+
+        synchronized (service) {
+            try {
+                service.submit(task);
+            } catch (Exception e) {
+                AllData.updateAllStatus("Updater.update(SerializeWrapper wrapper) - Ошибка выполнения новой нити. Выброшено исключение.");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
         }
     }
-
 
     public static void update(Task task) {
-        try {
-            service.submit(task);
-        } catch (Exception e) {
-            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
+
+        synchronized (service) {
+            try {
+                service.submit(task);
+            } catch (Exception e) {
+                AllData.updateAllStatus("Updater.update(Task task) - Ошибка выполнения новой нити. Выброшено исключение.");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
         }
     }
-
 
     public static void update(Runnable runnable) {
-        try {
-            service.submit(runnable);
-        } catch (Exception e) {
-            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
+
+        synchronized (service) {
+            try {
+                service.submit(runnable);
+            } catch (Exception e) {
+                AllData.updateAllStatus("Updater.update(Runnable runnable) - Ошибка выполнения новой нити. Выброшено исключение.");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
         }
     }
 
 
-
-    public static Integer getProjectID() {
+    public static synchronized Integer getProjectID() {
         Future<Integer> resultFuture = null;
         try {
             resultFuture = service.submit(new ThreadGetProjectID());
         } catch (Exception e) {
-            e.printStackTrace();
-            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getProjectID - Ошибка выполнения новой нити. Выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
             return null;
@@ -116,35 +120,27 @@ public class Updater {
         try {
             result = resultFuture.get(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение InterruptedException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getProjectID - Ошибка получения нового ID-номера проекта. Выброшено исключение InterruptedException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение ExecutionException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getProjectID - Ошибка получения нового ID-номера проекта. Выброшено исключение ExecutionException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (TimeoutException e) {
-            e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера проекта. Выброшено исключение TimeoutException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getProjectID - Ошибка получения нового ID-номера проекта. Выброшено исключение TimeoutException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
         return result;
     }
 
-    public static Integer getUserID() {
+    public static synchronized Integer getUserID() {
         Future<Integer> resultFuture = null;
         try {
             resultFuture = service.submit(new ThreadGetUserID());
         } catch (Exception e) {
-            e.printStackTrace();
-            AllData.status = Updater.class.getSimpleName() + " - Ошибка выполнения новой нити.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getUserID - Ошибка выполнения новой нити. Выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
             return null;
@@ -152,17 +148,17 @@ public class Updater {
 
         Integer result = null;
         try {
-            result = resultFuture.get();
+            result = resultFuture.get(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера юзера. Выброшено исключение InterruptedException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getUserID - Ошибка получения нового ID-номера юзера. Выброшено исключение InterruptedException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         } catch (ExecutionException e) {
-            e.printStackTrace();
-            AllData.status = "Ошибка получения нового ID-номера юзера. Выброшено исключение ExecutionException";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getUserID - Ошибка получения нового ID-номера юзера. Выброшено исключение ExecutionException");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (TimeoutException e) {
+            AllData.updateAllStatus("Updater.getUserID - Ошибка получения нового ID-номера юзера. Выброшено исключение TimeoutException");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
@@ -170,7 +166,7 @@ public class Updater {
     }
 
 
-    public static boolean globalUpdate(String updatedBase) {
+    public static synchronized boolean globalUpdate(String updatedBase) {
 
         ServerToClientWrapper wrapper = null;
 
@@ -178,8 +174,7 @@ public class Updater {
         try {
             wrapper = mapper.readValue(updatedBase, ServerToClientWrapper.class);
         } catch (IOException e) {
-            AllData.status = "Updater - Ошибка чтения объекта ServerToClientWrapper.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.globalUpdate - Ошибка чтения объекта ServerToClientWrapper. Выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
@@ -206,55 +201,82 @@ public class Updater {
             return true;
         }
 
-
-        /*try {
-            JAXBContext context = JAXBContext.newInstance(AllDataWrapper.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-            AllDataWrapper allDataWrapper = (AllDataWrapper) unmarshaller.unmarshal(new StringReader(updatedBase));
-
-            if (allDataWrapper != null && !allDataWrapper.getAllProjects().isEmpty()) {
-
-                AllData.getAllProjects().clear();
-                AllData.getActiveProjects().clear();
-                AllData.setWorkSumProjects(0);
-                AllUsers.getUsers().clear();
-
-                AllUsers.createUserID.set(allDataWrapper.getIDCounterAllUsers());
-                AllData.createProjectID.set(allDataWrapper.getAllProjectsIdNumber());
-                AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
-                AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());
-                AllUsers.getUsers().putAll(allDataWrapper.getSaveAdmins());
-                AllUsers.getUsers().putAll(allDataWrapper.getSaveSurveyors());
-                AllData.setAllProjects(allDataWrapper.getAllProjects());
-
-                AllData.rebuildWorkSum();
-                AllData.rebuildActiveProjects();
-
-                return true;
-            }
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            AllData.status = Updater.class.getSimpleName() + " - Не удалось провести обновление базы с сервера. Ошибка сериализации из XML: JAXBException";
-            AllData.updateAllStatus();
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        }*/
-
         return false;
     }
 
-    public static synchronized String getJsonString(Object object) {
+    public String getJsonString(Object object) {
         String jsonSerialize = "";
         ObjectMapper mapper = new ObjectMapper();
         try {
             jsonSerialize = mapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            AllData.status = "Ошибка сериализации объекта!";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("Updater.getJsonString - Ошибка сериализации объекта. Выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
         return jsonSerialize;
+    }
+
+    public String getReceivedFromServer(String httpAddress) {
+
+        String result = "";
+
+        try {
+            User user = AllUsers.getOneUser(AllUsers.getCurrentUser());
+            LoginWrapper loginWrapper = new LoginWrapper(user.getNameLogin(), user.getSecurePassword());
+
+            String jsonSerialize = "";
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                jsonSerialize = mapper.writeValueAsString(loginWrapper);
+            } catch (JsonProcessingException e) {
+                AllData.updateAllStatus("updater.getReceivedFromServer - Ошибка сериализации объекта LoginWrapper. Выброшено исключение.");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
+
+
+            if (!jsonSerialize.isEmpty()) {
+                HttpURLConnection connection = null;
+                int responceCode = 0;
+                try {
+                    URL url = new URL(httpAddress);
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setDoOutput(true);
+                    connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+
+                    BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+                    out.write(jsonSerialize);
+                    out.flush();
+                    out.close();
+
+                    responceCode = connection.getResponseCode();
+                } catch (ConnectException e) {
+                    AllData.updateAllStatus("updater.getReceivedFromServer - Ошибка соединения: Выброшено исключение java.net.ConnectException");
+                    AllData.logger.error(AllData.status);
+                    AllData.logger.error(e.getMessage(), e);
+                }
+
+                if (responceCode == 200) {
+                    StringBuilder sb = new StringBuilder("");
+                    String tmp = null;
+                    BufferedReader inn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    while ((tmp = inn.readLine()) != null) {
+                        sb.append(tmp);
+                    }
+                    inn.close();
+
+                    result = sb.toString();
+                }
+            }
+        } catch (IOException e) {
+            AllData.updateAllStatus("updater.getReceivedFromServer - Ошибка получения ответа от сервера. Выброшено исключение.");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+
+        return result;
     }
 
 }

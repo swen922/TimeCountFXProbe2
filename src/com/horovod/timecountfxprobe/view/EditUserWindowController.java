@@ -547,8 +547,7 @@ public class EditUserWindowController {
         initSaveButtons();
         AllData.staffWindowController.initializeTable();
 
-        AllData.status = "Локально изменены свойства пользователя id-" + userID + " = " + user.getFullName();
-        AllData.updateAllStatus();
+        AllData.updateAllStatus("EditUserWindowController.handleSaveButton() - Локально изменены свойства пользователя id-" + userID + " = " + user.getFullName());
         AllData.logger.info(AllData.status);
 
         if (user.getRole().equals(Role.DESIGNER)) {

@@ -342,8 +342,7 @@ public class InfoProjectWindowController {
             myProject.setComment(commentTextArea.getText());
         }
         initSaveButtons();
-        AllData.status = "Текст комментария в проекте id-" + myProjectID + " изменен";
-        AllData.updateAllStatus();
+        AllData.updateAllStatus("InfoProjectWindowController.handleSaveButton() - Текст комментария в проекте id-" + myProjectID + " изменен");
         AllData.logger.info(AllData.status);
     }
 

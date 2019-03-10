@@ -15,14 +15,11 @@ public class ThreadCheckWaitingTasks implements Runnable {
     @Override
     public void run() {
 
-        AllData.status = "Starting ThreadCheckWaitingTasks...";
-        AllData.updateAllStatus();
+        AllData.updateAllStatus("Starting ThreadCheckWaitingTasks...");
 
         try {
             if (!AllData.waitingTasks.isEmpty()) {
-
-                AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - Список неисполненных обновлений базы составляет " + AllData.waitingTasks.size() + " задач. Активирую неисполненные обновления.";
-                AllData.updateAllStatus();
+                AllData.updateAllStatus("ThreadCheckWaitingTasks - Список неисполненных обновлений базы составляет " + AllData.waitingTasks.size() + " задач. Активирую неисполненные обновления.");
                 AllData.logger.info(AllData.status);
 
                 int counter = 0;
@@ -39,15 +36,13 @@ public class ThreadCheckWaitingTasks implements Runnable {
                 Loader loader = new Loader();
                 loader.saveWatingTasks();
 
-                AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - активировано " + counter + " задач из списка неисполненных обновлений базы.";
-                AllData.updateAllStatus();
+                AllData.updateAllStatus("ThreadCheckWaitingTasks - активировано " + counter + " задач из списка неисполненных обновлений базы.");
                 AllData.logger.info(AllData.status);
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            AllData.status = ThreadCheckWaitingTasks.class.getSimpleName() + " - Не удалось заново запустить невыполненные задачи: выброшено исключение.";
-            AllData.updateAllStatus();
+            AllData.updateAllStatus("ThreadCheckWaitingTasks - Не удалось заново запустить невыполненные задачи: выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
