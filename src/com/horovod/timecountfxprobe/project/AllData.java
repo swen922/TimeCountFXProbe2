@@ -75,6 +75,8 @@ public class AllData {
     public static String httpGetUserID = httpAddress + "/userid";
     public static String httpGlobalUpdate = httpAddress + "/globalupdate";
     public static String httpSendBaseToServer = httpAddress + "/sendbasetoserver";
+    public static String httpSetProjectID = httpAddress + "/setprojectid";
+
 
 
 
@@ -118,7 +120,6 @@ public class AllData {
 
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();
-    public static BlockingQueue<Runnable> tasksQueue = new LinkedBlockingQueue<>();
 
     // TODO для начала будем хранить в списке не абстрактные Task, а наши SerializeWrapper'ы
     public static BlockingQueue<SerializeWrapper> waitingTasks = new LinkedBlockingQueue<>();

@@ -134,7 +134,7 @@ public class ThreadUpdate extends Task<Boolean> {
             AllData.updateAllStatus("ThreadUpdate - Ошибка обновления. Полученный объект SerializeWrapper равен null.");
             AllData.logger.error(AllData.status);
         }
-        
+
         /** Если ответ отрицательный, то кладем объект SerializeWrapper в список неисполненных задач AllData.WaitingTasks */
         if (!result) {
             if (!AllData.waitingTasks.contains(serializeWrapper)) {

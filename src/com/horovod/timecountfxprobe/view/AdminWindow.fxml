@@ -157,6 +157,13 @@
                               <Button fx:id="loaderLoad111" alignment="CENTER" mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Check Waiting" textAlignment="CENTER" />
                            </children>
                         </VBox>
+                        <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Промежутки проверок (сек.)" textAlignment="CENTER" wrapText="true" />
+                              <TextField alignment="CENTER" promptText="Для Global Update" />
+                              <TextField alignment="CENTER" promptText="Для Check Waiting" />
+                           </children>
+                        </VBox>
                         <Separator orientation="VERTICAL" />
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>

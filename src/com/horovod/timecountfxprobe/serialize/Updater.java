@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
-import com.horovod.timecountfxprobe.threads.ThreadGetProjectID;
-import com.horovod.timecountfxprobe.threads.ThreadGetUserID;
-import com.horovod.timecountfxprobe.threads.ThreadUpdate;
+import com.horovod.timecountfxprobe.threads.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -26,7 +24,9 @@ import java.util.concurrent.*;
 
 public class Updater {
 
-    private static final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, AllData.tasksQueue);
+    public static final BlockingQueue<Runnable> tasksQueue = new LinkedBlockingQueue<>();
+
+    private static final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, tasksQueue);
     //private static ExecutorService service = Executors.newFixedThreadPool(1);
 
     private static final ScheduledExecutorService repeatWaitingTaskService = Executors.newSingleThreadScheduledExecutor();
@@ -110,7 +110,7 @@ public class Updater {
         try {
             resultFuture = service.submit(new ThreadGetProjectID());
         } catch (Exception e) {
-            AllData.updateAllStatus("Updater.getProjectID - Ошибка выполнения новой нити. Выброшено исключение.");
+            AllData.updateAllStatus("Updater.getProjectID - Ошибка выполнения новой нити ThreadGetProjectID. Выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
             return null;
@@ -135,12 +135,43 @@ public class Updater {
         return result;
     }
 
+
+    public static synchronized String setServerProjectID(int newProjectID) {
+        String result = "false";
+        Future<String> resultFuture = null;
+        try {
+            resultFuture = service.submit(new ThreadSetServerProjectID(newProjectID));
+        } catch (Exception e) {
+            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка выполнения новой нити ThreadSetServerProjectID. Выброшено исключение.");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+
+        try {
+            result = resultFuture.get(30, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка изменения счетчика ID-номеров проектов. Выброшено исключение InterruptedException");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка изменения счетчика ID-номеров проектов. Выброшено исключение ExecutionException");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (TimeoutException e) {
+            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка изменения счетчика ID-номеров проектов. Выброшено исключение TimeoutException");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+        return result;
+    }
+
+
     public static synchronized Integer getUserID() {
         Future<Integer> resultFuture = null;
         try {
             resultFuture = service.submit(new ThreadGetUserID());
         } catch (Exception e) {
-            AllData.updateAllStatus("Updater.getUserID - Ошибка выполнения новой нити. Выброшено исключение.");
+            AllData.updateAllStatus("Updater.getUserID - Ошибка выполнения новой нити ThreadGetUserID. Выброшено исключение.");
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
             return null;
@@ -203,6 +234,9 @@ public class Updater {
 
         return false;
     }
+
+
+
 
     public String getJsonString(Object object) {
         String jsonSerialize = "";
