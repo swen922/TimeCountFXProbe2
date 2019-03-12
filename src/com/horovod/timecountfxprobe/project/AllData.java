@@ -75,7 +75,10 @@ public class AllData {
     public static String httpGetUserID = httpAddress + "/userid";
     public static String httpGlobalUpdate = httpAddress + "/globalupdate";
     public static String httpSendBaseToServer = httpAddress + "/sendbasetoserver";
+    public static String httpGetBaseFromServer = httpAddress + "/getbasefromserver";
     public static String httpSetProjectID = httpAddress + "/setprojectid";
+    public static String httpSetUserID = httpAddress + "/setuserid";
+
 
 
 

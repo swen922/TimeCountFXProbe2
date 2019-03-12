@@ -2,10 +2,8 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Loader;
-import com.horovod.timecountfxprobe.threads.ThreadSendBaseToServer;
-import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
-import com.horovod.timecountfxprobe.threads.ThreadSetServerProjectID;
-import com.horovod.timecountfxprobe.threads.ThreadSetServerUserID;
+import com.horovod.timecountfxprobe.serialize.Updater;
+import com.horovod.timecountfxprobe.threads.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
@@ -23,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 
 public class AdminWindowController {
 
@@ -140,7 +139,7 @@ public class AdminWindowController {
     private void initStatistcTextFields() {
         this.userListSizeLabel.setText(String.valueOf(AllUsers.getUsers().size()));
         this.projectListSizeLabel.setText(String.valueOf(AllData.getAllProjects().size()));
-        this.taskQueueSizeLabel.setText(String.valueOf(AllData.tasksQueue.size()));
+        this.taskQueueSizeLabel.setText(String.valueOf(Updater.tasksQueue.size()));
         this.waitingTaskSizeLabel.setText(String.valueOf(AllData.waitingTasks.size()));
     }
 
@@ -225,28 +224,109 @@ public class AdminWindowController {
     }
 
     public void handleSetCurrentIDProjectsButton() {
-        ThreadSetServerProjectID threadSetServerProjectID = new ThreadSetServerProjectID();
-        threadSetServerProjectID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                initProjectIDTextField();
+        setCurrentIDProjectsButton.setDisable(true);
+        int num = 0;
+        String numString = currentIDprojectsTextField.getText();
+        if (numString != null && !numString.isEmpty()) {
+            try {
+                num = Integer.parseInt(numString);
+            } catch (NumberFormatException e) {
+
             }
-        });
+        }
+
+        if (num != 0) {
+            AllData.taskForProgressBar = new ThreadSetServerProjectID(num);
+            AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent event) {
+                    setCurrentIDProjectsButton.setDisable(false);
+                    initProjectIDTextField();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Нумерация проектов изменена");
+                    alert.setHeaderText("Установлен новый текущий номер в нумерации проектов = " + AllData.createProjectID.get());
+                    alert.showAndWait();
+                }
+            });
+            AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+        }
     }
 
     public void handleSetCurrentUDUsersButton() {
-        ThreadSetServerUserID threadSetServerUserID = new ThreadSetServerUserID();
-        threadSetServerUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                initUserIDTextField();
+        setCurrentIDUsersButton.setDisable(true);
+        int num = 0;
+        String numString = currentIDUsersTextField.getText();
+        if (numString != null && !numString.isEmpty()) {
+            try {
+                num = Integer.parseInt(numString);
+            } catch (NumberFormatException e) {
+
             }
-        });
+        }
+
+        if (num != 0) {
+            AllData.taskForProgressBar = new ThreadSetServerUserID(num);
+            AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent event) {
+                    setCurrentIDUsersButton.setDisable(false);
+                    initUserIDTextField();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Нумерация юзеров изменена");
+                    alert.setHeaderText("Установлен новый текущий номер в нумерации юзеров = " + AllUsers.createUserID.get());
+                    alert.showAndWait();
+                }
+            });
+            AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+        }
     }
 
     public void handleSendBaseToServerButton() {
+        sendBaseToServerButton.setDisable(true);
         AllData.taskForProgressBar = new ThreadSendBaseToServer();
+        AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                sendBaseToServerButton.setDisable(false);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("База на сервере обновлена");
+                alert.setHeaderText("Локальная база данных успешно отправлена на сервер.");
+                alert.showAndWait();
+            }
+        });
         AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+    }
+
+
+    public void handleGetBaseFromServerButton() {
+
+        getBaseFromServerButton.setDisable(true);
+
+        String download = AllData.pathToDownloads;
+        String name = "/base_" + AllData.formatDateTime(LocalDateTime.now()) + ".xml";
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML file", "*.xml");
+        chooser.getExtensionFilters().add(extFilter);
+        chooser.setInitialDirectory(new File(download));
+        chooser.setInitialFileName(name);
+        File file = chooser.showSaveDialog(AllData.primaryStage);
+
+        if (file != null) {
+            AllData.taskForProgressBar = new ThreadGetBaseFromServer(file);
+            AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+                @Override
+                public void handle(WorkerStateEvent event) {
+                    getBaseFromServerButton.setDisable(false);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("База с сервера получена");
+                    alert.setHeaderText("Серверная база данных успешно скачана с сервера.");
+                    alert.setContentText("Файл находится в указанной вами папке. \nЕго название начинается с \"base_\" ... ");
+                    alert.showAndWait();
+                }
+            });
+            AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+        }
     }
 
 

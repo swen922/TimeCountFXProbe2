@@ -136,36 +136,6 @@ public class Updater {
     }
 
 
-    public static synchronized String setServerProjectID(int newProjectID) {
-        String result = "false";
-        Future<String> resultFuture = null;
-        try {
-            resultFuture = service.submit(new ThreadSetServerProjectID(newProjectID));
-        } catch (Exception e) {
-            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка выполнения новой нити ThreadSetServerProjectID. Выброшено исключение.");
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        }
-
-        try {
-            result = resultFuture.get(30, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка изменения счетчика ID-номеров проектов. Выброшено исключение InterruptedException");
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка изменения счетчика ID-номеров проектов. Выброшено исключение ExecutionException");
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        } catch (TimeoutException e) {
-            AllData.updateAllStatus("Updater.setServerProjectID - Ошибка изменения счетчика ID-номеров проектов. Выброшено исключение TimeoutException");
-            AllData.logger.error(AllData.status);
-            AllData.logger.error(e.getMessage(), e);
-        }
-        return result;
-    }
-
-
     public static synchronized Integer getUserID() {
         Future<Integer> resultFuture = null;
         try {

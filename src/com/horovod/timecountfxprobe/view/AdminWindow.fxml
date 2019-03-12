@@ -74,7 +74,7 @@
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" minHeight="30.0" prefWidth="140.0" text="Отправить / скачать базу на сервер" textAlignment="CENTER" wrapText="true" />
                               <Button fx:id="sendBaseToServerButton" mnemonicParsing="false" onAction="#handleSendBaseToServerButton" prefWidth="140.0" text="Отправить..." />
-                              <Button mnemonicParsing="false" prefWidth="140.0" text="Скачать..." />
+                              <Button fx:id="getBaseFromServerButton" mnemonicParsing="false" onAction="#handleGetBaseFromServerButton" prefWidth="140.0" text="Скачать..." />
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
@@ -138,9 +138,9 @@
                      <children>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
-                              <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Загрузить / получить базу в / из клиента" textAlignment="CENTER" wrapText="true" />
-                              <Button mnemonicParsing="false" prefWidth="140.0" text="Загрузить" />
-                              <Button mnemonicParsing="false" prefWidth="140.0" text="Получить" />
+                              <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Юзеры и проекты" textAlignment="CENTER" wrapText="true" />
+                              <Button fx:id="createUserButton" mnemonicParsing="false" onAction="#handleCreateUserButton" prefWidth="140.0" text="Создать юзера..." />
+                              <Button fx:id="createProjectButton" mnemonicParsing="false" prefWidth="140.0" text="Создать проект..." />
                            </children>
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
@@ -152,7 +152,7 @@
                         </VBox>
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
-                              <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Проверки" textAlignment="CENTER" wrapText="true" />
+                              <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Проверки / загрузки" textAlignment="CENTER" wrapText="true" />
                               <Button fx:id="loaderSave111" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="140.0" text="Global Update" textAlignment="CENTER" />
                               <Button fx:id="loaderLoad111" alignment="CENTER" mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Check Waiting" textAlignment="CENTER" />
                            </children>
@@ -178,14 +178,6 @@
                               <RadioButton mnemonicParsing="false" text="Юзеры и пароли" />
                               <RadioButton mnemonicParsing="false" text="Проекты" />
                               <RadioButton mnemonicParsing="false" text="Рабочее время" />
-                           </children>
-                        </VBox>
-                        <Separator orientation="VERTICAL" />
-                        <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
-                           <children>
-                              <Label alignment="CENTER" contentDisplay="CENTER" minHeight="40.0" prefWidth="140.0" text="Юзеры и проекты" textAlignment="CENTER" wrapText="true" />
-                              <Button fx:id="createUserButton" mnemonicParsing="false" onAction="#handleCreateUserButton" prefWidth="140.0" text="Создать юзера..." />
-                              <Button fx:id="createProjectButton" mnemonicParsing="false" prefWidth="140.0" text="Создать проект..." />
                            </children>
                         </VBox>
                      </children>

@@ -382,9 +382,7 @@ public class CountSalaryWindowController {
                     writer.flush();
                 }
                 catch (Exception ex) {
-                    ex.printStackTrace();
                     AllData.logger.error(ex.getMessage(), ex);
-
                 }
             }
         }

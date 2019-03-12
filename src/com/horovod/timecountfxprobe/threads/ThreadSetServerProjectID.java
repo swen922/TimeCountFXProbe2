@@ -19,7 +19,7 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
 
     private int newProjectID;
 
-    protected ThreadSetServerProjectID(int newProjectID) {
+    public ThreadSetServerProjectID(int newProjectID) {
         this.newProjectID = newProjectID;
     }
 
@@ -30,7 +30,7 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
 
         User user = AllUsers.getOneUser(AllUsers.getCurrentUser());
 
-        IntegerLoginWrapper wrapper = new IntegerLoginWrapper(newProjectID, user.getNameLogin(), user.getSecurePassword());
+        IntegerLoginWrapper wrapper = new IntegerLoginWrapper(this.newProjectID, user.getNameLogin(), user.getSecurePassword());
         Updater updater = new Updater();
         String jsonString = updater.getJsonString(wrapper);
 
@@ -66,8 +66,17 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
                 inn.close();
 
                 String received = sb.toString();
+                int num = 0;
 
-                if (received.equalsIgnoreCase("true")) {
+                if (!received.startsWith("false")) {
+                    try {
+                        num = Integer.parseInt(received);
+                    } catch (NumberFormatException e) {
+
+                    }
+                }
+                if (num == newProjectID) {
+                    AllData.createProjectID.set(num);
                     AllData.updateAllStatus("ThreadSetServerProjectID - Новое значение счетчика проектов успешно установлено на сервере = " + newProjectID);
                     AllData.logger.info(AllData.status);
                     result = true;
