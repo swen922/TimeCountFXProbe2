@@ -17,7 +17,7 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
 
-        boolean result = false;
+        AllData.result = false;
 
         BaseToServerWrapper wrapper = new BaseToServerWrapper();
         Updater updater = new Updater();
@@ -59,9 +59,9 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
                 String received = sb.toString();
 
                 if (received.equalsIgnoreCase("true")) {
+                    AllData.result = true;
                     AllData.updateAllStatus("ThreadSendBaseToServer - База успешно отправлена на сервер.");
                     AllData.logger.info(AllData.status);
-                    result = true;
                 }
                 else if (received.equalsIgnoreCase("false pass")) {
                     AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Пароль пользователя неверен.");
@@ -93,6 +93,6 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
             AllData.updateAllStatus("ThreadSendBaseToServer - Ошибка отправки базы на сервер. Созданная JSON-строка пуста.");
             AllData.logger.error(AllData.status);
         }
-        return result;
+        return AllData.result;
     }
 }

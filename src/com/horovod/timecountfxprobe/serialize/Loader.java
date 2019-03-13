@@ -237,4 +237,38 @@ public class Loader {
         return false;
     }
 
+
+    public boolean save(ServerToClientWrapper wrapper, File file) {
+
+        try {
+
+            if (!file.exists()) {
+                Files.createFile(file.toPath());
+            }
+
+            JAXBContext context = JAXBContext.newInstance(ServerToClientWrapper.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            marshaller.marshal(wrapper, file);
+
+            AllData.updateAllStatus("Loader.save(ServerToClientWrapper wrapper, File file) - База успешно сохранена по указанному адресу.");
+            AllData.logger.info(AllData.status);
+
+
+            return true;
+
+        } catch (IOException e) {
+            AllData.updateAllStatus("Loader.save(ServerToClientWrapper wrapper, File file) -  - Не удалось записать базу в файл по указанному адресу: IOException");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        } catch (JAXBException e) {
+            AllData.updateAllStatus("Loader.save(ServerToClientWrapper wrapper, File file) -  - Не удалось записать базу в файл по указанному адресу. Ошибка сериализации в XML: JAXBException");
+            AllData.logger.error(AllData.status);
+            AllData.logger.error(e.getMessage(), e);
+        }
+
+        return false;
+    }
+
 }

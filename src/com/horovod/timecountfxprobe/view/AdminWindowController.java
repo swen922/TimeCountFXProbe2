@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class AdminWindowController {
@@ -45,9 +46,9 @@ public class AdminWindowController {
     @FXML
     private Button getBaseFromServerButton;
     @FXML
-    private Button loaderSaveOnServerButton;
-    @FXML
     private Button loaderLoadOnServerButton;
+    @FXML
+    private Button loaderSaveOnServerButton;
     @FXML
     private Button setHomeFolderOnServerButton;
     @FXML
@@ -224,6 +225,7 @@ public class AdminWindowController {
     }
 
     public void handleSetCurrentIDProjectsButton() {
+        AllData.result = false;
         setCurrentIDProjectsButton.setDisable(true);
         int num = 0;
         String numString = currentIDprojectsTextField.getText();
@@ -242,17 +244,30 @@ public class AdminWindowController {
                 public void handle(WorkerStateEvent event) {
                     setCurrentIDProjectsButton.setDisable(false);
                     initProjectIDTextField();
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Нумерация проектов изменена");
-                    alert.setHeaderText("Установлен новый текущий номер в нумерации проектов = " + AllData.createProjectID.get());
-                    alert.showAndWait();
+                    AllData.progressBarStage.close();
+
+                    if (AllData.result) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Нумерация проектов изменена");
+                        alert.setHeaderText("Установлен новый текущий номер в нумерации проектов = " + AllData.createProjectID.get());
+                        alert.showAndWait();
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Ошибка изенения нумерации проектов");
+                        alert.setHeaderText("Произошла ошибка при установке \nнового текущего номера в нумерации проектов.");
+                        alert.showAndWait();
+                    }
                 }
             });
-            AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+            AllData.mainApp.showProgressBarWindow();
+            Updater.update(AllData.taskForProgressBar);
+
         }
     }
 
     public void handleSetCurrentUDUsersButton() {
+        AllData.result = false;
         setCurrentIDUsersButton.setDisable(true);
         int num = 0;
         String numString = currentIDUsersTextField.getText();
@@ -271,39 +286,67 @@ public class AdminWindowController {
                 public void handle(WorkerStateEvent event) {
                     setCurrentIDUsersButton.setDisable(false);
                     initUserIDTextField();
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Нумерация юзеров изменена");
-                    alert.setHeaderText("Установлен новый текущий номер в нумерации юзеров = " + AllUsers.createUserID.get());
-                    alert.showAndWait();
+                    AllData.progressBarStage.close();
+
+                    if (AllData.result) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Нумерация юзеров изменена");
+                        alert.setHeaderText("Установлен новый текущий номер в нумерации юзеров = " + AllUsers.createUserID.get());
+                        alert.showAndWait();
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Ошибка изенения нумерации юзеров");
+                        alert.setHeaderText("Произошла ошибка при установке \nнового текущего номера в нумерации юзеров.");
+                        alert.showAndWait();
+                    }
+
                 }
             });
-            AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+            AllData.mainApp.showProgressBarWindow();
+            Updater.update(AllData.taskForProgressBar);
+
         }
     }
 
     public void handleSendBaseToServerButton() {
+        AllData.result = false;
         sendBaseToServerButton.setDisable(true);
+
         AllData.taskForProgressBar = new ThreadSendBaseToServer();
         AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
                 sendBaseToServerButton.setDisable(false);
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("База на сервере обновлена");
-                alert.setHeaderText("Локальная база данных успешно отправлена на сервер.");
-                alert.showAndWait();
+                AllData.progressBarStage.close();
+
+                if (AllData.result) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("База на сервере обновлена");
+                    alert.setHeaderText("Локальная база данных успешно отправлена на сервер.");
+                    alert.showAndWait();
+                }
+                else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Ошибка отправки базы на сервер");
+                    alert.setHeaderText("Произошла ошибка при отправке базы на сервер.");
+                    alert.showAndWait();
+                }
             }
         });
-        AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+        AllData.mainApp.showProgressBarWindow();
+        Updater.update(AllData.taskForProgressBar);
+
     }
 
 
     public void handleGetBaseFromServerButton() {
 
+        AllData.result = false;
         getBaseFromServerButton.setDisable(true);
 
         String download = AllData.pathToDownloads;
-        String name = "/base_" + AllData.formatDateTime(LocalDateTime.now()) + ".xml";
+        String name = "base_from_server_" + AllData.formatDate(LocalDate.now()) + ".xml";
 
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML file", "*.xml");
@@ -318,16 +361,87 @@ public class AdminWindowController {
                 @Override
                 public void handle(WorkerStateEvent event) {
                     getBaseFromServerButton.setDisable(false);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("База с сервера получена");
-                    alert.setHeaderText("Серверная база данных успешно скачана с сервера.");
-                    alert.setContentText("Файл находится в указанной вами папке. \nЕго название начинается с \"base_\" ... ");
-                    alert.showAndWait();
+                    AllData.progressBarStage.close();
+
+                    if (AllData.result) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("База с сервера получена");
+                        alert.setHeaderText("Серверная база данных успешно скачана с сервера.");
+                        alert.setContentText("Файл находится в указанной вами папке.");
+                        alert.showAndWait();
+                    }
+                    else {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Ошибка получения базы с сервера");
+                        alert.setHeaderText("Произошла ошибка при получении базы от сервера.");
+                        alert.showAndWait();
+                    }
                 }
             });
-            AllData.mainApp.showProgressBarWindow(AllData.primaryStage);
+            AllData.mainApp.showProgressBarWindow();
+            Updater.update(AllData.taskForProgressBar);
         }
     }
+
+    public void handleReadBaseOnServer() {
+        AllData.result = false;
+        loaderLoadOnServerButton.setDisable(true);
+
+        AllData.taskForProgressBar = new ThreadReadBaseOnServer();
+        AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                loaderLoadOnServerButton.setDisable(false);
+                AllData.progressBarStage.close();
+
+                if (AllData.result) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Сервер прочитал базу с диска");
+                    alert.setHeaderText("Сервер прочитал текущую базу с диска");
+                    alert.showAndWait();
+                }
+                else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Ошибка чтения базы сервером");
+                    alert.setHeaderText("Произошла ошибка при попытке чтения базы сервером.");
+                    alert.showAndWait();
+                }
+            }
+        });
+        AllData.mainApp.showProgressBarWindow();
+        Updater.update(AllData.taskForProgressBar);
+    }
+
+
+    public void handleSaveBaseOnServer() {
+        AllData.result = false;
+        loaderSaveOnServerButton.setDisable(true);
+
+        AllData.taskForProgressBar = new ThreadSaveBaseOnServer();
+        AllData.taskForProgressBar.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent event) {
+                loaderSaveOnServerButton.setDisable(false);
+                AllData.progressBarStage.close();
+
+                if (AllData.result) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Сервер записал базу на диск");
+                    alert.setHeaderText("Сервер записал текущую базу на диск");
+                    alert.showAndWait();
+                }
+                else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Ошибка записи базы сервером");
+                    alert.setHeaderText("Произошла ошибка при попытке записи базы сервером на диск.");
+                    alert.showAndWait();
+                }
+            }
+        });
+        AllData.mainApp.showProgressBarWindow();
+        Updater.update(AllData.taskForProgressBar);
+    }
+
 
 
 

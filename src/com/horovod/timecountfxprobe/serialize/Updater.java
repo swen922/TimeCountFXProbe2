@@ -91,6 +91,36 @@ public class Updater {
         }
     }
 
+    /*public static String updateString(Task<String> task) {
+
+        String result = "false";
+        synchronized (service) {
+            try {
+                Future<String> resultFuture = (Future<String>) service.submit(task);
+                try {
+                    result = resultFuture.get(30, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    AllData.updateAllStatus("Updater.updateString(Task<String> task) - Ошибка выполнения новой нити. Выброшено исключение.");
+                    AllData.logger.error(AllData.status);
+                    AllData.logger.error(e.getMessage(), e);
+                } catch (ExecutionException e) {
+                    AllData.updateAllStatus("Updater.updateString(Task<String> task) - Ошибка выполнения новой нити. Выброшено исключение.");
+                    AllData.logger.error(AllData.status);
+                    AllData.logger.error(e.getMessage(), e);
+                } catch (TimeoutException e) {
+                    AllData.updateAllStatus("Updater.updateString(Task<String> task) - Ошибка выполнения новой нити. Выброшено исключение.");
+                    AllData.logger.error(AllData.status);
+                    AllData.logger.error(e.getMessage(), e);
+                }
+            } catch (Exception e) {
+                AllData.updateAllStatus("Updater.updateString(Task<String> task) - Ошибка выполнения новой нити. Выброшено исключение.");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
+        }
+        return result;
+    }*/
+
     public static void update(Runnable runnable) {
 
         synchronized (service) {
@@ -223,7 +253,7 @@ public class Updater {
 
     public String getReceivedFromServer(String httpAddress) {
 
-        String result = "";
+        String result = "false";
 
         try {
             User user = AllUsers.getOneUser(AllUsers.getCurrentUser());

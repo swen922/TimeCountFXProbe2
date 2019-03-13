@@ -26,7 +26,7 @@ public class ThreadSetServerUserID extends Task<Boolean> {
     @Override
     protected Boolean call() throws Exception {
 
-        boolean result = false;
+        AllData.result = false;
 
         User user = AllUsers.getOneUser(AllUsers.getCurrentUser());
 
@@ -76,10 +76,10 @@ public class ThreadSetServerUserID extends Task<Boolean> {
                     }
                 }
                 if (num == newUserID) {
+                    AllData.result = true;
                     AllUsers.createUserID.set(num);
                     AllData.updateAllStatus("ThreadSetServerUserID - Новое значение счетчика юзеров успешно установлено на сервере = " + newUserID);
                     AllData.logger.info(AllData.status);
-                    result = true;
                 }
             }
             else {
@@ -92,6 +92,6 @@ public class ThreadSetServerUserID extends Task<Boolean> {
             AllData.logger.error(AllData.status);
         }
 
-        return result;
+        return AllData.result;
     }
 }

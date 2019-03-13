@@ -78,6 +78,9 @@ public class AllData {
     public static String httpGetBaseFromServer = httpAddress + "/getbasefromserver";
     public static String httpSetProjectID = httpAddress + "/setprojectid";
     public static String httpSetUserID = httpAddress + "/setuserid";
+    public static String httpReadBaseOnServer = httpAddress + "/readbase";
+    public static String httpSaveBaseOnServer = httpAddress + "/savebase";
+
 
 
 
@@ -120,6 +123,8 @@ public class AllData {
     public static DeleteLoggedUsersWindowController deleteLoggedUsersWindowController;
     public static Task taskForProgressBar;
     public static Stage progressBarStage;
+    public static ProgressBarWindowController progressBarWindowController;
+    public static boolean result = false;
 
     public static Map<Integer, Stage> openInfoProjectStages = new ConcurrentHashMap<>();
     public static Map<Integer, InfoProjectWindowController> infoProjectWindowControllers = new ConcurrentHashMap<>();

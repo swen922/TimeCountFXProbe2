@@ -80,8 +80,8 @@
                         <VBox alignment="TOP_CENTER" maxHeight="125.0" maxWidth="150.0" spacing="10.0">
                            <children>
                               <Label alignment="CENTER" contentDisplay="CENTER" prefWidth="140.0" text="Прочитать / записать текущую базу" textAlignment="CENTER" wrapText="true" />
-                              <Button mnemonicParsing="false" onAction="#handleLoaderLoadButton" prefWidth="140.0" text="Loader.load" />
-                              <Button mnemonicParsing="false" onAction="#handleLoaderSaveButton" prefWidth="140.0" text="Loader.save" />
+                              <Button fx:id="loaderLoadOnServerButton" mnemonicParsing="false" onAction="#handleReadBaseOnServer" prefWidth="140.0" text="Loader.load" />
+                              <Button fx:id="loaderSaveOnServerButton" mnemonicParsing="false" onAction="#handleSaveBaseOnServer" prefWidth="140.0" text="Loader.save" />
                            </children>
                         </VBox>
                      </children>
@@ -92,7 +92,7 @@
                   <TextField fx:id="homeFolderOnServerTextField" editable="false" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0" />
                   <Label layoutX="52.0" layoutY="162.0" text="Http или IP-адрес сервера" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="205.0" />
                   <Button layoutX="30.0" layoutY="190.0" mnemonicParsing="false" onAction="#handleSetHomeFolderButton" prefWidth="140.0" text="Установить адрес" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="230.0" />
-                  <TextField fx:id="HTTPAddressServerTextField" editable="false" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0" />
+                  <TextField fx:id="HTTPAddressServerTextField" layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" prefHeight="27.0" prefWidth="1008.0" AnchorPane.leftAnchor="170.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="230.0" />
                </children>
             </AnchorPane>
             <Separator prefWidth="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="335.0" />

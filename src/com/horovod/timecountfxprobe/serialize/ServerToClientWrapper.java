@@ -7,10 +7,12 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.user.*;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 
 @JsonAutoDetect
+@XmlRootElement(name = "servertoclientwrapper")
 public class ServerToClientWrapper {
 
     // Передаваемые поля
@@ -38,7 +40,7 @@ public class ServerToClientWrapper {
 
     public ServerToClientWrapper() {
 
-        this.allProjectsIdNumber = AllData.createProjectID.get();
+        /*this.allProjectsIdNumber = AllData.createProjectID.get();
         this.IDCounterAllUsers = AllUsers.createUserID.get();
         this.allProjects.putAll(AllData.getAllProjects());
         for (User usr : AllUsers.getUsers().values()) {
@@ -58,9 +60,10 @@ public class ServerToClientWrapper {
                 Surveyor sur = (Surveyor) usr;
                 this.saveSurveyors.put(sur.getIDNumber(), sur);
             }
-        }
+        }*/
     }
 
+    @XmlElement(name = "allprojectsidnumber")
     public int getAllProjectsIdNumber() {
         return allProjectsIdNumber;
     }
@@ -69,6 +72,7 @@ public class ServerToClientWrapper {
         this.allProjectsIdNumber = allProjectsIdNumber;
     }
 
+    @XmlElement(name = "allusersidcounter")
     public int getIDCounterAllUsers() {
         return IDCounterAllUsers;
     }
@@ -77,6 +81,7 @@ public class ServerToClientWrapper {
         this.IDCounterAllUsers = IDCounterAllUsers;
     }
 
+    @XmlElement(name = "allprojects")
     public HashMap<Integer, Project> getAllProjects() {
         return allProjects;
     }
@@ -85,6 +90,7 @@ public class ServerToClientWrapper {
         this.allProjects = allProjects;
     }
 
+    @XmlElement(name = "designers")
     public HashMap<Integer, Designer> getSaveDesigners() {
         return saveDesigners;
     }
@@ -93,6 +99,7 @@ public class ServerToClientWrapper {
         this.saveDesigners = saveDesigners;
     }
 
+    @XmlElement(name = "managers")
     public HashMap<Integer, Manager> getSaveManagers() {
         return saveManagers;
     }
@@ -101,6 +108,7 @@ public class ServerToClientWrapper {
         this.saveManagers = saveManagers;
     }
 
+    @XmlElement(name = "admins")
     public HashMap<Integer, Admin> getSaveAdmins() {
         return saveAdmins;
     }
@@ -109,6 +117,7 @@ public class ServerToClientWrapper {
         this.saveAdmins = saveAdmins;
     }
 
+    @XmlElement(name = "surveyors")
     public HashMap<Integer, Surveyor> getSaveSurveyors() {
         return saveSurveyors;
     }

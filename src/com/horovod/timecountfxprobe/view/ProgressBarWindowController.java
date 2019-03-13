@@ -13,29 +13,12 @@ import javafx.stage.Stage;
 
 public class ProgressBarWindowController {
 
-    private Task task;
-
     @FXML
     private ProgressBar progressBar;
 
     @FXML
     public void initialize() {
-
-        task = AllData.taskForProgressBar;
-
-        task.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
-            @Override
-            public void handle(WorkerStateEvent event) {
-                progressBar.progressProperty().unbind();
-                AllData.progressBarStage.close();
-            }
-        });
-
         progressBar.progressProperty().unbind();
-        progressBar.progressProperty().bind(task.progressProperty());
-
-        //Updater.getService().submit(task);
-        Updater.update(task);
-
+        progressBar.progressProperty().bind(AllData.taskForProgressBar.progressProperty());
     }
 }

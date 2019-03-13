@@ -26,7 +26,7 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
     @Override
     public Boolean call() throws Exception {
 
-        boolean result = false;
+        AllData.result = false;
 
         User user = AllUsers.getOneUser(AllUsers.getCurrentUser());
 
@@ -76,10 +76,10 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
                     }
                 }
                 if (num == newProjectID) {
+                    AllData.result = true;
                     AllData.createProjectID.set(num);
                     AllData.updateAllStatus("ThreadSetServerProjectID - Новое значение счетчика проектов успешно установлено на сервере = " + newProjectID);
                     AllData.logger.info(AllData.status);
-                    result = true;
                 }
             }
             else {
@@ -92,6 +92,6 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
             AllData.logger.error(AllData.status);
         }
 
-        return result;
+        return AllData.result;
     }
 }

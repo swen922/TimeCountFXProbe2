@@ -320,7 +320,7 @@ public class MainApp extends Application {
 
     }
 
-    public void showProgressBarWindow(Stage masterStage) {
+    public void showProgressBarWindow() {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(MainApp.class.getResource("view/ProgressBarWindow.fxml"));
@@ -328,12 +328,12 @@ public class MainApp extends Application {
 
             AllData.progressBarStage = new Stage();
             AllData.progressBarStage.setTitle("Работаю...");
-            AllData.progressBarStage.initOwner(masterStage);
+            AllData.progressBarStage.initOwner(primaryStage);
             AllData.progressBarStage.initModality(Modality.WINDOW_MODAL);
             Scene scene = new Scene(progressPane);
             AllData.progressBarStage.setScene(scene);
 
-            ProgressBarWindowController controller = loader.getController();
+            AllData.progressBarWindowController = loader.getController();
 
             AllData.progressBarStage.show();
 
@@ -342,6 +342,7 @@ public class MainApp extends Application {
             AllData.logger.error(e.getMessage(), e);
         }
     }
+
 
     public void showCountSalaryWindow() {
         try {
