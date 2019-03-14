@@ -15,14 +15,14 @@ public class ThreadCheckWaitingTasks implements Runnable {
     @Override
     public void run() {
 
-        AllData.updateAllStatus("Starting ThreadCheckWaitingTasks...");
+        int counter = 0;
+
+        //AllData.updateAllStatus("Starting ThreadCheckWaitingTasks...");
 
         try {
             if (!AllData.waitingTasks.isEmpty()) {
                 AllData.updateAllStatus("ThreadCheckWaitingTasks - Список неисполненных обновлений базы составляет " + AllData.waitingTasks.size() + " задач. Активирую неисполненные обновления.");
                 AllData.logger.info(AllData.status);
-
-                int counter = 0;
 
                 for (int i = 0; i < AllData.waitingTasks.size(); i++) {
                     SerializeWrapper wrapper = AllData.waitingTasks.poll();
@@ -46,5 +46,6 @@ public class ThreadCheckWaitingTasks implements Runnable {
             AllData.logger.error(AllData.status);
             AllData.logger.error(e.getMessage(), e);
         }
+        AllData.updateAllStatus("ThreadCheckWaitingTasks завершен. Количество неисполненных задач в списке было = " + counter);
     }
 }

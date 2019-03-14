@@ -13,10 +13,10 @@ public class ThreadStartCheckingWaitingTasks extends Task<Boolean> {
 
         try {
             ThreadCheckWaitingTasks task = new ThreadCheckWaitingTasks();
-            Updater.getRepeatWaitingTaskService().scheduleAtFixedRate(task, 20, 30, TimeUnit.SECONDS);
+            Updater.getRepeatWaitingTaskService().scheduleAtFixedRate(task, 20, AllData.checkWaitingPeriod, TimeUnit.SECONDS);
 
             ThreadGlobalUpdate globalUpdate = new ThreadGlobalUpdate();
-            Updater.getGlobalUpdateTaskService().scheduleAtFixedRate(globalUpdate, 30, 120, TimeUnit.SECONDS);
+            Updater.getGlobalUpdateTaskService().scheduleAtFixedRate(globalUpdate, 30, AllData.globalUpdatePeriod, TimeUnit.SECONDS);
 
             return true;
         } catch (Exception e) {

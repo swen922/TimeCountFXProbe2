@@ -45,6 +45,14 @@ public class AllDataWrapper {
 
     private List<String> saveUsersLogged = new ArrayList<>();
 
+    private String savedHttpAddress;
+
+    @XmlElement(name = "globalupdateperiod")
+    private int globalUpdatePeriod;
+
+    @XmlElement(name = "checkwaitingperiod")
+    private int checkWaitingPeriod;
+
 
     public AllDataWrapper() {
 
@@ -55,7 +63,6 @@ public class AllDataWrapper {
 
         for (User usr : AllUsers.getUsers().values()) {
             if (usr.getRole().equals(Role.DESIGNER)) {
-                //System.out.println(usr);
                 Designer des = (Designer) usr;
                 this.saveDesigners.put(des.getIDNumber(), des);
             }
@@ -72,10 +79,11 @@ public class AllDataWrapper {
                 this.saveSurveyors.put(sur.getIDNumber(), sur);
             }
         }
-        //this.saveUsersPass.putAll(AllUsers.getUsersPass());
         this.currentUser = AllUsers.getCurrentUser();
         this.saveUsersLogged.addAll(AllUsers.getUsersLogged());
-
+        this.savedHttpAddress = new String(AllData.httpAddress);
+        this.globalUpdatePeriod = AllData.globalUpdatePeriod;
+        this.checkWaitingPeriod = AllData.checkWaitingPeriod;
     }
 
 
@@ -114,11 +122,6 @@ public class AllDataWrapper {
         return saveSurveyors;
     }
 
-    /*@XmlElement(name = "userspass")
-    public Map<Integer, SecurePassword> getSaveUsersPass() {
-        return saveUsersPass;
-    }*/
-
     //@XmlElement(name = "currentuser")
     public int getCurrentUser() {
         return currentUser;
@@ -127,5 +130,22 @@ public class AllDataWrapper {
     @XmlElement(name = "userslogged")
     public List<String> getSaveUsersLogged() {
         return saveUsersLogged;
+    }
+
+    @XmlElement(name = "savedhttpaddress")
+    public String getSavedHttpAddress() {
+        return savedHttpAddress;
+    }
+
+    public int getGlobalUpdatePeriod() {
+        return globalUpdatePeriod;
+    }
+
+    public int getCheckWaitingPeriod() {
+        return checkWaitingPeriod;
+    }
+
+    public void setSavedHttpAddress(String savedHttpAddress) {
+        this.savedHttpAddress = savedHttpAddress;
     }
 }

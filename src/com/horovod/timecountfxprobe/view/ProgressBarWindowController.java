@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class ProgressBarWindowController {
 
@@ -20,5 +21,14 @@ public class ProgressBarWindowController {
     public void initialize() {
         progressBar.progressProperty().unbind();
         progressBar.progressProperty().bind(AllData.taskForProgressBar.progressProperty());
+    }
+
+    private void initClosing() {
+        AllData.progressBarStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+
+            }
+        });
     }
 }

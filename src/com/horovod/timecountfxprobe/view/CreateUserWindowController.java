@@ -259,6 +259,14 @@ public class CreateUserWindowController {
 
             AllData.createUserWindow.close();
 
+            if (AllData.tableProjectsManagerController != null) {
+                AllData.tableProjectsManagerController.initializeTable();
+            }
+
+            if (AllData.tableProjectsDesignerController != null) {
+                AllData.tableProjectsDesignerController.initializeTable();
+            }
+
             if (AllData.tableProjectsManagerController == null && AllData.adminWindowController == null) {
                 AllData.mainApp.showLoginWindowOnStart();
                 Updater.update(new ThreadStartCheckingWaitingTasks());

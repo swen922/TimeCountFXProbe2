@@ -112,6 +112,7 @@ public class Loader {
                 AllData.getActiveProjects().clear();
                 AllData.createProjectID.set(0);
                 AllData.setWorkSumProjects(0);
+                AllData.httpAddress = "";
 
                 AllUsers.getUsers().clear();
                 AllUsers.createUserID.set(0);
@@ -120,6 +121,10 @@ public class Loader {
 
                 AllUsers.createUserID.set(allDataWrapper.getIDCounterAllUsers());
                 AllData.createProjectID.set(allDataWrapper.getAllProjectsIdNumber());
+                AllData.httpAddress = allDataWrapper.getSavedHttpAddress();
+                AllData.rebuildHTTPAddresses();
+                AllData.globalUpdatePeriod = allDataWrapper.getGlobalUpdatePeriod();
+                AllData.checkWaitingPeriod = allDataWrapper.getCheckWaitingPeriod();
 
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveDesigners());
                 AllUsers.getUsers().putAll(allDataWrapper.getSaveManagers());

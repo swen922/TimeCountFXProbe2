@@ -261,7 +261,11 @@ public class CreateProjectWindowController {
 
             if (newID != null) {
                 Project result = AllData.createProject(newID, companyTextField.getText(), managerTextArea.getText(), descriptionTextArea.getText(), LocalDate.now());
-                AllData.tableProjectsManagerController.initializeTable();
+
+                if (AllData.tableProjectsManagerController != null) {
+                    AllData.tableProjectsManagerController.initializeTable();
+                }
+
                 if (AllData.staffWindowController != null) {
                     AllData.staffWindowController.initializeTable();
                 }

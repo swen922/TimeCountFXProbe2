@@ -13,19 +13,27 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static com.horovod.timecountfxprobe.serialize.Updater.getGlobalUpdateTaskService;
 
 public class AdminWindowController {
-
 
     // Server fields
 
@@ -49,14 +57,6 @@ public class AdminWindowController {
     private Button loaderLoadOnServerButton;
     @FXML
     private Button loaderSaveOnServerButton;
-    @FXML
-    private Button setHomeFolderOnServerButton;
-    @FXML
-    private TextField homeFolderOnServerTextField;
-    @FXML
-    private Button setHTTPAddressServerButton;
-    @FXML
-    private TextField HTTPAddressServerTextField;
 
 
     // Client fields
@@ -66,17 +66,21 @@ public class AdminWindowController {
     @FXML
     private Label waitingTaskSizeLabel;
     @FXML
-    private Button uploadBaseToClientButton;
+    private Button createUserButton;
     @FXML
-    private Button getBaseFromClientButton;
+    private Button createProjectButton;
     @FXML
-    private Button loaderSaveOnClientButton;
+    private Button loaderLoadButton;
     @FXML
-    private Button loaderLoadOnClientButton;
+    private Button loaderSaveButton;
     @FXML
-    private Button startGlobalUpdateFromServerButton;
+    private Button globalUpdateButton;
+    @FXML
+    private TextField globalUpdatePeriodTextField;
     @FXML
     private Button checkWaitingTasksButton;
+    @FXML
+    private TextField checkWaitingPeriodTextField;
     @FXML
     private Button importFromSQLButton;
     @FXML
@@ -88,13 +92,10 @@ public class AdminWindowController {
     @FXML
     private CheckBox timeCheckBox;
     @FXML
-    private Button setHomeFolderButton;
+    private Button setHttpAddressButton;
     @FXML
-    private TextField homeFolderTextField;
-    @FXML
-    private Button createUserButton;
-    @FXML
-    private Button createProjectButton;
+    private TextField httpAddressTextField;
+
 
 
     // Window fields
@@ -112,29 +113,13 @@ public class AdminWindowController {
 
 
     @FXML
-    private void initialize() {
-
-        AllData.resetStatus();
+    public void initialize() {
 
         initStatistcTextFields();
-        initProjectIDTextField();
-        initUserIDTextField();
-        initHomeFolderOnServer();
-        initHTTPAddressServer();
-        initHomeFolder();
+        initTextFields();
         initLoggedUsersChoiceBox();
         initClosing();
-    }
 
-    public void updateAdminWindow() {
-        initStatistcTextFields();
-        initProjectIDTextField();
-        initUserIDTextField();
-        initHomeFolderOnServer();
-        initHTTPAddressServer();
-        initHomeFolder();
-        initLoggedUsersChoiceBox();
-        initClosing();
     }
 
     private void initStatistcTextFields() {
@@ -143,25 +128,69 @@ public class AdminWindowController {
         this.taskQueueSizeLabel.setText(String.valueOf(Updater.tasksQueue.size()));
         this.waitingTaskSizeLabel.setText(String.valueOf(AllData.waitingTasks.size()));
     }
-
-    private void initProjectIDTextField() {
+    private void initTextFields() {
         this.currentIDprojectsTextField.setText(String.valueOf(AllData.createProjectID.get()));
-    }
-
-    private void initUserIDTextField() {
         this.currentIDUsersTextField.setText(String.valueOf(AllUsers.createUserID.get()));
-    }
+        this.globalUpdatePeriodTextField.setText(String.valueOf(AllData.globalUpdatePeriod));
+        this.checkWaitingPeriodTextField.setText(String.valueOf(AllData.checkWaitingPeriod));
+        this.httpAddressTextField.setText(AllData.httpAddress);
 
-    private void initHomeFolderOnServer() {
-        this.homeFolderOnServerTextField.setText(AllData.pathToHomeFolderOnServer);
-    }
+        this.globalUpdatePeriodTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode keyCode = event.getCode();
+                if (keyCode == KeyCode.ENTER) {
+                    String input = globalUpdatePeriodTextField.getText();
+                    int global = AllData.getIntFromText(AllData.globalUpdatePeriod, input);
+                    if (global > 0) {
+                        AllData.globalUpdatePeriod = global;
+                        globalUpdatePeriodTextField.requestFocus();
 
-    private void initHTTPAddressServer() {
-        this.HTTPAddressServerTextField.setText(AllData.httpAddress);
-    }
+                        Updater.getGlobalUpdateTaskService().shutdown();
+                        ScheduledExecutorService globalUpdateTaskService = Executors.newSingleThreadScheduledExecutor();
+                        Updater.setGlobalUpdateTaskService(globalUpdateTaskService);
+                        Updater.getGlobalUpdateTaskService().scheduleAtFixedRate(new ThreadGlobalUpdate(), 5, global, TimeUnit.SECONDS);
 
-    private void initHomeFolder() {
-        this.homeFolderTextField.setText(AllData.pathToHomeFolder);
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Период запуска изменен");
+                        alert.setHeaderText("Период запуска глобального обновления базы успешно изменен. \nНовый период = " + global + " секунд.");
+                        alert.showAndWait();
+                    }
+                    else {
+                        globalUpdatePeriodTextField.setText(String.valueOf(AllData.globalUpdatePeriod));
+                    }
+                }
+            }
+        });
+
+        this.checkWaitingPeriodTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                KeyCode keyCode = event.getCode();
+                if (keyCode == KeyCode.ENTER) {
+                    String input = checkWaitingPeriodTextField.getText();
+                    int check = AllData.getIntFromText(AllData.checkWaitingPeriod, input);
+                    if (check > 0) {
+                        AllData.checkWaitingPeriod = check;
+                        checkWaitingPeriodTextField.requestFocus();
+
+                        Updater.getRepeatWaitingTaskService().shutdown();
+                        ScheduledExecutorService repeatWaitingTaskService = Executors.newSingleThreadScheduledExecutor();
+                        Updater.setRepeatWaitingTaskService(repeatWaitingTaskService);
+                        Updater.getRepeatWaitingTaskService().scheduleAtFixedRate(new ThreadCheckWaitingTasks(), 5, check, TimeUnit.SECONDS);
+
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Период запуска изменен");
+                        alert.setHeaderText("Период запуска проверки неисполненных задач успешно изменен. \nНовый период = " + check + " секунд.");
+                        alert.showAndWait();
+
+                    }
+                    else {
+                        checkWaitingPeriodTextField.setText(String.valueOf(AllData.checkWaitingPeriod));
+                    }
+                }
+            }
+        });
     }
 
     public void initLoggedUsersChoiceBox() {
@@ -243,8 +272,10 @@ public class AdminWindowController {
                 @Override
                 public void handle(WorkerStateEvent event) {
                     setCurrentIDProjectsButton.setDisable(false);
-                    initProjectIDTextField();
-                    AllData.progressBarStage.close();
+                    initTextFields();
+                    if (AllData.progressBarStage.isShowing()) {
+                        AllData.progressBarStage.close();
+                    }
 
                     if (AllData.result) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -285,8 +316,10 @@ public class AdminWindowController {
                 @Override
                 public void handle(WorkerStateEvent event) {
                     setCurrentIDUsersButton.setDisable(false);
-                    initUserIDTextField();
-                    AllData.progressBarStage.close();
+                    initTextFields();
+                    if (AllData.progressBarStage.isShowing()) {
+                        AllData.progressBarStage.close();
+                    }
 
                     if (AllData.result) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -318,7 +351,9 @@ public class AdminWindowController {
             @Override
             public void handle(WorkerStateEvent event) {
                 sendBaseToServerButton.setDisable(false);
-                AllData.progressBarStage.close();
+                if (AllData.progressBarStage.isShowing()) {
+                    AllData.progressBarStage.close();
+                }
 
                 if (AllData.result) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -361,7 +396,9 @@ public class AdminWindowController {
                 @Override
                 public void handle(WorkerStateEvent event) {
                     getBaseFromServerButton.setDisable(false);
-                    AllData.progressBarStage.close();
+                    if (AllData.progressBarStage.isShowing()) {
+                        AllData.progressBarStage.close();
+                    }
 
                     if (AllData.result) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -443,67 +480,68 @@ public class AdminWindowController {
     }
 
 
-
-
     public void handleCreateUserButton() {
         AllData.mainApp.showCreateUserWindow();
     }
 
-
-
-
-    public void handleSetHomeFolderButton() {
-        String oldHome = homeFolderTextField.getText();
-        String newHome = "";
-        FileChooser chooser = new FileChooser();
-        //FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
-        //chooser.getExtensionFilters().add(extFilter);
-        chooser.setInitialDirectory(new File(oldHome));
-        File file = chooser.showSaveDialog(AllData.primaryStage);
-
-        if (file != null) {
-            newHome = file.getParent();
-        }
-        if (!newHome.isEmpty()) {
-            homeFolderTextField.setText(newHome);
-            AllData.pathToHomeFolder = newHome;
-        }
-
-        /*if (homeFolderTextField.getText() != null && !homeFolderTextField.getText().isEmpty()) {
-            String newHome = homeFolderTextField.getText();
-            File file = null;
-            try {
-                Files.createDirectories(Paths.get(newHome));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (file != null) {
-                AllData.pathToHomeFolder = newHome;
-            }
-        }*/
+    public void handleCreateProjectButton() {
+        AllData.mainApp.showCreateProjectWindow();
     }
 
-
-
-
-
-
+    public void handleLoaderLoadButton() {
+        loadBase();
+        initialize();
+    }
 
     public void handleLoaderSaveButton() {
         saveBase();
     }
 
-    public void handleLoaderLoadButton() {
-        loadBase();
-        updateAdminWindow();
+    public void handleGlobalUpdateButton() {
+        ThreadGlobalUpdate globalUpdate = new ThreadGlobalUpdate();
+        Updater.update(globalUpdate);
     }
+
+    public void handleCheckWaitingTasksButton() {
+        ThreadCheckWaitingTasks task = new ThreadCheckWaitingTasks();
+        Updater.update(task);
+    }
+
+    public void handleSetHttpAddressButton() {
+        String address = httpAddressTextField.getText();
+        if (address != null && !address.isEmpty()) {
+            AllData.httpAddress = address;
+            AllData.rebuildHTTPAddresses();
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Интернет-адрес сервера изменен");
+            alert.setHeaderText("Интернет-адрес сервера успешно изменен.");
+            alert.setContentText("Изменения вступят в силу после перезапуска программы");
+            alert.showAndWait();
+        }
+
+    }
+
+
+
+
 
     private void saveBase() {
         Loader loader = new Loader();
         boolean writed = loader.save();
-        if (!writed) {
+        if (writed) {
+            serializeOK();
+        }
+        else {
             alertSerialize();
         }
+    }
+
+    private void serializeOK() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("База успешно записана");
+        alert.setHeaderText("База успешно записана в файл");
+        alert.showAndWait();
     }
 
     private void alertSerialize() {
@@ -516,9 +554,19 @@ public class AdminWindowController {
     private void loadBase() {
         Loader loader = new Loader();
         boolean loaded = loader.load();
-        if (!loaded) {
+        if (loaded) {
+            deSerializeOK();
+        }
+        else {
             alertDeSerialize();
         }
+    }
+
+    private void deSerializeOK() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("База успешно прочитана");
+        alert.setHeaderText("База успешно прочитана из файла");
+        alert.showAndWait();
     }
 
     private void alertDeSerialize() {

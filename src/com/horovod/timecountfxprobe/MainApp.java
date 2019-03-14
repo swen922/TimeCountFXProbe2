@@ -40,8 +40,6 @@ public class MainApp extends Application {
         AllData.primaryStage = primaryStage;
         this.primaryStage.setTitle("Time Count System Probe FX -1");
 
-        AllData.resetStatus();
-
         Loader loader = new Loader();
         boolean readBase = loader.load();
         if (!readBase) {

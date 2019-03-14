@@ -29,24 +29,31 @@ public class Updater {
     private static final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, tasksQueue);
     //private static ExecutorService service = Executors.newFixedThreadPool(1);
 
-    private static final ScheduledExecutorService repeatWaitingTaskService = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledExecutorService repeatWaitingTaskService = Executors.newSingleThreadScheduledExecutor();
     //private static ScheduledExecutorService repeatUpdater = Executors.newScheduledThreadPool(5);
 
-    private static final ScheduledExecutorService globalUpdateTaskService = Executors.newSingleThreadScheduledExecutor();
+    private static ScheduledExecutorService globalUpdateTaskService = Executors.newSingleThreadScheduledExecutor();
 
 
     /*public static ExecutorService getService() {
         return service;
     }*/
 
-    public static ScheduledExecutorService getRepeatWaitingTaskService() {
-        return repeatWaitingTaskService;
-    }
-
     public static ScheduledExecutorService getGlobalUpdateTaskService() {
         return globalUpdateTaskService;
     }
 
+    public static ScheduledExecutorService getRepeatWaitingTaskService() {
+        return repeatWaitingTaskService;
+    }
+
+    public static void setGlobalUpdateTaskService(ScheduledExecutorService globalUpdateTaskService) {
+        Updater.globalUpdateTaskService = globalUpdateTaskService;
+    }
+
+    public static void setRepeatWaitingTaskService(ScheduledExecutorService repeatWaitingTaskService) {
+        Updater.repeatWaitingTaskService = repeatWaitingTaskService;
+    }
 
     public static void update(UpdateType updateType, Object object) {
         SerializeWrapper wrapper = new SerializeWrapper(updateType, object);

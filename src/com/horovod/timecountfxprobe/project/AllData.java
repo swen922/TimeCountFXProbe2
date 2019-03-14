@@ -67,15 +67,15 @@ public class AllData {
     private static String meUser = System.getProperty("user.name");
     public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX";
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
-    // TODO добавить поле в аккаунт Админа, чтобы можно было изменять это поле и все поля тоже
-    public static String pathToHomeFolderOnServer = "/Users/admin/TimeCountProbeFX";
+    public static int globalUpdatePeriod = 120;
+    public static int checkWaitingPeriod = 30;
+
     public static String httpAddress = "http://localhost:8088";
     public static String httpUpdate = httpAddress + "/receiveupdate";
     public static String httpGetProjectID = httpAddress + "/projectid";
     public static String httpGetUserID = httpAddress + "/userid";
     public static String httpGlobalUpdate = httpAddress + "/globalupdate";
     public static String httpSendBaseToServer = httpAddress + "/sendbasetoserver";
-    public static String httpGetBaseFromServer = httpAddress + "/getbasefromserver";
     public static String httpSetProjectID = httpAddress + "/setprojectid";
     public static String httpSetUserID = httpAddress + "/setuserid";
     public static String httpReadBaseOnServer = httpAddress + "/readbase";
@@ -141,11 +141,16 @@ public class AllData {
     public static String status = "Все нормально";
 
 
-    public void rebuildHTTPAddresses() {
+    public static void rebuildHTTPAddresses() {
         httpUpdate = httpAddress + "/receiveupdate";
         httpGetProjectID = httpAddress + "/projectid";
         httpGetUserID = httpAddress + "/userid";
         httpGlobalUpdate = httpAddress + "/globalupdate";
+        httpSendBaseToServer = httpAddress + "/sendbasetoserver";
+        httpSetProjectID = httpAddress + "/setprojectid";
+        httpSetUserID = httpAddress + "/setuserid";
+        httpReadBaseOnServer = httpAddress + "/readbase";
+        httpSaveBaseOnServer = httpAddress + "/savebase";
     }
 
     /** Стандартные геттеры и сеттеры */
@@ -760,7 +765,7 @@ public class AllData {
                     AllData.tableProjectsDesignerController.initialize();
                 }
                 if (AllData.adminWindowController != null) {
-                    AllData.adminWindowController.updateAdminWindow();
+                    AllData.adminWindowController.initialize();
                 }
                 // TODO сюда добавить сюрвеора, когда будет написан
                 if (AllData.statisticManagerWindowController != null) {
