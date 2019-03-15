@@ -16,10 +16,15 @@ public class ThreadSetUserID extends Task<Integer> {
     @Override
     public Integer call() {
 
+        System.out.println("inside ThreadSetUserID.call");
+
         Integer result = null;
 
         Updater updater = new Updater();
         String received = updater.getReceivedFromServer(AllData.httpGetUserID);
+
+        System.out.println("received = " + received);
+
         if (!received.isEmpty() && !received.startsWith("false")) {
             result = Integer.parseInt(received);
         }

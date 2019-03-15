@@ -394,7 +394,7 @@ public class EditProjectWindowController {
 
     public void initOpenFolderButton() {
         String startPath = "/Volumes/design/";
-        String projectName = myProject.getDescription().split(" - ")[0].trim() + " id-" + myProjectID;
+        String projectName = myProject.getDescription().split(" +- +")[0].trim() + " id-" + myProjectID;
         String path = startPath + myProject.getCompany() + "/" + projectName;
 
         if (myProject.getFolderPath() != null) {

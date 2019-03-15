@@ -120,22 +120,26 @@ public class CreateProjectWindowController {
 
 
     public void createProjectID() {
+
         getProjectIDButton.setDisable(true);
 
-        AllData.createProjectID.addListener(new ChangeListener<Number>() {
+        /*AllData.createProjectID.addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 createIDTextField.setDisable(false);
             }
-        });
+        });*/
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
         ThreadSetProjectID threadSetProjectID = new ThreadSetProjectID();
+
         threadSetProjectID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
                 progressIndicator.progressProperty().unbind();
                 anchorPane.getChildren().remove(progressIndicator);
+                createIDTextField.setDisable(false);
+
             }
         });
 

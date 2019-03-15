@@ -1,12 +1,11 @@
 package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.serialize.Loader;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.threads.*;
-import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.Role;
-import com.horovod.timecountfxprobe.user.User;
+import com.horovod.timecountfxprobe.user.*;
 import javafx.application.Platform;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -19,17 +18,22 @@ import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 
 import javax.xml.bind.JAXBException;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.horovod.timecountfxprobe.serialize.Updater.getGlobalUpdateTaskService;
 
@@ -84,13 +88,11 @@ public class AdminWindowController {
     @FXML
     private Button importFromSQLButton;
     @FXML
-    private Button saveSQLToXMLButton;
+    private RadioButton usersRadioButton;
     @FXML
-    private CheckBox usersCheckBox;
+    private RadioButton projectsRadioButton;
     @FXML
-    private CheckBox projectsCheckBox;
-    @FXML
-    private CheckBox timeCheckBox;
+    private RadioButton timeRadioButton;
     @FXML
     private Button setHttpAddressButton;
     @FXML
@@ -118,7 +120,9 @@ public class AdminWindowController {
         initStatistcTextFields();
         initTextFields();
         initLoggedUsersChoiceBox();
+        initRadioButtons();
         initClosing();
+
 
     }
 
@@ -191,6 +195,15 @@ public class AdminWindowController {
                 }
             }
         });
+    }
+
+    private void initRadioButtons() {
+        ToggleGroup importSQLGroup = new ToggleGroup();
+        usersRadioButton.setToggleGroup(importSQLGroup);
+        projectsRadioButton.setToggleGroup(importSQLGroup);
+        timeRadioButton.setToggleGroup(importSQLGroup);
+        usersRadioButton.setSelected(true);
+
     }
 
     public void initLoggedUsersChoiceBox() {
@@ -520,6 +533,233 @@ public class AdminWindowController {
             alert.showAndWait();
         }
 
+    }
+
+    public void handleImportFromSQLButton() {
+
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+        chooser.getExtensionFilters().add(extFilter);
+        chooser.setInitialDirectory(new File(AllData.pathToHomeFolder));
+        File file = chooser.showOpenDialog(AllData.primaryStage);
+
+        if (file != null && file.exists()) {
+
+            StringBuilder sb = null;
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                sb = new StringBuilder("");
+                while (reader.ready()) {
+                    sb.append(reader.readLine()).append("\n");
+                }
+            } catch (IOException e) {
+                AllData.logger.error("AdminWindowController.handleImportFromSQLButton - Ошибка чтения файла с диска.");
+                AllData.logger.error(e.getMessage(), e);
+                return;
+            }
+            String input = sb.toString();
+
+            if (usersRadioButton.isSelected()) {
+
+                AllUsers.getUsers().clear();
+
+                input = input.replaceAll("'", "");
+                input = input.replaceAll("\\(", "");
+                input = input.replaceAll("\\)", "");
+                input = input.replaceAll(",", "");
+                String[] inputArray = input.split("\n");
+
+                for (String line : inputArray) {
+                    String[] userLine = line.split(" ");
+                    String idString = userLine[0];
+                    int id = Integer.parseInt(idString);
+                    String login = userLine[1];
+                    String pass = userLine[2];
+                    SecurePassword securePassword = SecurePassword.getInstance(pass);
+                    System.out.println(securePassword);
+                    String mail = userLine[3];
+                    String role = userLine[4];
+
+                    User user = null;
+                    if (role.equalsIgnoreCase("designer")) {
+                        user = new Designer(id, login, securePassword);
+                        user.setEmail(mail);
+                        AllUsers.getUsers().put(user.getIDNumber(), user);
+                        System.out.println();
+                    }
+                    else if (role.equalsIgnoreCase("manager")) {
+                        user = new Manager(id, login, securePassword);
+                        user.setEmail(mail);
+                        AllUsers.getUsers().put(user.getIDNumber(), user);
+                    }
+                    else if (role.equalsIgnoreCase("admin")) {
+                        user = new Admin(id, login, securePassword);
+                        user.setEmail(mail);
+                        AllUsers.getUsers().put(user.getIDNumber(), user);
+                    }
+                    else if (role.equalsIgnoreCase("surveyor")) {
+                        user = new Surveyor(id, login, securePassword);
+                        user.setEmail(mail);
+                        AllUsers.getUsers().put(user.getIDNumber(), user);
+                    }
+
+                    if (user != null) {
+                        AllUsers.getUsers().put(user.getIDNumber(), user);
+                    }
+                    else {
+                        AllData.logger.error("Ошибка парсинга строки в юзера. Строка = " + line);
+                    }
+                }
+            }
+            else if (projectsRadioButton.isSelected()) {
+
+                AllData.getAllProjects().clear();
+                AllData.getActiveProjects().clear();
+
+                String[] inputArray = input.split("\n");
+
+                for (String line : inputArray) {
+
+                    String inputLine = new String(line);
+
+                    int id = 0;
+                    String compAndManager = "";
+                    String company = "";
+                    String manager = "";
+                    String description = "";
+                    String archiveString = "";
+                    LocalDate date = null;
+
+                    Project project = null;
+
+                    /** Первый паттерн – для поиска номера id*/
+                    Pattern p = Pattern.compile("\\(\\d+,");
+                    Matcher m = p.matcher(inputLine);
+
+                    String idString = "";
+                    if (m.find()) {
+                        // Найден id-номер
+                        idString = m.group();
+
+                        // Урезаем строку
+                        int i = inputLine.indexOf(idString, 0);
+                        int ii = i + idString.length();
+                        inputLine = inputLine.substring(ii, inputLine.length()).replaceAll("'\\),", "',").trim();
+
+                        // Найден id-номер
+                        idString = idString.replaceAll("\\(", "");
+                        idString = idString.replaceAll(",", "");
+
+                        try {
+                            id = Integer.parseInt(idString);
+                        } catch (NumberFormatException e) {
+                            AllData.logger.error("AdminWindowController.handleImportFromSQLButton - Ошибка парсинга id-номера.");
+                            AllData.logger.error(e.getMessage(), e);
+                        }
+                    }
+
+
+                    /** Второй паттерн – для поиска текста в одинарных скобках ' */
+                    Pattern p2 = Pattern.compile("('.+?',)");
+                    Matcher m2 = p2.matcher(inputLine);
+
+
+                    if (m2.find()) {
+                        // Найдена компания и менеджер
+                        compAndManager = m2.group();
+
+                        // Урезаем строку
+                        int i = inputLine.indexOf(compAndManager, 0);
+                        int ii = i + compAndManager.length() + 1;
+                        inputLine = inputLine.substring(ii, inputLine.length()).replaceAll("'\\),", "',").trim();
+
+
+                        // Чистим компанию и менеджера
+                        compAndManager = compAndManager.replaceAll("',", "");
+                        compAndManager = compAndManager.replaceAll("'", "");
+
+                        // Разделяем компанию и менеджера
+                        String[] cm = compAndManager.split(" +- +");
+                        company = cm[0];
+                        manager = cm[1];
+                    }
+
+
+                    if (m2.find()) {
+                        // Найдено описание проекта
+                        description = m2.group();
+
+                        // Урезаем строку
+                        int i = inputLine.indexOf(description, 0);
+                        int ii = i + description.length() + 1;
+                        inputLine = inputLine.substring(ii, inputLine.length()).trim();
+
+                        // Чистим описание проекта
+                        description = description.replaceAll("',", "");
+                        description = description.replaceAll("'", "");
+
+                        // Найден булин архивный ли проект
+                        archiveString = inputLine.substring(0, 1);
+                    }
+
+
+
+                    /** Третий паттерн – для поиска даты в описании проекта */
+                    Pattern p3 = Pattern.compile("\\d+\\.\\d+\\.\\d+");
+                    Matcher m3 = p3.matcher(description);
+
+                    // Найдена дата создания проекта
+                    String dateStringInput = "";
+                    if (m3.find()) {
+                        dateStringInput = m3.group();
+                        DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d.M.yyyy");
+                        try {
+                            date = DATE_FORMATTER.parse(dateStringInput, LocalDate::from);
+                        } catch (Exception e) {
+                            AllData.logger.error("AdminWindowController.handleImportFromSQLButton - Ошибка парсинга даты.");
+                            AllData.logger.error(e.getMessage(), e);
+                        }
+                    }
+
+                    /*int id = 0;
+                    String compAndManager = "";
+                    String company = "";
+                    String manager = "";
+                    String description = "";
+                    String archiveString = "";
+                    LocalDate date = null;*/
+
+                    if (id != 0 && !compAndManager.isEmpty() && !description.isEmpty() && !archiveString.isEmpty()) {
+
+                        if (date == null) {
+                            project = new Project(id, company, manager, description);
+                            AllData.logger.error("У проекта id-" + project.getIdNumber() + " не удалось распознать дату создания проекта");
+                        }
+                        else {
+                            project = new Project(id, company, manager, description, date);
+                        }
+                        if (archiveString.equals("1")) {
+                            project.setArchive(true);
+                        }
+                    }
+
+                    if (project != null) {
+                        AllData.getAllProjects().put(project.getIdNumber(), project);
+                    }
+                    else {
+                        AllData.logger.error("Ошибка парсинга строки в проект. Строка = " + line);
+                    }
+
+                }
+
+                AllData.rebuildActiveProjects();
+            }
+            else if (timeRadioButton.isSelected()) {
+
+            }
+
+        }
+
+        AllData.updateAllWindows();
     }
 
 

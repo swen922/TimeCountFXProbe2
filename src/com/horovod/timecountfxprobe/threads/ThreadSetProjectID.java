@@ -24,6 +24,7 @@ public class ThreadSetProjectID extends Task<Integer> {
 
         Updater updater = new Updater();
         String received = updater.getReceivedFromServer(AllData.httpGetProjectID);
+
         if (!received.isEmpty() && !received.startsWith("false")) {
             result = Integer.parseInt(received);
         }

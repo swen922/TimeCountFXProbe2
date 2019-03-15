@@ -112,6 +112,9 @@ public class CreateUserWindowController {
 
 
     public void createUserID() {
+
+        System.out.println("inside createUserID");
+
         getUserIDButton.setDisable(true);
 
         /*AllUsers.createUserID.addListener(new ChangeListener<Number>() {
@@ -123,6 +126,9 @@ public class CreateUserWindowController {
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
         ThreadSetUserID threadSetUserID = new ThreadSetUserID();
+
+        System.out.println(threadSetUserID);
+
         threadSetUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {

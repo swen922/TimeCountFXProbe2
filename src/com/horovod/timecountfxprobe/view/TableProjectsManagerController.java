@@ -808,9 +808,24 @@ public class TableProjectsManagerController {
             filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                 @Override
                 public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                    if (integerProjectEntry.getValue().containsWorkTime(fromDate, tillDate)) {
-                        return true;
+
+                    Project pr = integerProjectEntry.getValue();
+
+                    if (pr.getWork().isEmpty()) {
+                        LocalDate dateCreated = AllData.parseDate(pr.getDateCreationString());
+                        if (dateCreated.compareTo(fromDate) >= 0 && dateCreated.compareTo(tillDate) <= 0) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
                     }
+                    else {
+                        if (pr.containsWorkTime(fromDate, tillDate)) {
+                            return true;
+                        }
+                    }
+
                     return false;
                 }
             });
@@ -1251,7 +1266,7 @@ public class TableProjectsManagerController {
                     @Override
                     public void handle(ActionEvent event) {
 
-                        String projectName = entry.getValue().getDescription().split(" - ")[0].trim() + " id-" + entry.getKey();
+                        String projectName = entry.getValue().getDescription().split(" +- +")[0].trim() + " id-" + entry.getKey();
                         String path = startPath + entry.getValue().getCompany() + "/" + projectName;
 
                         if (entry.getValue().getFolderPath() != null) {

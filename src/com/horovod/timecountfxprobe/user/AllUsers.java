@@ -324,7 +324,7 @@ public class AllUsers {
      * * с данным ID и nameLogin
      */
     public static boolean isUserExist(int idNumber) {
-        if (idNumber <= 0 || idNumber > createUserID.get()) {
+        if (idNumber <= 0) {
             return false;
         }
         return users.containsKey(idNumber);
@@ -380,6 +380,10 @@ public class AllUsers {
         if (!users.containsKey(IDuser)) {
             return false;
         }
+
+        System.out.println("AllUsers.getOneUser(IDuser) = " + AllUsers.getOneUser(IDuser));
+
+
         String securePass = AllUsers.getOneUser(IDuser).getSecurePassword().getSecurePass();
         String salt = AllUsers.getOneUser(IDuser).getSecurePassword().getSalt();
         boolean result;

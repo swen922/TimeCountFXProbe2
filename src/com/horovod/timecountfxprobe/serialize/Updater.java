@@ -263,8 +263,15 @@ public class Updater {
         String result = "false";
 
         try {
-            User user = AllUsers.getOneUser(AllUsers.getCurrentUser());
-            LoginWrapper loginWrapper = new LoginWrapper(user.getNameLogin(), user.getSecurePassword());
+
+            LoginWrapper loginWrapper = null;
+            if (AllUsers.getUsers().isEmpty()) {
+                loginWrapper = new LoginWrapper("", null);
+            }
+            else {
+                User user = AllUsers.getOneUser(AllUsers.getCurrentUser());
+                loginWrapper = new LoginWrapper(user.getNameLogin(), user.getSecurePassword());
+            }
 
             String jsonSerialize = "";
             ObjectMapper mapper = new ObjectMapper();
@@ -276,6 +283,7 @@ public class Updater {
                 AllData.logger.error(e.getMessage(), e);
             }
 
+            System.out.println("jsonSerialize = " + jsonSerialize);
 
             if (!jsonSerialize.isEmpty()) {
                 HttpURLConnection connection = null;
@@ -293,6 +301,9 @@ public class Updater {
                     out.close();
 
                     responceCode = connection.getResponseCode();
+
+                    System.out.println(responceCode);
+
                 } catch (ConnectException e) {
                     AllData.updateAllStatus("updater.getReceivedFromServer - Ошибка соединения: Выброшено исключение java.net.ConnectException");
                     AllData.logger.error(AllData.status);
