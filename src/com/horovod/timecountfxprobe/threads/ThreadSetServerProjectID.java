@@ -68,18 +68,34 @@ public class ThreadSetServerProjectID extends Task<Boolean> {
                 String received = sb.toString();
                 int num = 0;
 
-                if (!received.startsWith("false")) {
-                    try {
-                        num = Integer.parseInt(received);
-                    } catch (NumberFormatException e) {
+                if (!received.isEmpty() && !received.startsWith("false")) {
 
+                    String intTMP = received.split(" ")[0];
+                    if (intTMP != null && !intTMP.isEmpty()) {
+                        try {
+                            num = Integer.parseInt(intTMP);
+                        } catch (NumberFormatException e) {
+
+                        }
                     }
+
                 }
+
                 if (num == newProjectID) {
+
                     AllData.result = true;
                     AllData.createProjectID.set(num);
                     AllData.updateAllStatus("ThreadSetServerProjectID - Новое значение счетчика проектов успешно установлено на сервере = " + newProjectID);
                     AllData.logger.info(AllData.status);
+
+                    String timeTMP = received.split(" ")[1];
+                    if (timeTMP != null && !timeTMP.isEmpty()) {
+                        AllData.lastUpdateTime = timeTMP;
+                    }
+                }
+                else {
+                    AllData.updateAllStatus("ThreadSetServerProjectID - Ошибка при установке нового значения счетчика проектов на сервере. Полученное число не равно отправленному.");
+                    AllData.logger.error(AllData.status);
                 }
             }
             else {

@@ -70,6 +70,8 @@ public class AllData {
     public static int globalUpdatePeriod = 120;
     public static int checkWaitingPeriod = 30;
 
+    public static String lastUpdateTime = "";
+
     public static String httpAddress = "http://localhost:8088";
     public static String httpUpdate = httpAddress + "/receiveupdate";
     public static String httpGetProjectID = httpAddress + "/projectid";
@@ -1164,7 +1166,7 @@ public class AllData {
 
     public static String formatDateTime(LocalDateTime dateTime) {
         if (TIME_FORMATTER == null) {
-            TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+            TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss.SSS");
         }
 
         if (dateTime == null) {
@@ -1175,6 +1177,9 @@ public class AllData {
     }
 
     public static LocalDateTime parseDateTime(String dateTimeString) {
+        if (TIME_FORMATTER == null) {
+            TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss.SSS");
+        }
         try {
             return TIME_FORMATTER.parse(dateTimeString, LocalDateTime::from);
         } catch (Exception e) {

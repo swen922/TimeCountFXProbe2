@@ -58,8 +58,15 @@ public class ThreadSendBaseToServer extends Task<Boolean> {
 
                 String received = sb.toString();
 
-                if (received.equalsIgnoreCase("true")) {
+                if (received.startsWith("true")) {
+
                     AllData.result = true;
+
+                    String timeTMP = received.split(" ")[1];
+                    if (timeTMP != null && !timeTMP.isEmpty()) {
+                        AllData.lastUpdateTime = timeTMP;
+                    }
+
                     AllData.updateAllStatus("ThreadSendBaseToServer - База успешно отправлена на сервер.");
                     AllData.logger.info(AllData.status);
                 }

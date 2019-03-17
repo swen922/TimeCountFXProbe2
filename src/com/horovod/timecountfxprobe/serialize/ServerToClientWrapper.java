@@ -16,6 +16,10 @@ import java.util.HashMap;
 public class ServerToClientWrapper {
 
     // Передаваемые поля
+
+    @JsonDeserialize(as = String.class)
+    private String lastUpdateTime;
+
     @JsonDeserialize(as = Integer.class)
     private int allProjectsIdNumber;
 
@@ -61,6 +65,15 @@ public class ServerToClientWrapper {
                 this.saveSurveyors.put(sur.getIDNumber(), sur);
             }
         }*/
+    }
+
+    @XmlElement(name = "lastupdatetime")
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
     }
 
     @XmlElement(name = "allprojectsidnumber")

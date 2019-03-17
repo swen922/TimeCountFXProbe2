@@ -4,22 +4,16 @@ package com.horovod.timecountfxprobe.serialize;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.horovod.timecountfxprobe.project.AllData;
-import com.horovod.timecountfxprobe.project.WorkTime;
-import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.threads.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
 import javafx.concurrent.Task;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Queue;
 import java.util.concurrent.*;
 
 public class Updater {
@@ -145,7 +139,7 @@ public class Updater {
     public static synchronized Integer getProjectID() {
         Future<Integer> resultFuture = null;
         try {
-            resultFuture = service.submit(new ThreadGetProjectID());
+            resultFuture = service.submit(new ThreadIncrementAndGetProjectID());
         } catch (Exception e) {
             AllData.updateAllStatus("Updater.getProjectID - Ошибка выполнения новой нити ThreadGetProjectID. Выброшено исключение.");
             AllData.logger.error(AllData.status);
@@ -176,7 +170,7 @@ public class Updater {
     public static synchronized Integer getUserID() {
         Future<Integer> resultFuture = null;
         try {
-            resultFuture = service.submit(new ThreadGetUserID());
+            resultFuture = service.submit(new ThreadIncrementAndGetUserID());
         } catch (Exception e) {
             AllData.updateAllStatus("Updater.getUserID - Ошибка выполнения новой нити ThreadGetUserID. Выброшено исключение.");
             AllData.logger.error(AllData.status);
@@ -217,8 +211,7 @@ public class Updater {
             AllData.logger.error(e.getMessage(), e);
         }
 
-
-        if (wrapper != null && !wrapper.getAllProjects().isEmpty()) {
+        if (wrapper != null && !wrapper.getSaveAdmins().isEmpty()) {
 
             AllData.getAllProjects().clear();
             AllData.getActiveProjects().clear();
@@ -258,6 +251,7 @@ public class Updater {
         return jsonSerialize;
     }
 
+
     public String getReceivedFromServer(String httpAddress) {
 
         String result = "false";
@@ -283,8 +277,6 @@ public class Updater {
                 AllData.logger.error(e.getMessage(), e);
             }
 
-            System.out.println("jsonSerialize = " + jsonSerialize);
-
             if (!jsonSerialize.isEmpty()) {
                 HttpURLConnection connection = null;
                 int responceCode = 0;
@@ -301,8 +293,6 @@ public class Updater {
                     out.close();
 
                     responceCode = connection.getResponseCode();
-
-                    System.out.println(responceCode);
 
                 } catch (ConnectException e) {
                     AllData.updateAllStatus("updater.getReceivedFromServer - Ошибка соединения: Выброшено исключение java.net.ConnectException");

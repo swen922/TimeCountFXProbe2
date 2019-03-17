@@ -67,7 +67,13 @@ public class ThreadUpdate extends Task<Boolean> {
 
                         String received = sb.toString();
 
-                        if (received.equalsIgnoreCase("true")) {
+                        if (received.startsWith("true")) {
+
+                            String timeTMP = received.split(" ")[1];
+                            if (timeTMP != null && !timeTMP.isEmpty()) {
+                                AllData.lastUpdateTime = timeTMP;
+                            }
+
                             AllData.updateAllStatus("ThreadUpdate - Обновление успешно отправлено на сервер. Update type = " + serializeWrapper.getUpdateType());
                             AllData.logger.info(AllData.status);
                             result = true;
@@ -86,6 +92,10 @@ public class ThreadUpdate extends Task<Boolean> {
                         }
                         else if (received.equalsIgnoreCase("false pass")) {
                             AllData.updateAllStatus("ThreadUpdate - Не удалось обновить данные на сервере: Пароль пользователя неверен. SerializeWrapper = " + serializeWrapper);
+                            AllData.logger.error(AllData.status);
+                        }
+                        else if (received.equalsIgnoreCase("false user status")) {
+                            AllData.updateAllStatus("ThreadUpdate - Не удалось обновить данные на сервере: Статус пользователя недостаточен. SerializeWrapper = " + serializeWrapper);
                             AllData.logger.error(AllData.status);
                         }
                         else if (received.equalsIgnoreCase("false project")) {

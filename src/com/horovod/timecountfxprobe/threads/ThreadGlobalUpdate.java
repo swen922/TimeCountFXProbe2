@@ -13,7 +13,13 @@ public class ThreadGlobalUpdate implements Runnable {
 
             Updater updater = new Updater();
             String received = updater.getReceivedFromServer(AllData.httpGlobalUpdate);
-            if (!received.isEmpty() && !received.startsWith("false")) {
+
+            if (!received.isEmpty() && received.equals("noneed")) {
+                AllData.updateAllStatus("ThreadGlobalUpdate - Обновление не требуется.");
+                AllData.logger.info(AllData.status);
+            }
+            else if (!received.isEmpty() && !received.startsWith("false")) {
+
                 boolean success = Updater.globalUpdate(received);
 
                 if (success) {
@@ -22,12 +28,12 @@ public class ThreadGlobalUpdate implements Runnable {
                     AllData.logger.info(AllData.status);
                 }
                 else {
-                    AllData.updateAllStatus("ThreadGlobalUpdate - Ошибка обновления базы с сервера либо отказ из-за отсутствия базы на сервере.");
+                    AllData.updateAllStatus("ThreadGlobalUpdate - Ошибка обновления базы с сервера.");
                     AllData.logger.error(AllData.status);
                 }
             }
             else {
-                AllData.updateAllStatus("ThreadGlobalUpdate - Ошибка обновления базы с сервера.");
+                AllData.updateAllStatus("ThreadGlobalUpdate - Ошибка обновления базы с сервера либо отказ из-за отсутствия базы на сервере.");
                 AllData.logger.error(AllData.status);
             }
         }

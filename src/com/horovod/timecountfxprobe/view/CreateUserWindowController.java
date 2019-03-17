@@ -2,21 +2,16 @@ package com.horovod.timecountfxprobe.view;
 
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.serialize.Updater;
-import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
-import com.horovod.timecountfxprobe.threads.ThreadSetUserID;
+import com.horovod.timecountfxprobe.threads.ThreadIncrementAndSetUserID;
 import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
 import com.horovod.timecountfxprobe.user.AllUsers;
-import com.horovod.timecountfxprobe.user.Designer;
 import com.horovod.timecountfxprobe.user.Role;
 import com.horovod.timecountfxprobe.user.User;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 
@@ -125,11 +120,11 @@ public class CreateUserWindowController {
         });*/
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
-        ThreadSetUserID threadSetUserID = new ThreadSetUserID();
+        ThreadIncrementAndSetUserID threadIncrementAndSetUserID = new ThreadIncrementAndSetUserID();
 
-        System.out.println(threadSetUserID);
+        System.out.println(threadIncrementAndSetUserID);
 
-        threadSetUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+        threadIncrementAndSetUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
                 createIDTextField.setDisable(false);
@@ -143,9 +138,9 @@ public class CreateUserWindowController {
         progressIndicator.setLayoutX(400);
         progressIndicator.setLayoutY(37);
         progressIndicator.progressProperty().unbind();
-        progressIndicator.progressProperty().bind(threadSetUserID.progressProperty());
+        progressIndicator.progressProperty().bind(threadIncrementAndSetUserID.progressProperty());
 
-        Updater.update(threadSetUserID);
+        Updater.update(threadIncrementAndSetUserID);
 
     }
 

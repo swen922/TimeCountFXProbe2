@@ -3,26 +3,18 @@ package com.horovod.timecountfxprobe.view;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import com.horovod.timecountfxprobe.serialize.Updater;
-import com.horovod.timecountfxprobe.threads.ThreadGetProjectID;
-import com.horovod.timecountfxprobe.threads.ThreadSetProjectID;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.horovod.timecountfxprobe.threads.ThreadIncrementAndSetProjectID;
+
 import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+
 
 public class CreateProjectWindowController {
 
@@ -131,9 +123,9 @@ public class CreateProjectWindowController {
         });*/
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
-        ThreadSetProjectID threadSetProjectID = new ThreadSetProjectID();
+        ThreadIncrementAndSetProjectID threadIncrementAndSetProjectID = new ThreadIncrementAndSetProjectID();
 
-        threadSetProjectID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
+        threadIncrementAndSetProjectID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
             public void handle(WorkerStateEvent event) {
                 progressIndicator.progressProperty().unbind();
@@ -148,9 +140,9 @@ public class CreateProjectWindowController {
         progressIndicator.setLayoutX(470);
         progressIndicator.setLayoutY(15);
         progressIndicator.progressProperty().unbind();
-        progressIndicator.progressProperty().bind(threadSetProjectID.progressProperty());
+        progressIndicator.progressProperty().bind(threadIncrementAndSetProjectID.progressProperty());
 
-        Updater.update(threadSetProjectID);
+        Updater.update(threadIncrementAndSetProjectID);
 
     }
 
