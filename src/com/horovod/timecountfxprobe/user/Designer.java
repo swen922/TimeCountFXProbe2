@@ -77,11 +77,7 @@ public class Designer implements User {
 
     @XmlElement(name = "designerrole")
     public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role newrole) {
-        this.role = newrole;
+        return Role.DESIGNER;
     }
 
     @XmlElement(name = "designerfullname")

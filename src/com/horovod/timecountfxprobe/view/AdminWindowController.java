@@ -115,18 +115,26 @@ public class AdminWindowController {
 
 
     @FXML
-    public void initialize() {
+    private void initialize() {
 
-        initStatistcTextFields();
+        initStatisticTextFields();
         initTextFields();
+        initPeriods();
         initLoggedUsersChoiceBox();
         initRadioButtons();
         initClosing();
 
-
     }
 
-    private void initStatistcTextFields() {
+    public void updateAdmin() {
+
+        initStatisticTextFields();
+        initTextFields();
+    }
+
+
+
+    private void initStatisticTextFields() {
         this.userListSizeLabel.setText(String.valueOf(AllUsers.getUsers().size()));
         this.projectListSizeLabel.setText(String.valueOf(AllData.getAllProjects().size()));
         this.taskQueueSizeLabel.setText(String.valueOf(Updater.tasksQueue.size()));
@@ -138,7 +146,9 @@ public class AdminWindowController {
         this.globalUpdatePeriodTextField.setText(String.valueOf(AllData.globalUpdatePeriod));
         this.checkWaitingPeriodTextField.setText(String.valueOf(AllData.checkWaitingPeriod));
         this.httpAddressTextField.setText(AllData.httpAddress);
+    }
 
+    private void initPeriods() {
         this.globalUpdatePeriodTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -213,6 +223,14 @@ public class AdminWindowController {
         if (!usersLoggedChoiceBox.getItems().contains(AllData.toLoginWindow)) {
             usersLoggedChoiceBox.getItems().add(AllData.toLoginWindow);
         }
+
+        /*System.out.println("usersLoggedChoiceBox = " + usersLoggedChoiceBox);
+        System.out.println("usersLoggedChoiceBox.getItems().size() = " + usersLoggedChoiceBox.getItems().size());
+        for (String val : usersLoggedChoiceBox.getItems()) {
+            System.out.println("val = " + val);
+        }
+        System.out.println("AllUsers.getCurrentUser() = " + AllUsers.getCurrentUser());
+        System.out.println("AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName() = " + AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());*/
 
         usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
 
@@ -560,13 +578,16 @@ public class AdminWindowController {
 
             if (usersRadioButton.isSelected()) {
 
-                AllUsers.getUsers().clear();
+                /** коварная строчка удаляет текущего админа пипец*/
+                //AllUsers.getUsers().clear();
 
                 input = input.replaceAll("'", "");
                 input = input.replaceAll("\\(", "");
                 input = input.replaceAll("\\)", "");
                 input = input.replaceAll(",", "");
                 String[] inputArray = input.split("\n");
+
+                int counterUsers = 0;
 
                 for (String line : inputArray) {
                     String[] userLine = line.split(" ");
@@ -575,7 +596,7 @@ public class AdminWindowController {
                     String login = userLine[1];
                     String pass = userLine[2];
                     SecurePassword securePassword = SecurePassword.getInstance(pass);
-                    System.out.println(securePassword);
+
                     String mail = userLine[3];
                     String role = userLine[4];
 
@@ -584,7 +605,7 @@ public class AdminWindowController {
                         user = new Designer(id, login, securePassword);
                         user.setEmail(mail);
                         AllUsers.getUsers().put(user.getIDNumber(), user);
-                        System.out.println();
+
                     }
                     else if (role.equalsIgnoreCase("manager")) {
                         user = new Manager(id, login, securePassword);
@@ -604,11 +625,16 @@ public class AdminWindowController {
 
                     if (user != null) {
                         AllUsers.getUsers().put(user.getIDNumber(), user);
+                        counterUsers++;
                     }
                     else {
                         AllData.logger.error("Ошибка парсинга строки в юзера. Строка = " + line);
                     }
                 }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Импорт пользователей проведен успешно");
+                alert.setHeaderText("Импорт пользователей проведен успешно. \nВсего импортировано " + counterUsers + " юзеров");
+                alert.showAndWait();
             }
             else if (projectsRadioButton.isSelected()) {
 
@@ -616,6 +642,7 @@ public class AdminWindowController {
                 AllData.getActiveProjects().clear();
 
                 String[] inputArray = input.split("\n");
+                int counterProjects = 0;
 
                 for (String line : inputArray) {
 
@@ -744,6 +771,7 @@ public class AdminWindowController {
 
                     if (project != null) {
                         AllData.getAllProjects().put(project.getIdNumber(), project);
+                        counterProjects++;
                     }
                     else {
                         AllData.logger.error("Ошибка парсинга строки в проект. Строка = " + line);
@@ -752,12 +780,19 @@ public class AdminWindowController {
                 }
 
                 AllData.rebuildActiveProjects();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Импорт пользователей проведен успешно");
+                alert.setHeaderText("Импорт пользователей проведен успешно. \nВсего импортировано " + counterProjects + " проектов");
+                alert.showAndWait();
             }
             else if (timeRadioButton.isSelected()) {
 
             }
 
         }
+
+
 
         AllData.updateAllWindows();
     }

@@ -4,7 +4,6 @@ import com.horovod.timecountfxprobe.MainApp;
 import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
 import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
-import com.horovod.timecountfxprobe.threads.ThreadGetProjectID;
 import com.horovod.timecountfxprobe.view.*;
 import com.horovod.timecountfxprobe.user.AllUsers;
 import com.horovod.timecountfxprobe.user.Role;
@@ -767,7 +766,7 @@ public class AllData {
                     AllData.tableProjectsDesignerController.initialize();
                 }
                 if (AllData.adminWindowController != null) {
-                    AllData.adminWindowController.initialize();
+                    AllData.adminWindowController.updateAdmin();
                 }
                 // TODO сюда добавить сюрвеора, когда будет написан
                 if (AllData.statisticManagerWindowController != null) {

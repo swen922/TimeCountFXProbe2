@@ -149,7 +149,11 @@ public class AllUsers {
 
     public static User getOneUserForFullName(String userFullName) {
         for (User u : users.values()) {
+
+            System.out.println("u = " + u);
+
             if (u.getFullName().equals(userFullName)) {
+                System.out.println("u.getFullName() = " + u.getFullName());
                 return u;
             }
         }

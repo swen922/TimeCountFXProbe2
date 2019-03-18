@@ -66,11 +66,7 @@ public class Surveyor implements User {
 
     @XmlElement(name = "surveyorrole")
     public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role newrole) {
-        this.role = newrole;
+        return Role.SURVEYOR;
     }
 
     @XmlElement(name = "surveyorfullname")

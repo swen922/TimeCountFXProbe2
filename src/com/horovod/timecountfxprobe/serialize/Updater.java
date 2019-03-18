@@ -220,6 +220,7 @@ public class Updater {
 
             AllUsers.createUserID.set(wrapper.getIDCounterAllUsers());
             AllData.createProjectID.set(wrapper.getAllProjectsIdNumber());
+            AllData.lastUpdateTime = wrapper.getLastUpdateTime();
             AllUsers.getUsers().putAll(wrapper.getSaveDesigners());
             AllUsers.getUsers().putAll(wrapper.getSaveManagers());
             AllUsers.getUsers().putAll(wrapper.getSaveAdmins());

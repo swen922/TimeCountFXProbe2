@@ -67,11 +67,7 @@ public class Admin implements User {
 
     @XmlElement(name = "adminrole")
     public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role newrole) {
-        this.role = newrole;
+        return Role.ADMIN;
     }
 
     @XmlElement(name = "adminfullname")

@@ -275,7 +275,7 @@ public class CreateUserWindowController {
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Создан пользователь id-" + user.getIDNumber());
-            alert.setHeaderText("Создан пользователь id-" + user.getIDNumber() + "\nлогин = " + user.getNameLogin() + "\nимя = " + user.getFullName());
+            alert.setHeaderText("Создан пользователь id-" + user.getIDNumber() + "\nлогин = " + user.getNameLogin() + "\nимя = " + user.getFullName() + "\nроль = " + user.getRole());
             alert.show();
         }
         else {

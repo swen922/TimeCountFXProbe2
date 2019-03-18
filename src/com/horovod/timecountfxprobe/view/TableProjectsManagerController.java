@@ -573,6 +573,10 @@ public class TableProjectsManagerController {
 
                         User user = AllUsers.getOneUserForFullName(selectUser);
 
+
+                        System.out.println(user);
+
+
                         Role role = user.getRole();
 
                         if (role.equals(Role.DESIGNER)) {

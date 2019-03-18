@@ -11,7 +11,6 @@ public interface User {
     String getNameLogin();
     void setNameLogin(String newNameLogin);
     Role getRole();
-    void setRole(Role newrole);
     String getFullName();
     void setFullName(String newFullName);
     String getEmail();

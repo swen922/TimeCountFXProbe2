@@ -69,11 +69,7 @@ public class Manager implements User {
 
     @XmlElement(name = "managerrole")
     public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role newrole) {
-        this.role = newrole;
+        return Role.MANAGER;
     }
 
     @XmlElement(name = "managerfullname")

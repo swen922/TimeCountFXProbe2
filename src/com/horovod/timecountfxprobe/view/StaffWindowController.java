@@ -130,6 +130,8 @@ public class StaffWindowController {
         // поэтому во время работы initialize() снова запускать нельзя
         designersOnlyCheckBox.setSelected(true);
 
+        initMonthChoiceBox();
+        initYearChoiceBox();
         initMonthYearChoiceBoxes();
         initRadioButtons();
         initTimeLimitTextField();
@@ -142,9 +144,11 @@ public class StaffWindowController {
     private void initMonthYearChoiceBoxes() {
         if (monthChoiceBox.getValue() == null) {
             monthChoiceBox.setValue(LocalDate.now().getMonth());
+            System.out.println(monthChoiceBox.getValue());
         }
         if (yearsChoiceBox.getValue() == null) {
             yearsChoiceBox.setValue(LocalDate.now().getYear());
+            System.out.println(yearsChoiceBox.getValue());
         }
     }
 
@@ -275,6 +279,7 @@ public class StaffWindowController {
             }
         });
     }
+
 
     public void initMonthChoiceBox() {
         if (monthsValues == null) {
