@@ -75,6 +75,9 @@ public class TableProjectsManagerController {
     private CheckBox showArchiveProjectsCheckBox;
 
     @FXML
+    private Label projectsCountLabel;
+
+    @FXML
     private DatePicker fromDatePicker;
 
     @FXML
@@ -430,6 +433,8 @@ public class TableProjectsManagerController {
         filterDataWrapper.setPredicate(filterPredicate);
         projectsTable.setItems(sortedList);
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
+        projectsCountLabel.setText(String.valueOf(sortedList.size()));
+
     }
 
 

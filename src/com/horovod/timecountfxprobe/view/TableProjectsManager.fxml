@@ -29,7 +29,7 @@
                <children>
                   <VBox alignment="BOTTOM_CENTER" minWidth="450.0" prefWidth="450.0" spacing="3.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="10.0">
+                        <HBox alignment="CENTER_LEFT" prefHeight="20.0" spacing="20.0">
                            <children>
                               <CheckBox fx:id="showArchiveProjectsCheckBox" lineSpacing="10.0" mnemonicParsing="false" onAction="#handleShowArchiveProjectsCheckBox" text="Показывать архивные проекты">
                                  <padding>
@@ -42,6 +42,16 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </CheckBox>
+                              <Separator orientation="VERTICAL" prefHeight="200.0" />
+                              <Label fx:id="projectsCountLabel" text="0">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="-10.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label text="проектов" />
                            </children>
                         </HBox>
                         <Separator />

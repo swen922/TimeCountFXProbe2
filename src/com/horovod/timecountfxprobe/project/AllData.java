@@ -418,8 +418,32 @@ public class AllData {
             }
 
 
-            AllData.status = "Локально добавлено/изменено рабочее время в проекте id-" + projectIDnumber;
+            AllData.status = "AllData.addWorkTime - Локально добавлено/изменено рабочее время в проекте id-" + projectIDnumber;
             AllData.updateAllStatus();
+
+            WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
+
+            Updater.update(UpdateType.UPDATE_TIME, workTime);
+
+            return true;
+        }
+        return false;
+    }
+
+
+    public static synchronized boolean addWorkTimeForImport(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
+
+        if (!AllUsers.isUserExist(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
+            return false;
+        }
+
+
+        if (isProjectExist(projectIDnumber)) {
+
+            Project project = getAnyProject(projectIDnumber);
+            int difference = project.addWorkTime(correctDate, idUser, newTime);
+
+            addWorkSumProjects(difference);
 
             WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
 
@@ -683,6 +707,10 @@ public class AllData {
         }
         if (description == null || description.isEmpty()) {
             return null;
+        }
+
+        if (newDate == null) {
+            newDate = LocalDate.now();
         }
 
         Project project = new Project(projectID, company, manager, description, newDate);

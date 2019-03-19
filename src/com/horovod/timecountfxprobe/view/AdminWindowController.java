@@ -27,8 +27,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -578,7 +580,7 @@ public class AdminWindowController {
 
             if (usersRadioButton.isSelected()) {
 
-                /** коварная строчка удаляет текущего админа пипец*/
+                /** коварная строчка удаляет текущего админа ваще пипец*/
                 //AllUsers.getUsers().clear();
 
                 input = input.replaceAll("'", "");
@@ -631,10 +633,14 @@ public class AdminWindowController {
                         AllData.logger.error("Ошибка парсинга строки в юзера. Строка = " + line);
                     }
                 }
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Импорт пользователей проведен успешно");
-                alert.setHeaderText("Импорт пользователей проведен успешно. \nВсего импортировано " + counterUsers + " юзеров");
-                alert.showAndWait();
+
+                if (counterUsers > 0) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Импорт пользователей проведен успешно");
+                    alert.setHeaderText("Импорт пользователей проведен успешно. \nВсего импортировано " + counterUsers + " юзеров");
+                    alert.showAndWait();
+                }
+
             }
             else if (projectsRadioButton.isSelected()) {
 
@@ -656,7 +662,7 @@ public class AdminWindowController {
                     String archiveString = "";
                     LocalDate date = null;
 
-                    Project project = null;
+                    //Project project = null;
 
                     /** Первый паттерн – для поиска номера id*/
                     Pattern p = Pattern.compile("\\(\\d+,");
@@ -706,8 +712,20 @@ public class AdminWindowController {
 
                         // Разделяем компанию и менеджера
                         String[] cm = compAndManager.split(" +- +");
-                        company = cm[0];
-                        manager = cm[1];
+                        if (cm.length == 2) {
+                            company = cm[0];
+                            manager = cm[1];
+                        }
+                        else if (cm.length == 1) {
+                            company = cm[0];
+                        }
+
+                        if (company == null || company.isEmpty()) {
+                            company = "someCompany";
+                        }
+                        if (manager == null || manager.isEmpty()) {
+                            manager = "someManager";
+                        }
                     }
 
 
@@ -755,44 +773,122 @@ public class AdminWindowController {
                     String archiveString = "";
                     LocalDate date = null;*/
 
+                    Project project = null;
                     if (id != 0 && !compAndManager.isEmpty() && !description.isEmpty() && !archiveString.isEmpty()) {
 
+                        project = AllData.createProject(id, company, manager, description, date);
+
                         if (date == null) {
-                            project = new Project(id, company, manager, description);
                             AllData.logger.error("У проекта id-" + project.getIdNumber() + " не удалось распознать дату создания проекта");
                         }
-                        else {
-                            project = new Project(id, company, manager, description, date);
-                        }
+                    }
+                    else {
+                        AllData.logger.error("Ошибка парсинга строки Один или несколько компонентов не распознаны. Строка = " + line);
+                    }
+
+                    if (project != null) {
+                        //AllData.getAllProjects().put(project.getIdNumber(), project);
+                        counterProjects++;
+
                         if (archiveString.equals("1")) {
                             project.setArchive(true);
                         }
                     }
-
-                    if (project != null) {
-                        AllData.getAllProjects().put(project.getIdNumber(), project);
-                        counterProjects++;
-                    }
                     else {
-                        AllData.logger.error("Ошибка парсинга строки в проект. Строка = " + line);
+                        AllData.logger.error("Ошибка создания проекта. Строка = " + line);
                     }
 
                 }
 
-                AllData.rebuildActiveProjects();
+                if (counterProjects > 0) {
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Импорт пользователей проведен успешно");
-                alert.setHeaderText("Импорт пользователей проведен успешно. \nВсего импортировано " + counterProjects + " проектов");
-                alert.showAndWait();
+                    AllData.rebuildActiveProjects();
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Импорт проектов проведен успешно");
+                    alert.setHeaderText("Импорт проектов проведен успешно. \nВсего импортировано " + counterProjects + " проектов");
+                    alert.showAndWait();
+                }
             }
             else if (timeRadioButton.isSelected()) {
+
+                String[] inputArray = input.split("\n");
+                int counterTime = 0;
+
+                for (String line : inputArray) {
+                    if (line != null && !line.isEmpty()) {
+
+                        String inputLine = new String(line);
+
+                        inputLine = inputLine.replaceAll("\\(", "");
+                        inputLine = inputLine.replaceAll("\\)", "");
+                        inputLine = inputLine.replaceAll("'", "");
+                        inputLine = inputLine.replaceAll(",", "");
+
+
+                        String[] array = inputLine.split(" ");
+
+                        int userID = 0;
+                        int projectID = 0;
+                        DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d.M.yyyy");
+                        LocalDate date = null;
+                        double timeD = 0d;
+
+                        try {
+                            userID = Integer.parseInt(array[1]);
+                        } catch (NumberFormatException e) {
+
+                        }
+
+
+                        try {
+                            projectID = Integer.parseInt(array[2]);
+                        } catch (NumberFormatException e) {
+
+                        }
+
+
+                        try {
+                            date = DATE_FORMATTER.parse(array[3], LocalDate::from);
+                        } catch (Exception e) {
+                        }
+
+
+                        try {
+                            timeD = Double.parseDouble(array[4]);
+                        } catch (NumberFormatException e) {
+
+                        }
+
+                        if (userID != 0 && projectID != 0 && date != null && timeD != 0) {
+                            AllData.addWorkTimeForImport(projectID, date, userID, timeD);
+                            counterTime++;
+                        }
+                    }
+                }
+                if (counterTime > 0) {
+
+                    LocalDate today = LocalDate.now();
+                    AllData.rebuildTodayWorkSumProperty();
+                    AllData.rebuildWeekWorkSumProperty(today.getYear(), today.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+                    AllData.rebuildMonthWorkSumProperty(today.getYear(), today.getMonthValue());
+                    AllData.rebuildYearWorkSumProperty(today.getYear());
+
+                    AllData.rebuildActiveProjects();
+
+                    AllData.rebuildWorkSum();
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Импорт времени проведен успешно");
+                    alert.setHeaderText("Импорт рабочего времени проведен успешно. \nВсего импортировано " + counterTime + " объектов WorkTime");
+                    alert.showAndWait();
+
+
+                }
 
             }
 
         }
-
-
 
         AllData.updateAllWindows();
     }
