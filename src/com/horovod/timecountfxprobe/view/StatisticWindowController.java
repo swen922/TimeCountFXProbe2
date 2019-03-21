@@ -64,6 +64,12 @@ public class StatisticWindowController {
     @FXML
     private Label weekWorkSumLabel;
 
+    @FXML
+    private Label totalTimeLabel;
+
+    @FXML
+    private Button closeButton;
+
 
     @FXML
     private ChoiceBox<String> fillModeChoiceBox;
@@ -287,6 +293,8 @@ public class StatisticWindowController {
     private void fillXYBarChartSeries(FillChartMode mode, LocalDate from) {
 
         Map<String, Double> workSums = new TreeMap<>();
+        int total = 0;
+        String totalString = "";
 
         if (mode.equals(FillChartMode.DAILY)) {
             for (int i = 0; i < from.getMonth().length(Year.from(from).isLeap()); i++) {
@@ -297,7 +305,10 @@ public class StatisticWindowController {
                     sum += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), oneDay);
                 }
                 workSums.put(String.valueOf(i + 1), AllData.intToDouble(sum));
+                total += sum;
             }
+            totalString = "Итого в месяц = " + AllData.formatWorkTime(AllData.intToDouble(total)) + " " + AllData.formatHours(String.valueOf(AllData.intToDouble(total)));
+
         }
         else if (mode.equals(FillChartMode.MONTHLY)) {
 
@@ -312,9 +323,14 @@ public class StatisticWindowController {
                     LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
                     sum += p.getWorkSumForDesignerAndPeriod(AllUsers.getCurrentUser(), fromdate, tillDate);
                 }
+                total += sum;
                 workSums.put(month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()), AllData.intToDouble(sum));
             }
+            totalString = "Итого в год = " + AllData.formatWorkTime(AllData.intToDouble(total)) + " " + AllData.formatHours(String.valueOf(AllData.intToDouble(total)));
+
         }
+
+        totalTimeLabel.setText(totalString);
 
         workTimeForBarChart.clear();
 

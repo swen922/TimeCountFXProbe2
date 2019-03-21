@@ -159,9 +159,9 @@ public class AddWorkDayDialogController {
             datePicker.setValue(LocalDate.now());
         }
 
-        if (datePicker.getValue().isBefore(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()))) {
+        /*if (datePicker.getValue().isBefore(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()))) {
             datePicker.setValue(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()));
-        }
+        }*/
 
         return datePicker.getValue();
     }
@@ -173,9 +173,9 @@ public class AddWorkDayDialogController {
             }
         }
 
-        if (datePicker.getValue().isBefore(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()))) {
+        /*if (datePicker.getValue().isBefore(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()))) {
             datePicker.setValue(AllData.parseDate(AllData.getAnyProject(projectIDnumber).getDateCreationString()));
-        }
+        }*/
 
         checkButtons();
     }
@@ -188,11 +188,8 @@ public class AddWorkDayDialogController {
             return null;
         }
 
-        Double result = AllData.getDoubleFromText(0, workTimeTextField.getText(), 1);
-        if (result == 0) {
-            return null;
-        }
-        return result;
+        return AllData.getDoubleFromText(0, workTimeTextField.getText(), 1);
+
     }
 
 }

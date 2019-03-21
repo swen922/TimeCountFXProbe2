@@ -30,6 +30,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -288,7 +289,7 @@ public class EditProjectWindowController {
         });
 
         Callback<TableColumn<WorkDay, String>, TableCell<WorkDay, String>> cellFactory =
-                (TableColumn<WorkDay, String> p) -> new EditingCell(FillChartMode.TIME);
+                (TableColumn<WorkDay, String> p) -> new EditingCellDay();
 
 
         for (Integer i : des) {
@@ -962,4 +963,125 @@ public class EditProjectWindowController {
             handleSaveAndCloseButton();
         }
     }
+
+
+    /*private class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
+
+        private TextField textField;
+        private FillChartMode fillChartMode;
+
+        public EditingCell(FillChartMode fillChartMode) {
+            this.fillChartMode = fillChartMode;
+        }
+
+    *//*public EditingCell() {
+    }*//*
+
+        @Override
+        public void startEdit() {
+            try {
+                Project p = (Project) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
+                //Integer num = (Integer) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
+                //Project p = AllData.getAnyProject(num);
+                if (!p.isArchive() && !AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    if (!isEmpty()) {
+                        super.startEdit();
+                        createTextField();
+                        setText(null);
+                        setGraphic(textField);
+                        textField.selectAll();
+                    }
+                }
+            } catch (Exception e) {
+                AllData.logger.error(e.getMessage(), e);
+            }
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((java.lang.String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+
+            super.updateItem(item, empty);
+            if (empty) {
+
+                setText(null);
+                setGraphic(null);
+            }
+            else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText((java.lang.String) getString());
+                    }
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText((java.lang.String) getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            String oldText = getString();
+            textField = new TextField((java.lang.String) oldText);
+            textField.setAlignment(Pos.CENTER);
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    if (fillChartMode.equals(FillChartMode.TIME)) {
+                        textField.setText("");
+                    }
+                }
+            });
+            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    KeyCode keyCode = event.getCode();
+                    if (keyCode == KeyCode.ENTER) {
+                        if (fillChartMode.equals(FillChartMode.TIME)) {
+                            commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
+                        }
+
+                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().requestFocus();
+                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().getSelectionModel().selectAll();
+
+                    }
+                }
+            });
+            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue) {
+                        if (fillChartMode.equals(FillChartMode.TIME)) {
+                            commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
+                        }
+                        else {
+                            commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
+                        }
+                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().requestFocus();
+                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().getSelectionModel().selectAll();
+                    }
+                }
+            });
+            com.horovod.timecountfxprobe.view.EditingCell.this.textField.selectAll();
+
+        }
+
+        private String getString() {
+            return (String) (getItem() == null ? "" : getItem().toString());
+        }
+
+    }
+    // конец класса EditingCell*/
+
+
 }

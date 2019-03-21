@@ -142,7 +142,7 @@ public class AllData {
     public static String status = "Все нормально";
 
 
-    public static void rebuildHTTPAddresses() {
+    public static synchronized void rebuildHTTPAddresses() {
         httpUpdate = httpAddress + "/receiveupdate";
         httpGetProjectID = httpAddress + "/projectid";
         httpGetUserID = httpAddress + "/userid";
@@ -186,7 +186,7 @@ public class AllData {
     }*/
 
 
-    public static ObservableMap<Integer, Project> getAllProjects() {
+    public static synchronized ObservableMap<Integer, Project> getAllProjects() {
         return allProjects;
     }
 
@@ -197,30 +197,34 @@ public class AllData {
 
     }
 
-    public static Map<Integer, Project> getActiveProjects() {
+    public static synchronized Map<Integer, Project> getActiveProjects() {
         return activeProjects;
     }
 
 
-    public static int getWorkSumProjects() {
+
+    public static synchronized int getWorkSumProjects() {
         return workSumProjects.get();
     }
 
-    public static void setWorkSumProjects(int newWorkSum) {
+    public static synchronized void setWorkSumProjects(int newWorkSum) {
         AllData.workSumProjects.set(newWorkSum);
     }
 
     private static synchronized void addWorkSumProjects(int addTime) {
         AllData.workSumProjects.addAndGet(addTime);
-        AllData.workSumProjectsProperty.set(AllData.intToDouble(workSumProjects.get()));
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.workSumProjectsProperty.set(AllData.intToDouble(workSumProjects.get()));
+            }
+        });
+
     }
 
 
-    public static double getWorkSumProjectsProperty() {
-        return workSumProjectsProperty.get();
-    }
 
-    public static DoubleProperty workSumProjectsProperty() {
+    public static synchronized DoubleProperty workSumProjectsProperty() {
         return workSumProjectsProperty;
     }
 
@@ -229,47 +233,57 @@ public class AllData {
         for (Project p : allProjects.values()) {
             counter += p.getWorkSum();
         }
+        final int counterFin = counter;
         AllData.workSumProjects.set(counter);
-        AllData.workSumProjectsProperty.set(AllData.intToDouble(counter));
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.workSumProjectsProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
-    public static double getLimitTimeForStaffWindow() {
+    public static synchronized double getLimitTimeForStaffWindow() {
         return limitTimeForStaffWindow;
     }
 
-    public static void setLimitTimeForStaffWindow(double limitTimeForStaffWindow) {
+    public static synchronized void setLimitTimeForStaffWindow(double limitTimeForStaffWindow) {
         AllData.limitTimeForStaffWindow = limitTimeForStaffWindow;
     }
 
-    public static int getLimitMoneyForStaffWindow() {
+    public static synchronized int getLimitMoneyForStaffWindow() {
         return limitMoneyForStaffWindow;
     }
 
-    public static void setLimitMoneyForStaffWindow(int limitMoneyForStaffWindow) {
+    public static synchronized void setLimitMoneyForStaffWindow(int limitMoneyForStaffWindow) {
         AllData.limitMoneyForStaffWindow = limitMoneyForStaffWindow;
     }
 
 
 
-    public static DoubleProperty todayWorkSumProperty() {
+    public static synchronized DoubleProperty todayWorkSumProperty() {
         return todayWorkSumProperty;
     }
 
     public static synchronized void rebuildTodayWorkSumProperty() {
-
         int counter = 0;
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(LocalDate.now())) {
                 counter += p.getWorkSumForDate(LocalDate.now());
             }
         }
-        AllData.todayWorkSumProperty.set(AllData.intToDouble(counter));
-
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.todayWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
-    public static DoubleProperty weekWorkSumPropertyProperty() {
+    public static synchronized DoubleProperty weekWorkSumPropertyProperty() {
         return weekWorkSumProperty;
     }
 
@@ -280,11 +294,17 @@ public class AllData {
                 counter += p.getWorkSumForWeek(year, week);
             }
         }
-        AllData.weekWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.weekWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
-    public static DoubleProperty monthWorkSumPropertyProperty() {
+    public static synchronized DoubleProperty monthWorkSumPropertyProperty() {
         return monthWorkSumProperty;
     }
 
@@ -295,11 +315,17 @@ public class AllData {
                 counter += p.getWorkSumForMonth(year, month);
             }
         }
-        AllData.monthWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.monthWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
-    public static DoubleProperty yearWorkSumPropertyProperty() {
+    public static synchronized DoubleProperty yearWorkSumPropertyProperty() {
         return yearWorkSumProperty;
     }
 
@@ -310,12 +336,18 @@ public class AllData {
                 counter += p.getWorkSumForYear(year);
             }
         }
-        AllData.yearWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.yearWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
 
-    public static DoubleProperty designerDayWorkSumProperty() {
+    public static synchronized DoubleProperty designerDayWorkSumProperty() {
         return designerDayWorkSumProperty;
     }
 
@@ -326,11 +358,17 @@ public class AllData {
                 counter += p.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
             }
         }
-        AllData.designerDayWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.designerDayWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
-    public static DoubleProperty designerWeekWorkSumProperty() {
+    public static synchronized DoubleProperty designerWeekWorkSumProperty() {
         return designerWeekWorkSumProperty;
     }
 
@@ -341,10 +379,16 @@ public class AllData {
                 counter += p.getWorkSumForDesignerAndWeek(AllUsers.getCurrentUser(), year, week);
             }
         }
-        AllData.designerWeekWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.designerWeekWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
-    public static DoubleProperty designerMonthWorkSumProperty() {
+    public static synchronized DoubleProperty designerMonthWorkSumProperty() {
         return designerMonthWorkSumProperty;
     }
 
@@ -355,11 +399,17 @@ public class AllData {
                 counter += p.getWorkSumForDesignerAndMonth(AllUsers.getCurrentUser(), year, month);
             }
         }
-        AllData.designerMonthWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.designerMonthWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
 
-    public static DoubleProperty designerYearWorkSumProperty() {
+    public static synchronized DoubleProperty designerYearWorkSumProperty() {
         return designerYearWorkSumProperty;
     }
 
@@ -370,10 +420,16 @@ public class AllData {
                 counter += p.getWorkSumForDesignerAndYear(AllUsers.getCurrentUser(), year);
             }
         }
-        AllData.designerYearWorkSumProperty.set(AllData.intToDouble(counter));
+        final int counterFin = counter;
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                AllData.designerYearWorkSumProperty.set(AllData.intToDouble(counterFin));
+            }
+        });
     }
 
-    public static int getWorkSumForDesignerAndPeriod(int designerID, LocalDate from, LocalDate till) {
+    public static synchronized int getWorkSumForDesignerAndPeriod(int designerID, LocalDate from, LocalDate till) {
         int workTime = 0;
         for (Project p : allProjects.values()) {
             workTime += p.getWorkSumForDesignerAndPeriod(designerID, from, till);
@@ -388,7 +444,7 @@ public class AllData {
 
     public static synchronized boolean addWorkTime(int projectIDnumber, LocalDate correctDate, int idUser, double newTime) {
 
-        if (!AllUsers.isUserExist(idUser) || AllUsers.isUserDeleted(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
+        if (!AllUsers.isUserExist(idUser) || !AllUsers.getOneUser(idUser).getRole().equals(Role.DESIGNER)) {
             return false;
         }
 
@@ -396,10 +452,13 @@ public class AllData {
             return false;
         }*/
 
-        if (isProjectExist(projectIDnumber) && (!isProjectArchive(projectIDnumber))) {
+        if (isProjectExist(projectIDnumber)) {
 
             Project project = getAnyProject(projectIDnumber);
-            int difference = project.addWorkTime(correctDate, idUser, newTime);
+            Integer difference = project.addWorkTime(correctDate, idUser, newTime);
+            if (difference == null) {
+                return false;
+            }
 
             addWorkSumProjects(difference);
 
@@ -421,11 +480,17 @@ public class AllData {
             AllData.status = "AllData.addWorkTime - Локально добавлено/изменено рабочее время в проекте id-" + projectIDnumber;
             AllData.updateAllStatus();
 
-            WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
-
-            Updater.update(UpdateType.UPDATE_TIME, workTime);
-
-            return true;
+            if (newTime == 0) {
+                Updater.update(UpdateType.UPDATE_TIME, new WorkTime(projectIDnumber, AllData.formatDate(correctDate), idUser, 0));
+                return true;
+            }
+            else {
+                WorkTime workTime = AllData.getAnyProject(projectIDnumber).getWorkTimeForDesignerAndDate(idUser, correctDate);
+                if (workTime != null) {
+                    Updater.update(UpdateType.UPDATE_TIME, workTime);
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -455,18 +520,18 @@ public class AllData {
     }
 
 
-    public static boolean containsWorkTime(int projectID, int designerID, LocalDate date) {
+    public static synchronized boolean containsWorkTime(int projectID, int designerID, LocalDate date) {
         if (allProjects.containsKey(projectID)) {
             return allProjects.get(projectID).containsWorkTime(designerID, date);
         }
         return false;
     }
 
-    public static IntegerProperty designerRatingPositionProperty() {
+    public static synchronized IntegerProperty designerRatingPositionProperty() {
         return designerRatingPosition;
     }
 
-    public static void rebuildDesignerRatingPosition() {
+    public static synchronized void rebuildDesignerRatingPosition() {
 
         Map<Integer, Integer> places = new TreeMap<>(Collections.reverseOrder());
 
@@ -484,7 +549,12 @@ public class AllData {
         List<Integer> listPlaces = new ArrayList<>(places.values());
         int result = listPlaces.indexOf(AllUsers.getCurrentUser());
         
-        designerRatingPosition.set(result + 1);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                designerRatingPosition.set(result + 1);
+            }
+        });
     }
 
 
@@ -493,28 +563,28 @@ public class AllData {
      * @return null
      * */
 
-    public static Project getOneActiveProject(int idActiveProject) {
+    public static synchronized Project getOneActiveProject(int idActiveProject) {
         if (isProjectExist(idActiveProject)) {
             return activeProjects.get(idActiveProject);
         }
         return null;
     }
 
-    public static Project getAnyProject(int idProject) {
+    public static synchronized Project getAnyProject(int idProject) {
         if (isProjectExist(idProject)) {
             return allProjects.get(idProject);
         }
         return null;
     }
 
-    public static Project getOneArchiveProject(int idArchiveProject) {
+    public static synchronized Project getOneArchiveProject(int idArchiveProject) {
         if (isProjectArchive(idArchiveProject)) {
             return allProjects.get(idArchiveProject);
         }
         return null;
     }
 
-    public static List<Project> getActiveProjectsForPeriodCreation(LocalDate fromDate, LocalDate tillDate) {
+    public static synchronized List<Project> getActiveProjectsForPeriodCreation(LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             LocalDate date = AllData.parseDate(p.getDateCreationString());
@@ -526,7 +596,7 @@ public class AllData {
     }
 
 
-    public static List<Project> getActiveProjectsForDesignerAndDate(int designerIDnumber, LocalDate workDate) {
+    public static synchronized List<Project> getActiveProjectsForDesignerAndDate(int designerIDnumber, LocalDate workDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, workDate)) {
@@ -536,7 +606,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForPeriod(LocalDate fromDate, LocalDate tillDate) {
+    public static synchronized List<Project> getActiveProjectsForPeriod(LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(fromDate, tillDate)) {
@@ -546,7 +616,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForDate(LocalDate argDate) {
+    public static synchronized List<Project> getActiveProjectsForDate(LocalDate argDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(argDate)) {
@@ -556,7 +626,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+    public static synchronized List<Project> getActiveProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : activeProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
@@ -566,7 +636,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForDesignerAndMonth(int designerIDnumber, Year year, Month month) {
+    public static synchronized List<Project> getActiveProjectsForDesignerAndMonth(int designerIDnumber, Year year, Month month) {
         List<Project> result = new ArrayList<>();
         LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
         LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
@@ -578,7 +648,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getActiveProjectsForMonth(Year year, Month month) {
+    public static synchronized List<Project> getActiveProjectsForMonth(Year year, Month month) {
         List<Project> result = new ArrayList<>();
         LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
         LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
@@ -591,7 +661,7 @@ public class AllData {
     }
 
 
-    public static List<Project> getAllProjectsForMonth(Year year, Month month) {
+    public static synchronized List<Project> getAllProjectsForMonth(Year year, Month month) {
         List<Project> result = new ArrayList<>();
         LocalDate fromDate = LocalDate.of(year.getValue(), month.getValue(), 1);
         LocalDate tillDate = LocalDate.of(year.getValue(), month.getValue(), month.length(year.isLeap()));
@@ -606,7 +676,7 @@ public class AllData {
 
 
 
-    public static List<Project> getAllProjectsForPeriodCreation(LocalDate fromDate, LocalDate tillDate) {
+    public static synchronized List<Project> getAllProjectsForPeriodCreation(LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             LocalDate date = AllData.parseDate(p.getDateCreationString());
@@ -618,7 +688,7 @@ public class AllData {
     }
 
 
-    public static List<Project> getAllProjectsForDesignerAndDate(int designerIDnumber, LocalDate workDate) {
+    public static synchronized List<Project> getAllProjectsForDesignerAndDate(int designerIDnumber, LocalDate workDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, workDate)) {
@@ -628,7 +698,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForPeriod(LocalDate fromDate, LocalDate tillDate) {
+    public static synchronized List<Project> getAllProjectsForPeriod(LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(fromDate, tillDate)) {
@@ -638,7 +708,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDate(LocalDate argDate) {
+    public static synchronized List<Project> getAllProjectsForDate(LocalDate argDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(argDate)) {
@@ -648,7 +718,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
+    public static synchronized List<Project> getAllProjectsForDesignerAndPeriod(int designerIDnumber, LocalDate fromDate, LocalDate tillDate) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTime(designerIDnumber, fromDate, tillDate)) {
@@ -658,7 +728,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDesignerAndWeek(int designerIDnumber, int year, int week) {
+    public static synchronized List<Project> getAllProjectsForDesignerAndWeek(int designerIDnumber, int year, int week) {
         List<Project> result = new ArrayList<>();
         for (Project p : allProjects.values()) {
             if (p.containsWorkTimeForDesignerAndWeek(designerIDnumber, year, week)) {
@@ -668,7 +738,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDesignerAndMonth(int designerIDnumber, int year, int month) {
+    public static synchronized List<Project> getAllProjectsForDesignerAndMonth(int designerIDnumber, int year, int month) {
         List<Project> result = new ArrayList<>();
         LocalDate fromDate = LocalDate.of(year, month, 1);
         LocalDate tillDate = LocalDate.of(year, month, fromDate.getMonth().length(Year.from(fromDate).isLeap()));
@@ -680,7 +750,7 @@ public class AllData {
         return result;
     }
 
-    public static List<Project> getAllProjectsForDesignerAndYear(int designerIDnumber, int year) {
+    public static synchronized List<Project> getAllProjectsForDesignerAndYear(int designerIDnumber, int year) {
         List<Project> result = new ArrayList<>();
         LocalDate fromDate = LocalDate.of(year, 1, 1);
         LocalDate tillDate = LocalDate.of(year, 12, 31);
@@ -697,7 +767,7 @@ public class AllData {
 
     /** Методы добавления, удаления проектов */
 
-    public synchronized static Project createProject(int projectID, String company, String manager, String description, LocalDate newDate) {
+    public static synchronized Project createProject(int projectID, String company, String manager, String description, LocalDate newDate) {
 
         if (company == null || company.isEmpty()) {
             return null;
@@ -730,7 +800,7 @@ public class AllData {
 
 
 
-    public synchronized static boolean deleteProject(int deadProject) {
+    public static synchronized boolean deleteProject(int deadProject) {
         if (isProjectExist(deadProject)) {
             int deleteWorkTime = allProjects.get(deadProject).getWorkSum();
             allProjects.remove(deadProject);
@@ -798,7 +868,7 @@ public class AllData {
                 }
                 // TODO сюда добавить сюрвеора, когда будет написан
                 if (AllData.statisticManagerWindowController != null) {
-                    AllData.statisticManagerWindowController.initialize();
+                    AllData.statisticManagerWindowController.updateStatisticManagerWindow();
                 }
                 if (AllData.statisticWindowController != null) {
                     AllData.statisticWindowController.initialize();
@@ -852,11 +922,11 @@ public class AllData {
 
 
 
-    public static void updateTimeStamp() {
+    public static synchronized void updateTimeStamp() {
         timeStamp = formatDateTime(LocalDateTime.now()) + " - ";
     }
 
-    public static void resetStatus() {
+    public static synchronized void resetStatus() {
         updateTimeStamp();
         AllData.status = "Все нормально";
     }
@@ -866,7 +936,7 @@ public class AllData {
     /** Методы проверки существования проекта в списке
      * и его проверки на архивное состояние */
 
-    public static boolean isProjectExist(int idProject) {
+    public static synchronized boolean isProjectExist(int idProject) {
         if (idProject <= 0) {
             return false;
         }
@@ -876,7 +946,7 @@ public class AllData {
     // Перед применением данного метода ВСЕГДА сначала вызывать isProjectExist(int idProject),
     // то есть проверять проект на существование
     // Проверку сюда вставлять нельзя, т.к. при отсутствии непонятно, что возвращать
-    public static boolean isProjectArchive(int idProject) {
+    public static synchronized boolean isProjectArchive(int idProject) {
         return allProjects.get(idProject).isArchive();
     }
 
@@ -917,7 +987,7 @@ public class AllData {
         }
     }
 
-    public static void rebuildEditProjectsControllers() {
+    public static synchronized void rebuildEditProjectsControllers() {
         Iterator<Map.Entry<Integer, EditProjectWindowController>> iter = editProjectWindowControllers.entrySet().iterator();
         while (iter.hasNext()) {
             if (iter.next().getValue() == null) {
@@ -930,12 +1000,12 @@ public class AllData {
 
     /** методы-утилиты */
 
-    public static int doubleToInt(double argument) {
+    public static synchronized int doubleToInt(double argument) {
         double tmp = argument * 10;
         return (int) formatDouble(tmp, 0);
     }
 
-    public static double intToDouble(int argument) {
+    public static synchronized double intToDouble(int argument) {
         double tmp = (double) argument;
         double tmp2 = tmp / 10;
         BigDecimal result = new BigDecimal(Double.toString(tmp2));
@@ -943,14 +1013,14 @@ public class AllData {
         return result.doubleValue();
     }
 
-    public static double formatDouble(double argDouble, int scale) {
+    public static synchronized double formatDouble(double argDouble, int scale) {
         BigDecimal result = new BigDecimal(Double.toString(argDouble));
         result = result.setScale(scale, RoundingMode.HALF_UP);
         return result.doubleValue();
     }
 
 
-    public static String formatWorkTime(Double timeDouble) {
+    public static synchronized String formatWorkTime(Double timeDouble) {
 
         if (timeDouble == 0d) {
             return "-";
@@ -962,7 +1032,7 @@ public class AllData {
         return result;
     }
 
-    public static String formatHours(String input) {
+    public static synchronized String formatHours(String input) {
 
         if (input.endsWith(".0")) {
             input = input.replaceAll("\\.0", "");
@@ -986,7 +1056,7 @@ public class AllData {
         return "часов";
     }
 
-    public static String formatStringInputDouble(String oldText, String input, int scale) {
+    public static synchronized String formatStringInputDouble(String oldText, String input, int scale) {
 
         if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
             return "-";
@@ -1028,7 +1098,7 @@ public class AllData {
 
 
 
-    public static int getIntFromText(int current, String input) {
+    public static synchronized int getIntFromText(int current, String input) {
 
         if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
             return 0;
@@ -1051,7 +1121,7 @@ public class AllData {
 
 
 
-    public static String formatStringInputInteger(String oldText, String input) {
+    public static synchronized String formatStringInputInteger(String oldText, String input) {
 
         if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
             return "-";
@@ -1087,7 +1157,7 @@ public class AllData {
         return String.valueOf(res);
     }
 
-    public static String formatInputInteger(Integer input) {
+    public static synchronized String formatInputInteger(Integer input) {
 
         if (input == null || input == 0) {
             return "-";
@@ -1115,7 +1185,7 @@ public class AllData {
     }
 
 
-    public static Integer parseMoney(Integer oldValue, String input) {
+    public static synchronized Integer parseMoney(Integer oldValue, String input) {
 
         if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
             return 0;
@@ -1139,7 +1209,7 @@ public class AllData {
     }
 
 
-    public static List<WorkDay> convertWorkTimesToWorkDays(List<WorkTime> workTimeList) {
+    public static synchronized List<WorkDay> convertWorkTimesToWorkDays(List<WorkTime> workTimeList) {
         List<WorkDay> result = new ArrayList<>();
         if (workTimeList == null || workTimeList.isEmpty()) {
             return result;
@@ -1176,14 +1246,14 @@ public class AllData {
 
 
 
-    public static String formatDate(LocalDate date) {
+    public static synchronized String formatDate(LocalDate date) {
         if (date == null) {
             return null;
         }
         return DATE_FORMATTER.format(date);
     }
 
-    public static LocalDate parseDate(String dateString) {
+    public static synchronized LocalDate parseDate(String dateString) {
         try {
             return DATE_FORMATTER.parse(dateString, LocalDate::from);
         } catch (Exception e) {
@@ -1191,7 +1261,7 @@ public class AllData {
         }
     }
 
-    public static String formatDateTime(LocalDateTime dateTime) {
+    public static synchronized String formatDateTime(LocalDateTime dateTime) {
         if (TIME_FORMATTER == null) {
             TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss.SSS");
         }
@@ -1214,7 +1284,7 @@ public class AllData {
         }
     }
 
-    public static boolean validDate(String dateString) {
+    public static synchronized boolean validDate(String dateString) {
         return parseDate(dateString) != null;
     }
 

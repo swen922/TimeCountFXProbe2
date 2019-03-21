@@ -172,6 +172,11 @@
             </Button>
          </children>
       </AnchorPane>
-      <Button layoutX="1337.0" layoutY="495.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="closeButton" layoutX="1337.0" layoutY="495.0" minWidth="70.0" mnemonicParsing="false" onAction="#handleCloseButton" text="Закрыть" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="10.0" />
+      <Label fx:id="totalTimeLabel" layoutX="60.0" layoutY="703.0" text="Итого" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="85.0">
+         <font>
+            <Font name="System Bold" size="20.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

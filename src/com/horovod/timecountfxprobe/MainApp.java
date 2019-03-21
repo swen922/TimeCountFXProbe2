@@ -2,7 +2,10 @@ package com.horovod.timecountfxprobe;
 
 
 import com.horovod.timecountfxprobe.project.AllData;
+import com.horovod.timecountfxprobe.project.WorkTime;
 import com.horovod.timecountfxprobe.serialize.Loader;
+import com.horovod.timecountfxprobe.serialize.SerializeWrapper;
+import com.horovod.timecountfxprobe.serialize.UpdateType;
 import com.horovod.timecountfxprobe.serialize.Updater;
 import com.horovod.timecountfxprobe.test.Generator;
 import com.horovod.timecountfxprobe.threads.ThreadStartCheckingWaitingTasks;
@@ -35,6 +38,9 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+        AllData.logger.info("-");
+        AllData.logger.info("Запускаю JavaFX приложение...");
 
         this.primaryStage = primaryStage;
         AllData.primaryStage = primaryStage;
@@ -441,11 +447,12 @@ public class MainApp extends Application {
             statStage.initModality(Modality.NONE);
             Scene scene = new Scene(statisticWindow);
             statStage.setScene(scene);
+            StatisticWindowController controller = loader.getController();
 
-            AllData.statisticWindowController = loader.getController();
             AllData.statisticStage = statStage;
+            AllData.statisticWindowController = controller;
 
-            statStage.show();
+            AllData.statisticStage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -464,10 +471,14 @@ public class MainApp extends Application {
             stManagerStage.initModality(Modality.NONE);
             Scene scene = new Scene(stManagerWindow);
             stManagerStage.setScene(scene);
-            stManagerStage.show();
+            StatisticManagerWindowController controller = loader.getController();
 
-            AllData.statisticManagerWindowController = loader.getController();
+
+            AllData.statisticManagerWindowController = controller;
             AllData.statisticManagerStage = stManagerStage;
+
+            AllData.statisticManagerStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
             AllData.logger.error(e.getMessage(), e);

@@ -1,6 +1,7 @@
 package com.horovod.timecountfxprobe.serialize;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
@@ -9,11 +10,20 @@ import com.horovod.timecountfxprobe.user.*;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Objects;
 
 @JsonAutoDetect
 @XmlRootElement(name = "serializewrapper")
 public class SerializeWrapper {
+
+
+    @JsonDeserialize(as = String.class)
+    private String login;
+
+    @JsonDeserialize(as = SecurePassword.class)
+    private SecurePassword securePassword;
+
 
     @JsonDeserialize(as = UpdateType.class)
     private UpdateType updateType;
@@ -40,40 +50,52 @@ public class SerializeWrapper {
     private Surveyor surveyor;
 
 
+    @JsonIgnore
+    private Object object;
 
-    @JsonDeserialize(as = String.class)
-    private String login;
-
-    @JsonDeserialize(as = SecurePassword.class)
-    private SecurePassword securePassword;
 
 
     public SerializeWrapper(UpdateType updateType, Object object) {
+
         this.updateType = updateType;
 
         if (updateType.equals(UpdateType.UPDATE_TIME)) {
             this.workTime = (WorkTime) object;
+            this.object = this.workTime;
         }
         else if (updateType.equals(UpdateType.UPDATE_PROJECT) || updateType.equals(UpdateType.CREATE_PROJECT)) {
             this.project = (Project) object;
+            this.object = this.project;
         }
         else if (updateType.equals(UpdateType.DELETE_PROJECT)) {
             this.deletedProjectID = (Integer) object;
+            this.object = this.deletedProjectID;
         }
         else if (updateType.equals(UpdateType.UPDATE_DESIGNER) || updateType.equals(UpdateType.CREATE_DESIGNER)) {
             this.designer = (Designer) object;
+            this.object = this.designer;
         }
         else if (updateType.equals(UpdateType.UPDATE_MANAGER) || updateType.equals(UpdateType.CREATE_MANAGER)) {
             this.manager = (Manager) object;
+            this.object = this.manager;
         }
         else if (updateType.equals(UpdateType.UPDATE_ADMIN) || updateType.equals(UpdateType.CREATE_ADMIN)) {
             this.admin = (Admin) object;
+            this.object = this.admin;
         }
         else if (updateType.equals(UpdateType.UPDATE_SURVEYOR) || updateType.equals(UpdateType.CREATE_SURVEYOR)) {
             this.surveyor = (Surveyor) object;
+            this.object = this.surveyor;
         }
 
-        if (AllData.tableProjectsManagerController == null && AllData.adminWindowController == null) {
+        if (AllUsers.isUserExist(AllUsers.getCurrentUser())) {
+
+            this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
+            this.securePassword = AllUsers.getOneUser(AllUsers.getCurrentUser()).getSecurePassword();
+
+        }
+        else if (AllData.tableProjectsManagerController == null && AllData.adminWindowController == null) {
+
             if (updateType.equals(UpdateType.CREATE_ADMIN)) {
                 this.login = this.admin.getNameLogin();
                 this.securePassword = this.admin.getSecurePassword();
@@ -91,10 +113,7 @@ public class SerializeWrapper {
                 this.securePassword = this.surveyor.getSecurePassword();
             }
         }
-        else if (AllUsers.isUserExist(AllUsers.getCurrentUser())) {
-            this.login = AllUsers.getOneUser(AllUsers.getCurrentUser()).getNameLogin();
-            this.securePassword = AllUsers.getOneUser(AllUsers.getCurrentUser()).getSecurePassword();
-        }
+
     }
 
     public SerializeWrapper() {
@@ -140,6 +159,12 @@ public class SerializeWrapper {
         return surveyor;
     }
 
+
+    /** Метод для проверки, есть ли во вроппере хоть один корректный объект */
+    @XmlTransient
+    public Object getObject() {
+        return object;
+    }
 
 
     @XmlElement(name = "userlogininwrapper")

@@ -274,7 +274,7 @@ public class TableProjectsDesignerController {
 
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCell(FillChartMode.TIME);
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCellTime();
 
         columnTime.setCellFactory(cellFactory);
 
@@ -300,6 +300,11 @@ public class TableProjectsDesignerController {
                 double newTimeDouble = AllData.getDoubleFromText(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())), event.getNewValue(), 1);
                 boolean added = AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
 
+                System.out.println("project = " + project);
+                System.out.println(newTimeDouble);
+                System.out.println(added);
+
+
                 if (added) {
                     // код для мгновенного обновления страниц у менеджера
                     if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
@@ -311,11 +316,11 @@ public class TableProjectsDesignerController {
                     initialize();
                 }
                 else {
-                    // TODO Написать алерт или еще как-то показать, что не добавлено
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Ошибка добавления времени");
                     alert.setHeaderText("Не удалось добавить / изменить рабочее время в проекте id-" + project.getIdNumber());
                     alert.showAndWait();
+                    initialize();
                 }
 
                 /*filterField.setText("-");
@@ -960,23 +965,33 @@ public class TableProjectsDesignerController {
 
                 Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
 
+
                 if (entry.getValue().isArchive()) {
                     openFolderButton.setDisable(true);
                     setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+
+                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                        infoButton.setDisable(true);
+                    }
+                    else {
+                        infoButton.setDisable(false);
+                    }
                 }
                 else {
                     openFolderButton.setDisable(false);
                     setStyle(null);
+
+                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                        openFolderButton.setDisable(true);
+                        infoButton.setDisable(true);
+                    }
+                    else {
+                        openFolderButton.setDisable(false);
+                        infoButton.setDisable(false);
+                    }
                 }
 
-                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
-                    openFolderButton.setDisable(true);
-                    infoButton.setDisable(true);
-                }
-                else {
-                    openFolderButton.setDisable(false);
-                    infoButton.setDisable(false);
-                }
+
 
                 openFolderButton.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -1048,5 +1063,117 @@ public class TableProjectsDesignerController {
         }
 
     } // Конец класса DesignerCell
+
+
+    class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
+
+        private TextField textField;
+
+        public EditingCell() {
+        }
+
+        @Override
+        public void startEdit() {
+            if (!isEmpty()) {
+                super.startEdit();
+                createTextField();
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+            }
+
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(null);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+
+            super.updateItem(item, empty);
+            if (empty) {
+
+                setText(null);
+                setGraphic(null);
+            }
+            else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(null);
+                }
+                else {
+                    setText(getString());
+                    setGraphic(null);
+                }
+            }
+        }
+
+        private void createTextField() {
+            String oldText = getString();
+            textField = new TextField(oldText);
+            textField.setAlignment(Pos.CENTER);
+            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent event) {
+                    KeyCode keyCode = event.getCode();
+                    if (keyCode == KeyCode.ENTER) {
+                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        EditingCell.this.getTableView().requestFocus();
+                        EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        initialize();
+                        //projectsTable.refresh();
+                    }
+                }
+            });
+            /*textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    if (!newValue) {
+                        commitEdit(formatStringInput(oldText, textField.getText()));
+                        EditingCell.this.getTableView().requestFocus();
+                        EditingCell.this.getTableView().getSelectionModel().selectAll();
+                        initialize();
+                        //projectsTable.refresh();
+                    }
+                }
+            });*/
+            EditingCell.this.textField.selectAll();
+
+        }
+
+        private String formatStringInput(String oldText, String input) {
+            String newText = input.replaceAll(" ", ".");
+            newText = newText.replaceAll("-", ".");
+            newText = newText.replaceAll(",", ".");
+            newText = newText.replaceAll("=", ".");
+
+            Double newTimeDouble = null;
+            try {
+                newTimeDouble = Double.parseDouble(newText);
+            } catch (NumberFormatException e) {
+                return oldText;
+            }
+            if (newTimeDouble != null) {
+                newText = String.valueOf(AllData.formatDouble(newTimeDouble, 2));
+                return newText;
+            }
+
+            return oldText;
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    } // Конец класса EditingCell
+
 
 }

@@ -77,6 +77,12 @@ public class StatisticManagerWindowController {
     @FXML
     private Label yearWorkSumLabel;
 
+    @FXML
+    private Label totalTimeLabel;
+
+    @FXML
+    private Button closeButton;
+
 
     @FXML
     private ChoiceBox<String> fillModeChoiceBox;
@@ -98,7 +104,9 @@ public class StatisticManagerWindowController {
 
 
     @FXML
-    public void initialize() {
+    private void initialize() {
+
+        initUsersChoiceBoxes();
 
         initializeChoiceBoxes();
 
@@ -112,7 +120,27 @@ public class StatisticManagerWindowController {
 
         initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
         initWorkSumLabels();
-        initUsersChoiceBoxes();
+        initUserDateText();
+        initUserProjectText();
+    }
+
+    public void updateStatisticManagerWindow() {
+
+        //initUsersChoiceBoxes();
+        updateUsersChoiceBoxes();
+
+        //initializeChoiceBoxes();
+
+        LocalDate now = LocalDate.now();
+        Year year = Year.from(now);
+        Month month = now.getMonth();
+        AllData.rebuildTodayWorkSumProperty();
+        AllData.rebuildWeekWorkSumProperty(year.getValue(), now.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear()));
+        AllData.rebuildMonthWorkSumProperty(year.getValue(), month.getValue());
+        AllData.rebuildYearWorkSumProperty(year.getValue());
+
+        initializeBarChart(FillChartMode.DAILY, LocalDate.of(year.getValue(), month.getValue(), 1));
+        initWorkSumLabels();
         initUserDateText();
         initUserProjectText();
     }
@@ -144,9 +172,19 @@ public class StatisticManagerWindowController {
         sortUsers();
         users.add(0, allUsers);
         userForDayChoiceBox.setItems(users);
-        userForDayChoiceBox.setValue(users.get(0));
+        userForDayChoiceBox.setValue(allUsers);
         userForProjectChoiceBox.setItems(users);
-        userForProjectChoiceBox.setValue(users.get(0));
+        userForProjectChoiceBox.setValue(allUsers);
+    }
+
+    private void updateUsersChoiceBoxes() {
+        List<String> usersForChoiceBox = new ArrayList<>();
+        for (User u : AllUsers.getActiveDesigners().values()) {
+            usersForChoiceBox.add(u.getFullName());
+        }
+        users = FXCollections.observableArrayList(usersForChoiceBox);
+        sortUsers();
+        users.add(0, allUsers);
     }
 
 
@@ -332,25 +370,30 @@ public class StatisticManagerWindowController {
     private void fillXYBarChartSeries(FillChartMode mode, LocalDate from) {
 
         Map<String, Double> workSums = new TreeMap<>();
+        int total = 0;
+        String totalString = "";
 
         if (mode.equals(FillChartMode.DAILY)) {
+
             for (int i = 0; i < from.getMonth().length(Year.from(from).isLeap()); i++) {
                 LocalDate oneDay = from.plusDays(i);
-                List<Project> tmp = AllData.getAllProjectsForDate(oneDay);
+                List<Project> tmp = new ArrayList<>(AllData.getAllProjectsForDate(oneDay));
                 int sum = 0;
                 for (Project p : tmp) {
                     sum += p.getWorkSumForDate(oneDay);
                 }
                 workSums.put(String.valueOf(i + 1), AllData.intToDouble(sum));
+                total += sum;
             }
+            totalString = "Итого в месяц = " + AllData.formatWorkTime(AllData.intToDouble(total)) + " " + AllData.formatHours(String.valueOf(AllData.intToDouble(total)));
+
         }
         else if (mode.equals(FillChartMode.MONTHLY)) {
-
             Year year = Year.from(from);
 
             for (int i = 0; i < 12; i++) {
                 Month month = from.getMonth().plus(i);
-                List<Project> monthlyProjects = AllData.getAllProjectsForMonth(year, month);
+                List<Project> monthlyProjects = new ArrayList<>(AllData.getAllProjectsForMonth(year, month));
                 int sum = 0;
                 for (Project p : monthlyProjects) {
                     LocalDate fromdate = LocalDate.of(year.getValue(), month.getValue(), 1);
@@ -358,8 +401,13 @@ public class StatisticManagerWindowController {
                     sum += p.getWorkSumForPeriod(fromdate, tillDate);
                 }
                 workSums.put(month.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()), AllData.intToDouble(sum));
+                total += sum;
             }
+            //String totalFormatted = AllData.formatDouble(AllData.intToDouble(total), 2);
+            totalString = "Итого в год = " + AllData.formatWorkTime(AllData.intToDouble(total)) + " " + AllData.formatHours(String.valueOf(AllData.intToDouble(total)));
+
         }
+        totalTimeLabel.setText(totalString);
 
         workTimeForBarChart.clear();
 
@@ -589,6 +637,7 @@ public class StatisticManagerWindowController {
     }
 
     public void handleCloseButton() {
+
         AllData.statisticManagerStage.close();
     }
 

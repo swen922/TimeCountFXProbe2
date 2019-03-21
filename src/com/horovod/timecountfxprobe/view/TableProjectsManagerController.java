@@ -578,10 +578,6 @@ public class TableProjectsManagerController {
 
                         User user = AllUsers.getOneUserForFullName(selectUser);
 
-
-                        System.out.println(user);
-
-
                         Role role = user.getRole();
 
                         if (role.equals(Role.DESIGNER)) {
@@ -923,7 +919,16 @@ public class TableProjectsManagerController {
     }
 
     public void handleStatisticButton() {
-        AllData.mainApp.showStatisticManagerWindow();
+
+        //AllData.mainApp.showStatisticManagerWindow();
+
+        if (AllData.statisticManagerStage != null) {
+            AllData.statisticManagerStage.hide();
+            AllData.statisticManagerStage.show();
+        }
+        else {
+            AllData.mainApp.showStatisticManagerWindow();
+        }
     }
 
     public void handleAbout() {
@@ -1077,7 +1082,6 @@ public class TableProjectsManagerController {
                 writer.flush();
             }
             catch (Exception ex) {
-                ex.printStackTrace();
                 AllData.logger.error(ex.getMessage(), ex);
 
             }
@@ -1188,7 +1192,6 @@ public class TableProjectsManagerController {
                 writer.flush();
             }
             catch (Exception ex) {
-                ex.printStackTrace();
                 AllData.logger.error(ex.getMessage(), ex);
 
             }
@@ -1196,30 +1199,6 @@ public class TableProjectsManagerController {
 
     }
 
-
-
-    public void testAdd() {
-
-        /*Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                System.out.println("inside call()");
-                AllData.addWorkTime(12, LocalDate.now(),5, 60);
-                return null;
-            }
-        };
-        *//** ОБЯЗАТЕЛЬНО к использованию! *//*
-        Platform.runLater(task);*/
-
-        /*Thread t = new Thread(task);
-        t.setDaemon(true);
-        t.start();*/
-
-
-        TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
-        testBackgroundUpdate01.testBackgroundAddTime();
-
-    }
 
     public void testDelete() {
         TestBackgroundUpdate01 testBackgroundUpdate01 = new TestBackgroundUpdate01();
@@ -1230,10 +1209,10 @@ public class TableProjectsManagerController {
 
 
     class ManagerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
-        private final Button openFolderButton = new Button("Туда");
-        private final Button manageButton = new Button("Инфо");
-        private final CheckBox archiveCheckBox = new CheckBox("Архивный");
-        private final Button deleteButton = new Button("X");
+        private Button openFolderButton = new Button("Туда");
+        private Button manageButton = new Button("Инфо");
+        private CheckBox archiveCheckBox = new CheckBox("Архивный");
+        private Button deleteButton = new Button("X");
 
         String startPath = "/Volumes/design/";
 
@@ -1247,27 +1226,38 @@ public class TableProjectsManagerController {
                 Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
 
                 if (entry.getValue().isArchive()) {
+                    openFolderButton.setDisable(true);
                     archiveCheckBox.setSelected(true);
-                    openFolderButton.setDisable(true);
                     setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
-                }
-                else {
-                    archiveCheckBox.setSelected(false);
-                    openFolderButton.setDisable(false);
-                    setStyle(null);
-                }
 
-                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
-                    openFolderButton.setDisable(true);
-                    manageButton.setDisable(true);
-                    archiveCheckBox.setDisable(true);
-                    deleteButton.setDisable(true);
+                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                        manageButton.setDisable(true);
+                        archiveCheckBox.setDisable(true);
+                        deleteButton.setDisable(true);
+                    }
+                    else {
+                        manageButton.setDisable(false);
+                        archiveCheckBox.setDisable(false);
+                        deleteButton.setDisable(false);
+                    }
                 }
                 else {
                     openFolderButton.setDisable(false);
-                    manageButton.setDisable(false);
-                    archiveCheckBox.setDisable(false);
-                    deleteButton.setDisable(false);
+                    archiveCheckBox.setSelected(false);
+                    setStyle(null);
+
+                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                        openFolderButton.setDisable(true);
+                        manageButton.setDisable(true);
+                        archiveCheckBox.setDisable(true);
+                        deleteButton.setDisable(true);
+                    }
+                    else {
+                        openFolderButton.setDisable(false);
+                        manageButton.setDisable(false);
+                        archiveCheckBox.setDisable(false);
+                        deleteButton.setDisable(false);
+                    }
                 }
 
 

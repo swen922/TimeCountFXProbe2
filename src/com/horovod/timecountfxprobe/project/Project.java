@@ -317,42 +317,50 @@ public class Project {
      * Возвращаемое значение int используется в AllData для добавления
      * к суммарному общему рабочему времени workSumProjects
      * */
-    public synchronized int addWorkTime(LocalDate newDate, int idUser, double newTimeDouble) {
+    public synchronized Integer addWorkTime(LocalDate newDate, int idUser, double newTimeDouble) {
 
         int newTimeInt = AllData.doubleToInt(newTimeDouble);
+        Integer diff = null;
 
-        Iterator<WorkTime> iter = work.iterator();
-        while (iter.hasNext()) {
-            WorkTime wt = iter.next();
-            // Проверяем наличие такого дня + дизайнера
-            if (wt.getDate().equals(newDate) && wt.getDesignerID() == idUser) {
-                // сначала правим суммарное рабочее время всего проекта
-                int diff = newTimeInt - wt.getTime();
-                int newWorkSumInt = getWorkSum() + diff;
-
-                setWorkSum(newWorkSumInt);
-                setWorkSumProperty(newTimeDouble);
-
-                // удаляем экземпляр WorkTime, если время в нем стало равно 0
-                if (newTimeInt <= 0) {
-                    iter.remove();
-                    return diff;
-                }
-
-                // теперь вносим время в экземпляр рабочего времени
-                wt.setTime(newTimeInt);
-                return diff;
-            }
+        if (work.isEmpty()) {
+            work.add(new WorkTime(this.idNumber, AllData.formatDate(newDate), idUser, newTimeDouble));
+            setWorkSum(newTimeInt);
+            return newTimeInt;
         }
+        else {
+            Iterator<WorkTime> iter = work.iterator();
+            while (iter.hasNext()) {
+                WorkTime wt = iter.next();
+                // Проверяем наличие такого дня + дизайнера
+                if (wt.getDate().equals(newDate) && wt.getDesignerID() == idUser) {
 
-        // Если существующего экземпляра WorkTime с такой же датой и дизайнером не обнаружено,
-        // то создаем новый экземпляр WorkTime и кладем в список
-        work.add(new WorkTime(this.idNumber, AllData.formatDate(newDate), idUser, newTimeDouble));
-        int newWorkSumInt = getWorkSum() + newTimeInt;
-        setWorkSum(newWorkSumInt);
-        setWorkSumProperty(newTimeDouble);
-        return newTimeInt;
+                    // правим суммарное рабочее время всего проекта
+                    diff = newTimeInt - wt.getTime();
+                    if (diff != 0) {
+                        int newWorkSumInt = this.workSum + diff;
+                        setWorkSum(newWorkSumInt);
+                    }
 
+                    if (newTimeInt <= 0) {
+                        // удаляем экземпляр WorkTime, если время в нем стало равно 0
+                        iter.remove();
+                        return diff;
+                    }
+                    else {
+                        // вносим время в экземпляр рабочего времени
+                        wt.setTime(newTimeInt);
+                        return diff;
+                    }
+                }
+            }
+
+            // Если список work не пуст, но в нем не нашелся worktime с такой же датой и дизайнером:
+            work.add(new WorkTime(this.idNumber, AllData.formatDate(newDate), idUser, newTimeDouble));
+            int newWorkSumInt = this.workSum + newTimeInt;
+            setWorkSum(newWorkSumInt);
+            diff = newTimeInt;
+        }
+        return diff;
     }
 
     /** Методы проверки наличия рабочего времени по разным параметрам */
@@ -618,7 +626,13 @@ public class Project {
 
 
     public WorkTime getWorkTimeForDesignerAndDate(int designerIDnumber, LocalDate date) {
+
+        System.out.println("");
+        System.out.println("inside getWorkTimeForDesignerAndDate");
+
         for (WorkTime wt : work) {
+            System.out.println(wt);
+            System.out.println("");
             if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
                 return wt;
             }

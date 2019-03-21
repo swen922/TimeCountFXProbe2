@@ -16,7 +16,7 @@ public class ThreadGlobalUpdate implements Runnable {
 
             if (!received.isEmpty() && received.equals("noneed")) {
                 AllData.updateAllStatus("ThreadGlobalUpdate - Обновление не требуется.");
-                AllData.logger.info(AllData.status);
+                //AllData.logger.info(AllData.status);
             }
             else if (!received.isEmpty() && !received.startsWith("false")) {
 

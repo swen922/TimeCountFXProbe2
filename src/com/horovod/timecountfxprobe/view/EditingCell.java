@@ -30,8 +30,9 @@ public class EditingCell<T, String> extends TableCell<T, String> {
     @Override
     public void startEdit() {
         try {
+
             Integer num = (Integer) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
-            Project p = AllData.getAnyProject(num);
+                    Project p = AllData.getAnyProject(num);
             if (!p.isArchive() && !AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
                 if (!isEmpty()) {
                     super.startEdit();
@@ -100,6 +101,9 @@ public class EditingCell<T, String> extends TableCell<T, String> {
                         commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
                     }
                     else {
+
+                        System.out.println("inside EditingCell.setOnKeyPressed");
+
                         commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
 
                     }
