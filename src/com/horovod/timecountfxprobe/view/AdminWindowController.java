@@ -96,6 +96,10 @@ public class AdminWindowController {
     @FXML
     private RadioButton timeRadioButton;
     @FXML
+    private CheckBox replaceProjectsCheckBox;
+    @FXML
+    private Button deleteWaitingTasksButton;
+    @FXML
     private Button setHttpAddressButton;
     @FXML
     private TextField httpAddressTextField;
@@ -540,6 +544,12 @@ public class AdminWindowController {
         Updater.update(task);
     }
 
+    public void handleDeleteWaitingTasksButton() {
+        AllData.waitingTasks.clear();
+        Loader loader = new Loader();
+        loader.saveWatingTasks();
+    }
+
     public void handleSetHttpAddressButton() {
         String address = httpAddressTextField.getText();
         if (address != null && !address.isEmpty()) {
@@ -644,8 +654,10 @@ public class AdminWindowController {
             }
             else if (projectsRadioButton.isSelected()) {
 
-                AllData.getAllProjects().clear();
-                AllData.getActiveProjects().clear();
+                if (replaceProjectsCheckBox.isSelected()) {
+                    AllData.getAllProjects().clear();
+                    AllData.getActiveProjects().clear();
+                }
 
                 String[] inputArray = input.split("\n");
                 int counterProjects = 0;
@@ -793,6 +805,7 @@ public class AdminWindowController {
                         if (archiveString.equals("1")) {
                             project.setArchive(true);
                         }
+
                     }
                     else {
                         AllData.logger.error("Ошибка создания проекта. Строка = " + line);
@@ -809,6 +822,7 @@ public class AdminWindowController {
                     alert.setHeaderText("Импорт проектов проведен успешно. \nВсего импортировано " + counterProjects + " проектов");
                     alert.showAndWait();
                 }
+                AllData.rebuildActiveProjects();
             }
             else if (timeRadioButton.isSelected()) {
 
@@ -824,6 +838,8 @@ public class AdminWindowController {
                         inputLine = inputLine.replaceAll("\\)", "");
                         inputLine = inputLine.replaceAll("'", "");
                         inputLine = inputLine.replaceAll(",", "");
+                        inputLine = inputLine.replaceAll(";", "");
+
 
 
                         String[] array = inputLine.split(" ");
@@ -832,7 +848,7 @@ public class AdminWindowController {
                         int projectID = 0;
                         DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("d.M.yyyy");
                         LocalDate date = null;
-                        double timeD = 0d;
+                        Double timeD = null;
 
                         try {
                             userID = Integer.parseInt(array[1]);
@@ -847,7 +863,6 @@ public class AdminWindowController {
 
                         }
 
-
                         try {
                             date = DATE_FORMATTER.parse(array[3], LocalDate::from);
                         } catch (Exception e) {
@@ -860,9 +875,41 @@ public class AdminWindowController {
 
                         }
 
-                        if (userID != 0 && projectID != 0 && date != null && timeD != 0) {
-                            AllData.addWorkTimeForImport(projectID, date, userID, timeD);
-                            counterTime++;
+
+
+                        if (userID != 0 && projectID != 0 && timeD != null) {
+                            //AllData.addWorkTimeForImport(projectID, date, userID, timeD);
+
+                            Project pr = AllData.getAnyProject(projectID);
+                            if (pr != null) {
+                                if (date == null) {
+                                    date = LocalDate.now();
+                                    String error = "Не удалось восстановить дату из строчки для проекта id-" + projectID + " Строка = " + inputLine;
+                                    AllData.updateAllStatus(error);
+                                    AllData.logger.error(error);
+                                }
+
+                                Integer res = pr.addWorkTime(date, userID, timeD);
+
+                                if (res == null) {
+                                    String error = "Ошибка добавления времени: Project.addWorkTime() вернул NULL. Строка = " + inputLine;
+                                    AllData.updateAllStatus(error);
+                                    AllData.logger.error(error);
+                                }
+                                else {
+                                    counterTime++;
+                                }
+                            }
+                            else {
+                                String error = "Ошибка добавления времени: Полученный проект равен NULL. Строка = " + inputLine;
+                                AllData.updateAllStatus(error);
+                                AllData.logger.error(error);
+                            }
+                        }
+                        else {
+                            String error = "Не удалось прочитать строчку: " + inputLine + "   |   projectID = " + projectID +  ", userID = " + userID + ", timeD = " + timeD + ", date = " + date;
+                            AllData.updateAllStatus(error);
+                            AllData.logger.error(error);
                         }
                     }
                 }
@@ -882,8 +929,6 @@ public class AdminWindowController {
                     alert.setTitle("Импорт времени проведен успешно");
                     alert.setHeaderText("Импорт рабочего времени проведен успешно. \nВсего импортировано " + counterTime + " объектов WorkTime");
                     alert.showAndWait();
-
-
                 }
 
             }
@@ -892,9 +937,6 @@ public class AdminWindowController {
 
         AllData.updateAllWindows();
     }
-
-
-
 
 
     private void saveBase() {

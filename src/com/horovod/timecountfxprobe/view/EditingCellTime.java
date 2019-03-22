@@ -4,6 +4,7 @@ import com.horovod.timecountfxprobe.project.AllData;
 import com.horovod.timecountfxprobe.project.Project;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
@@ -45,9 +46,8 @@ public class EditingCellTime extends TableCell<Map.Entry<Integer, Project>, Stri
 
         super.updateItem(item, empty);
         if (empty) {
-
             setText(null);
-            setGraphic(null);
+            //setGraphic(null);
         }
         else {
             if (isEditing()) {
@@ -55,11 +55,11 @@ public class EditingCellTime extends TableCell<Map.Entry<Integer, Project>, Stri
                     textField.setText(getString());
                 }
                 setText(null);
-                setGraphic(null);
+                //setGraphic(null);
             }
             else {
                 setText(getString());
-                setGraphic(null);
+                //setGraphic(null);
             }
         }
     }
@@ -82,17 +82,17 @@ public class EditingCellTime extends TableCell<Map.Entry<Integer, Project>, Stri
                 }
             }
         });
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (!newValue) {
-                        commitEdit(formatStringInput(oldText, textField.getText()));
-                        EditingCellTime.this.getTableView().requestFocus();
-                        EditingCellTime.this.getTableView().getSelectionModel().selectAll();
-                        AllData.updateAllWindows();
-                    }
-                }
-            });
+        textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue) {
+                    commitEdit(formatStringInput(oldText, textField.getText()));
+                    EditingCellTime.this.getTableView().requestFocus();
+                    EditingCellTime.this.getTableView().getSelectionModel().selectAll();
+                    AllData.updateAllWindows();
+                 }
+            }
+        });
         EditingCellTime.this.textField.selectAll();
 
     }

@@ -627,12 +627,7 @@ public class Project {
 
     public WorkTime getWorkTimeForDesignerAndDate(int designerIDnumber, LocalDate date) {
 
-        System.out.println("");
-        System.out.println("inside getWorkTimeForDesignerAndDate");
-
         for (WorkTime wt : work) {
-            System.out.println(wt);
-            System.out.println("");
             if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
                 return wt;
             }

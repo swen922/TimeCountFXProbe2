@@ -300,11 +300,6 @@ public class TableProjectsDesignerController {
                 double newTimeDouble = AllData.getDoubleFromText(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())), event.getNewValue(), 1);
                 boolean added = AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
 
-                System.out.println("project = " + project);
-                System.out.println(newTimeDouble);
-                System.out.println(added);
-
-
                 if (added) {
                     // код для мгновенного обновления страниц у менеджера
                     if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
@@ -416,17 +411,25 @@ public class TableProjectsDesignerController {
 
                 if (lowerCaseFilter.contains(" ")) {
                     String[] allParts = lowerCaseFilter.split(" ");
-                    List<Boolean> resultList = new ArrayList<>();
+                    //List<Boolean> resultList = new ArrayList<>();
 
                     for (String s : allParts) {
+                        boolean res = containsString(integerProjectEntry.getValue(), s.trim());
+                        if (!res) {
+                            return false;
+                        }
+                    }
+
+                    /*for (String s : allParts) {
                         boolean res = containsString(integerProjectEntry.getValue(), s);
                         resultList.add(res);
                     }
                     for (boolean b : resultList) {
                         result = b;
                         if (!b) {break;}
-                    }
-                    return result;
+                    }*/
+                    //return result;
+
                 }
                 else {
                     result = containsString(integerProjectEntry.getValue(), lowerCaseFilter);
@@ -949,6 +952,82 @@ public class TableProjectsDesignerController {
     }
 
 
+    class DesignerCellField extends TableCell<Map.Entry<Integer, Project>, String> {
+        private TextField timeField = new TextField("-");
+
+        {
+            timeField.setMinWidth(40);
+            timeField.setMinHeight(20);
+            timeField.setEditable(true);
+            timeField.setAlignment(Pos.CENTER);
+        }
+
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            if (empty) {
+                setGraphic(null);
+            }
+            else {
+                Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
+                //timeField.setAlignment(Pos.CENTER);
+                //timeField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
+
+                timeField = new TextField(this.getString());
+
+                timeField.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        timeField.selectAll();
+                    }
+                });
+                timeField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                    @Override
+                    public void handle(KeyEvent event) {
+                        KeyCode keyCode = event.getCode();
+                        if (keyCode == KeyCode.ENTER) {
+                            String oldText = getString();
+                            String newText = formatStringInput(oldText, timeField.getText());
+                            timeField.setText(newText);
+                            commitEdit(newText);
+                            //DesignerCellField.this.getTableView().requestFocus();
+                            //DesignerCellField.this.getTableView().getSelectionModel().selectAll();
+                            AllData.updateAllWindows();
+
+                        }
+                    }
+                });
+
+                HBox hbox = new HBox();
+                hbox.getChildren().addAll(timeField);
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(2);
+                setGraphic(hbox);
+            }
+        }
+        private String formatStringInput(String oldText, String input) {
+            String newText = input.replaceAll(" ", ".");
+            newText = newText.replaceAll("-", ".");
+            newText = newText.replaceAll(",", ".");
+            newText = newText.replaceAll("=", ".");
+
+            Double newTimeDouble = null;
+            try {
+                newTimeDouble = Double.parseDouble(newText);
+            } catch (NumberFormatException e) {
+                return oldText;
+            }
+            if (newTimeDouble != null) {
+                newText = String.valueOf(AllData.formatDouble(newTimeDouble, 2));
+                return newText;
+            }
+
+            return oldText;
+        }
+
+        private String getString() {
+            return getItem() == null ? "-" : getItem();
+        }
+    } // конец класса DesignerCellField
 
     class DesignerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
 

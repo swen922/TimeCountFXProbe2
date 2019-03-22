@@ -101,9 +101,6 @@ public class EditingCell<T, String> extends TableCell<T, String> {
                         commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
                     }
                     else {
-
-                        System.out.println("inside EditingCell.setOnKeyPressed");
-
                         commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
 
                     }
