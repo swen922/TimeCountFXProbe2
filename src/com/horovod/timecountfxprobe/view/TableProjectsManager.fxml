@@ -51,7 +51,7 @@
                                     <Insets left="5.0" right="-10.0" />
                                  </HBox.margin>
                               </Label>
-                              <Label text="проектов" />
+                              <Label fx:id="projectsProjectsLabel" text="проектов" />
                            </children>
                         </HBox>
                         <Separator />
@@ -185,15 +185,23 @@
                   </VBox>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="150.0" spacing="10.0">
                      <children>
-                        <Button fx:id="newProjectButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleNewProjectButton" prefHeight="50.0" prefWidth="100.0" text="Новый проект" textAlignment="CENTER" wrapText="true">
+                        <Button fx:id="newProjectButton" alignment="CENTER" minHeight="30.0" mnemonicParsing="false" onAction="#handleNewProjectButton" prefHeight="30.0" prefWidth="110.0" text="Новый проект" textAlignment="CENTER" wrapText="true">
                            <font>
-                              <Font name="System Bold" size="15.0" />
+                              <Font name="System Bold" size="13.0" />
                            </font>
                         </Button>
-                        <Button fx:id="reloadButton" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="40.0" prefWidth="100.0" text="Обновить данные" textAlignment="CENTER" wrapText="true">
+                        <Button fx:id="batchArchiveButton" minHeight="30.0" mnemonicParsing="false" onAction="#handleBatchArchiveButton" prefHeight="30.0" prefWidth="110.0" text="В архив!" textAlignment="CENTER" wrapText="true">
                            <VBox.margin>
-                              <Insets bottom="5.0" />
+                              <Insets />
                            </VBox.margin>
+                           <font>
+                              <Font size="12.0" />
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Нажми, чтобы заново считать все данные и отсортировать таблицу" />
+                           </tooltip>
+                        </Button>
+                        <Button fx:id="reloadButton" minHeight="30.0" mnemonicParsing="false" onAction="#handleReloadButton" prefHeight="30.0" prefWidth="110.0" text="Обновить" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font size="12.0" />
                            </font>
@@ -203,7 +211,7 @@
                         </Button>
                         <Label fx:id="aboutProgramLabel" onMouseClicked="#handleAbout" text="О программе" textFill="#f3622d" underline="true">
                            <VBox.margin>
-                              <Insets />
+                              <Insets top="2.0" />
                            </VBox.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
@@ -217,7 +225,7 @@
                         <Insets />
                      </HBox.margin>
                      <padding>
-                        <Insets top="12.0" />
+                        <Insets top="10.0" />
                      </padding>
                   </VBox>
                </children>

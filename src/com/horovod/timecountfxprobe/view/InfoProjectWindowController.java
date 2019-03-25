@@ -151,20 +151,10 @@ public class InfoProjectWindowController {
 
     private void checkArchives() {
         if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired() || AllData.getAnyProject(myProjectID).isArchive()) {
-            openFolderButton.setDisable(true);
-            companyNameTextArea.setEditable(false);
-            managerTextArea.setEditable(false);
-            descriptionTextArea.setEditable(false);
             commentTextArea.setEditable(false);
-            tagsTextField.setEditable(false);
         }
         else {
-            openFolderButton.setDisable(false);
-            companyNameTextArea.setEditable(true);
-            managerTextArea.setEditable(true);
-            descriptionTextArea.setEditable(true);
             commentTextArea.setEditable(true);
-            tagsTextField.setEditable(true);
         }
 
         if (AllData.getAnyProject(myProjectID).isArchive()) {

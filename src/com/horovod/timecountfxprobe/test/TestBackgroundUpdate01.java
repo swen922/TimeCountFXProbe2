@@ -17,13 +17,13 @@ public class TestBackgroundUpdate01 {
                 AllData.addWorkTime(12, LocalDate.now(),3, 60);
 
                 if (AllData.tableProjectsDesignerController != null) {
-                    AllData.tableProjectsDesignerController.initialize();
+                    AllData.tableProjectsDesignerController.updateDesignerWindow();
                 }
                 if (AllData.tableProjectsManagerController != null) {
                     AllData.tableProjectsManagerController.initialize();
                 }
                 if (AllData.editProjectWindowControllers.get(12) != null) {
-                    AllData.editProjectWindowControllers.get(12).initializeTable();
+                    AllData.editProjectWindowControllers.get(12).updateEditProjectWindow();
                 }
 
             }
@@ -44,13 +44,13 @@ public class TestBackgroundUpdate01 {
                 AllData.addWorkTime(12, LocalDate.now(),3, 20);
 
                 if (AllData.tableProjectsDesignerController != null) {
-                    AllData.tableProjectsDesignerController.initialize();
+                    AllData.tableProjectsDesignerController.updateDesignerWindow();
                 }
                 if (AllData.tableProjectsManagerController != null) {
                     AllData.tableProjectsManagerController.initialize();
                 }
                 if (AllData.editProjectWindowControllers.get(12) != null) {
-                    AllData.editProjectWindowControllers.get(12).initializeTable();
+                    AllData.editProjectWindowControllers.get(12).updateEditProjectWindow();
                 }
             }
         };

@@ -861,7 +861,7 @@ public class AllData {
                     AllData.tableProjectsManagerController.initialize();
                 }
                 if (AllData.tableProjectsDesignerController != null) {
-                    AllData.tableProjectsDesignerController.initialize();
+                    AllData.tableProjectsDesignerController.updateDesignerWindow();
                 }
                 if (AllData.adminWindowController != null) {
                     AllData.adminWindowController.updateAdmin();
@@ -879,7 +879,7 @@ public class AllData {
                 if (!AllData.editProjectWindowControllers.isEmpty()) {
                     for (EditProjectWindowController controller : AllData.editProjectWindowControllers.values()) {
                         if (controller != null) {
-                            controller.updateProject();
+                            controller.updateEditProjectWindow();
                         }
                     }
                 }
@@ -1056,6 +1056,22 @@ public class AllData {
         return "часов";
     }
 
+    public static synchronized String formatProjects(int inputInteger) {
+        String input = String.valueOf(inputInteger);
+
+        if (input.endsWith("0") || input.endsWith("11") || input.endsWith("12") || input.endsWith("13") || input.endsWith("14")) {
+            return "проектов";
+        }
+        else if (input.endsWith("2") || input.endsWith("3") || input.endsWith("4")) {
+            return "проекта";
+        }
+        else if (input.endsWith("1")) {
+            return "проект";
+        }
+
+        return "проектов";
+    }
+
     public static synchronized String formatStringInputDouble(String oldText, String input, int scale) {
 
         if (input == null || input.isEmpty() || input.equals("0") || input.equals("-")) {
@@ -1086,6 +1102,10 @@ public class AllData {
         newText = newText.replaceAll("-", ".");
         newText = newText.replaceAll(",", ".");
         newText = newText.replaceAll("=", ".");
+
+        if (newText.equals("0.0")) {
+            return 0d;
+        }
 
         Double newTimeDouble = null;
         try {

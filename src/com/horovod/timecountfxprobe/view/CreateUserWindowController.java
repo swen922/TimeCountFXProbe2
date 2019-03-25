@@ -108,21 +108,10 @@ public class CreateUserWindowController {
 
     public void createUserID() {
 
-        System.out.println("inside createUserID");
-
         getUserIDButton.setDisable(true);
-
-        /*AllUsers.createUserID.addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                createIDTextField.setDisable(false);
-            }
-        });*/
 
         ProgressIndicator progressIndicator = new ProgressIndicator();
         ThreadIncrementAndSetUserID threadIncrementAndSetUserID = new ThreadIncrementAndSetUserID();
-
-        System.out.println(threadIncrementAndSetUserID);
 
         threadIncrementAndSetUserID.addEventHandler(WorkerStateEvent.WORKER_STATE_SUCCEEDED, new EventHandler<WorkerStateEvent>() {
             @Override
@@ -143,7 +132,6 @@ public class CreateUserWindowController {
         Updater.update(threadIncrementAndSetUserID);
 
     }
-
 
 
     public void handleCancelButton() {
@@ -260,13 +248,27 @@ public class CreateUserWindowController {
 
             AllData.createUserWindow.close();
 
+
             if (AllData.tableProjectsManagerController != null) {
-                AllData.tableProjectsManagerController.initializeTable();
+                AllData.tableProjectsManagerController.initialize();
             }
 
-            if (AllData.tableProjectsDesignerController != null) {
-                AllData.tableProjectsDesignerController.initializeTable();
+            if (AllData.statisticManagerWindowController != null) {
+                AllData.statisticManagerWindowController.updateStatisticManagerWindow();
             }
+
+            if (AllData.staffWindowController != null) {
+                AllData.staffWindowController.initializeTable();
+            }
+
+            if (!AllData.editProjectWindowControllers.isEmpty()) {
+                for (EditProjectWindowController controller : AllData.editProjectWindowControllers.values()) {
+                    if (controller != null) {
+                        controller.updateEditProjectWindow();
+                    }
+                }
+            }
+
 
             if (AllData.tableProjectsManagerController == null && AllData.adminWindowController == null) {
                 AllData.mainApp.showLoginWindowOnStart();

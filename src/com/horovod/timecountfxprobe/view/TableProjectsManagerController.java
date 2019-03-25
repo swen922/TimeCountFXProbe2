@@ -36,6 +36,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
@@ -48,10 +49,12 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import java.awt.Desktop;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TableProjectsManagerController {
 
-    private ObservableList<Map.Entry<Integer, Project>> showProjects;
+    private ObservableList<Map.Entry<Integer, Project>> tableProjects;
     private FilteredList<Map.Entry<Integer, Project>> filterData;
     private Predicate<Map.Entry<Integer, Project>> filterPredicate;
     private FilteredList<Map.Entry<Integer, Project>> filterDataWrapper;
@@ -60,6 +63,8 @@ public class TableProjectsManagerController {
     private ObservableList<String> datesForChart;
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
     private XYChart.Series<String, Integer> series;
+
+    private int myIdNumber;
 
 
     @FXML
@@ -76,6 +81,9 @@ public class TableProjectsManagerController {
 
     @FXML
     private Label projectsCountLabel;
+
+    @FXML
+    private Label projectsProjectsLabel;
 
     @FXML
     private DatePicker fromDatePicker;
@@ -96,6 +104,12 @@ public class TableProjectsManagerController {
     private Button newProjectButton;
 
     @FXML
+    private Button batchArchiveButton;
+
+    @FXML
+    private Button reloadButton;
+
+    @FXML
     private LineChart<String, Integer> decadeLineChart;
 
     @FXML
@@ -106,9 +120,6 @@ public class TableProjectsManagerController {
 
     @FXML
     private Label workSumLabel;
-
-    @FXML
-    private Button reloadButton;
 
     @FXML
     private Button statisticButton;
@@ -163,31 +174,63 @@ public class TableProjectsManagerController {
     private TableColumn<Map.Entry<Integer, Project>, String> columnDescription;
 
 
-    /** Временные кнопки под тестирование */
-
-    @FXML
-    private Button testAddButton;
-
-    @FXML
-    private Button testDeleteButton;
-
-    @FXML
-    private Button readBase;
-
-    /*public void readBaseNow() {
-        ReadBaseOnServer readBaseOnServer = new ReadBaseOnServer(new SerializeWrapper(UpdateType.UPDATE_BASE_ON_SERVER, null));
-        Updater.getService().submit(readBaseOnServer);
-    }*/
-
-
     @FXML
     public void initialize() {
 
-        /** TODO сюда или в mainApp добавить setStageTitle("Имя пользователя")
-         * */
+        myIdNumber = AllUsers.getCurrentUser();
+        AllData.primaryStage.setTitle(AllUsers.getOneUser(myIdNumber).getFullName());
+
+        initTextFields();
+        initObservableLists();
+        initializeTable();
+        initializeChart();
+        initLoggedUsersChoiceBox();
+        initExportChoiceBox();
+
+    }
 
 
-        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+    public void updateManagerWindow() {
+
+        initTextFields();
+        handleFilters();
+        sortTableProjects();
+        initializeChart();
+        projectsCountLabel.setText(String.valueOf(sortedList.size()));
+        projectsProjectsLabel.setText(AllData.formatProjects(sortedList.size()));
+
+
+    }
+
+
+    private void initObservableLists() {
+        // Отработка методов данных
+
+        if (tableProjects == null && showArchiveProjectsCheckBox.isSelected()) {
+            tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+        }
+        else if (tableProjects == null && !showArchiveProjectsCheckBox.isSelected()) {
+            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+        }
+
+        if (filterData == null) {
+            filterData = new FilteredList<>(tableProjects, p -> true);
+        }
+        if (filterPredicate == null) {
+            filterPredicate = p -> true;
+
+        }
+        if (filterDataWrapper == null) {
+            filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
+        }
+        if (sortedList == null) {
+            sortedList = new SortedList<>(filterDataWrapper);
+        }
+    }
+
+    private void initTextFields() {
+
+        if (AllUsers.getOneUser(myIdNumber).isRetired()) {
             todayWorkSumLabel.setText("-");
             workSumLabel.setText("-");
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
@@ -211,44 +254,9 @@ public class TableProjectsManagerController {
             AllData.rebuildTodayWorkSumProperty();
             topColoredPane.setStyle(null);
         }
-
-        //AllData.resetStatus();
-
-
-
-        // Отработка методов данных
-
-
-        if (showProjects == null && showArchiveProjectsCheckBox.isSelected()) {
-            showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
-        }
-        else if (showProjects == null && !showArchiveProjectsCheckBox.isSelected()) {
-            showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
-        }
-
-        if (filterData == null) {
-            filterData = new FilteredList<>(showProjects, p -> true);
-        }
-        if (filterPredicate == null) {
-            filterPredicate = p -> true;
-
-        }
-        if (filterDataWrapper == null) {
-            filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
-        }
-        if (sortedList == null) {
-            sortedList = new SortedList<>(filterDataWrapper);
-        }
-
-        initializeTable();
-
-        initializeChart();
-
-        initLoggedUsersChoiceBox();
-
-        initExportChoiceBox();
-
     }
+
+
 
     public void initializeTable() {
         sortTableProjects();
@@ -371,7 +379,7 @@ public class TableProjectsManagerController {
 
                     // код для мгновенного обновления страниц у менеджера
                     if (AllData.editProjectWindowControllers.containsKey(project.getIdNumber())) {
-                        AllData.editProjectWindowControllers.get(project.getIdNumber()).initializeTable();
+                        AllData.editProjectWindowControllers.get(project.getIdNumber()).updateEditProjectWindow();
                     }
                     if (AllData.staffWindowController != null && AllData.staffWindowStage.isShowing()) {
                         AllData.staffWindowController.initializeTable();
@@ -430,10 +438,11 @@ public class TableProjectsManagerController {
             }
         });
 
-        filterDataWrapper.setPredicate(filterPredicate);
+        //filterDataWrapper.setPredicate(filterPredicate);
         projectsTable.setItems(sortedList);
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
         projectsCountLabel.setText(String.valueOf(sortedList.size()));
+        projectsProjectsLabel.setText(AllData.formatProjects(sortedList.size()));
 
     }
 
@@ -467,12 +476,13 @@ public class TableProjectsManagerController {
 
     public void sortTableProjects() {
 
-        showProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
+        tableProjects.sort(new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
                 return Integer.compare(o2.getKey(), o1.getKey());
             }
         });
+
     }
 
 
@@ -513,7 +523,10 @@ public class TableProjectsManagerController {
             }
         };
 
-        initializeTable();
+        filterDataWrapper.setPredicate(filterPredicate);
+        projectsCountLabel.setText(String.valueOf(sortedList.size()));
+        projectsProjectsLabel.setText(AllData.formatProjects(sortedList.size()));
+
     }
 
 
@@ -556,7 +569,7 @@ public class TableProjectsManagerController {
             usersLoggedChoiceBox.getItems().add(AllData.toLoginWindow);
         }
 
-        usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
+        usersLoggedChoiceBox.setValue(AllUsers.getOneUser(myIdNumber).getFullName());
 
         usersLoggedChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -572,7 +585,7 @@ public class TableProjectsManagerController {
                         AllData.rootLayout.setCenter(null);
                         AllData.mainApp.showLoginWindow();
                     }
-                    else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
+                    else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(myIdNumber).getFullName())) {
 
                         closeAllWindows();
 
@@ -799,15 +812,19 @@ public class TableProjectsManagerController {
         LocalDate tillDate = tillDatePicker.getValue();
 
         if (showArchiveProjectsCheckBox.isSelected()) {
-            showProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+            //tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+            tableProjects.clear();
+            tableProjects.addAll(AllData.getAllProjects().entrySet());
         }
         else {
-            showProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+            //tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+            tableProjects.clear();
+            tableProjects.addAll(AllData.getActiveProjects().entrySet());
         }
 
-        filterData = new FilteredList<>(showProjects, p -> true);
+        /*filterData = new FilteredList<>(tableProjects, p -> true);
         filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
-        sortedList = new SortedList<>(filterDataWrapper);
+        sortedList = new SortedList<>(filterDataWrapper);*/
 
         if (fromDate != null && tillDate != null) {
             filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
@@ -846,7 +863,6 @@ public class TableProjectsManagerController {
         }
 
         sortTableProjects();
-        projectsTable.refresh();
     }
 
 
@@ -914,8 +930,75 @@ public class TableProjectsManagerController {
         AllData.mainApp.showCreateProjectWindow();
     }
 
+    public void handleBatchArchiveButton() {
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(AllData.pathToDownloads));
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT file", "*.txt");
+        chooser.getExtensionFilters().add(extFilter);
+        File file = chooser.showOpenDialog(AllData.primaryStage);
+
+        StringBuilder sb = new StringBuilder("");
+        String input = "";
+
+        if (file != null && file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file));) {
+                while (reader.ready()) {
+                    sb.append(reader.readLine()).append("\n");
+                }
+            } catch (FileNotFoundException e) {
+                AllData.updateAllStatus("TableProjectsManagerController - ошибка чтения файла со списком папок в архив: FileNotFoundException");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            } catch (IOException e) {
+                AllData.updateAllStatus("TableProjectsManagerController - ошибка чтения файла со списком папок в архив: IOException");
+                AllData.logger.error(AllData.status);
+                AllData.logger.error(e.getMessage(), e);
+            }
+        }
+
+        if (sb.length() > 0) {
+            input = sb.toString();
+        }
+
+        int counter = 0;
+
+        if (!input.isEmpty()) {
+            String[] intputParts = input.split("\n");
+            for (String line : intputParts) {
+                Pattern p = Pattern.compile("id-\\d+");
+                Matcher m = p.matcher(line);
+                int idProjectParsed = 0;
+                if (m.find()) {
+                    String n = m.group();
+                    n = n.replaceAll("id-", "");
+                    try {
+                        idProjectParsed = Integer.parseInt(n);
+                    } catch (NumberFormatException e) {
+                    }
+                    if (idProjectParsed != 0) {
+                        counter++;
+                        AllData.changeProjectArchiveStatus(idProjectParsed, true);
+                    }
+                }
+            }
+        }
+        if (counter > 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Перевод в архив успешен");
+            alert.setHeaderText("Переведено в архив " + counter + " " + AllData.formatProjects(counter) + ".");
+            alert.showAndWait();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Перевод в архив не удался");
+            alert.setHeaderText("Ни один проект не переведен в архив.");
+            alert.showAndWait();
+        }
+    }
+
     public void handleReloadButton() {
-        initialize();
+        //initialize();
+        updateManagerWindow();
     }
 
     public void handleStatisticButton() {
@@ -1230,7 +1313,7 @@ public class TableProjectsManagerController {
                     archiveCheckBox.setSelected(true);
                     setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
 
-                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    if (AllUsers.getOneUser(myIdNumber).isRetired()) {
                         manageButton.setDisable(true);
                         archiveCheckBox.setDisable(true);
                         deleteButton.setDisable(true);
@@ -1246,7 +1329,7 @@ public class TableProjectsManagerController {
                     archiveCheckBox.setSelected(false);
                     setStyle(null);
 
-                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    if (AllUsers.getOneUser(myIdNumber).isRetired()) {
                         openFolderButton.setDisable(true);
                         manageButton.setDisable(true);
                         archiveCheckBox.setDisable(true);

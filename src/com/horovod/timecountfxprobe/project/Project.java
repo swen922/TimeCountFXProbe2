@@ -523,7 +523,8 @@ public class Project {
         int result = 0;
         for (WorkTime wt : work) {
             if (wt.getDesignerID() == designerIDnumber && wt.getDate().equals(date)) {
-                result += wt.getTime();
+                result = wt.getTime();
+                break;
             }
         }
         return result;

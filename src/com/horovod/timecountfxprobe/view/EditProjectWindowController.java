@@ -148,25 +148,6 @@ public class EditProjectWindowController {
     private void initialize() {
 
         myProjectID = AllData.IDnumberForEdit;
-
-        if (myProject == null) {
-            myProject = AllData.getAnyProject(myProjectID);
-        }
-
-        initProjectFields();
-
-        //стартовая инициализация чекбокса Архивный согласно состоянию проекта
-        initializeArchiveCheckBox();
-
-        initSaveButtons();
-
-        initSelectFormatChoiceBox();
-
-        initializeTable();
-
-    }
-
-    public void updateProject() {
         myProject = AllData.getAnyProject(myProjectID);
 
         initProjectFields();
@@ -181,6 +162,8 @@ public class EditProjectWindowController {
         initializeTable();
 
     }
+
+
 
 
     private void initProjectFields() {
@@ -227,11 +210,29 @@ public class EditProjectWindowController {
 
     }
 
-
-
-    public void initializeTable() {
-
+    private void updateTextFields() {
         hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
+    }
+
+
+    public void updateEditProjectWindow() {
+
+        updateTextFields();
+
+        initProjectFields();
+
+        //стартовая инициализация чекбокса Архивный согласно состоянию проекта
+        initializeArchiveCheckBox();
+
+        initSaveButtons();
+
+        initializeTable();
+    }
+
+
+
+    private void initializeTable() {
+
 
         if (workDays == null) {
             workDays = FXCollections.observableHashMap();
@@ -965,123 +966,139 @@ public class EditProjectWindowController {
     }
 
 
-    /*private class EditingCell extends TableCell<Map.Entry<Integer, Project>, String> {
+    /*private class EditProjectField extends TableCell<WorkDay, String> {
 
-        private TextField textField;
-        private FillChartMode fillChartMode;
+        private TextField timeField;
 
-        public EditingCell(FillChartMode fillChartMode) {
-            this.fillChartMode = fillChartMode;
-        }
 
-    *//*public EditingCell() {
-    }*//*
-
-        @Override
-        public void startEdit() {
-            try {
-                Project p = (Project) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
-                //Integer num = (Integer) this.getTableView().getColumns().get(1).getCellObservableValue(this.getIndex()).getValue();
-                //Project p = AllData.getAnyProject(num);
-                if (!p.isArchive() && !AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
-                    if (!isEmpty()) {
-                        super.startEdit();
-                        createTextField();
-                        setText(null);
-                        setGraphic(textField);
-                        textField.selectAll();
-                    }
-                }
-            } catch (Exception e) {
-                AllData.logger.error(e.getMessage(), e);
-            }
-        }
-
-        @Override
-        public void cancelEdit() {
-            super.cancelEdit();
-
-            setText((java.lang.String) getItem());
-            setGraphic(null);
+        public EditProjectField() {
         }
 
         @Override
         protected void updateItem(String item, boolean empty) {
 
-            super.updateItem(item, empty);
-            if (empty) {
 
+
+            if (empty) {
                 setText(null);
                 setGraphic(null);
             }
             else {
+
+                timeField = new TextField("");
+                timeField.setMinWidth(50);
+                timeField.setMaxWidth(55);
+                timeField.setMinHeight(20);
+                timeField.setEditable(true);
+                timeField.setAlignment(Pos.CENTER);
+
+                WorkDay wd = getTableView().getItems().get(getIndex());
+                int index = getTableView().getSelectionModel().getFocusedIndex();
+                ///String desName = getTableView().getColumns().get(index).getText();
+                //User user = AllUsers.getOneUserForFullName(desName);
+                User user = AllUsers.getOneUser(5);
+
+                System.out.println(wd);
+                System.out.println(index);
+                System.out.println("------");
+                //System.out.println(desName);
+                //System.out.println(user);
+
+                double oldTime = wd.getWorkTimeForDesigner(user.getIDNumber());
+
+
                 if (isEditing()) {
-                    if (textField != null) {
-                        textField.setText((java.lang.String) getString());
+                    if (timeField != null) {
+                        timeField.setText("-");
                     }
-                    setText(null);
-                    setGraphic(null);
                 }
                 else {
-                    setText((java.lang.String) getString());
-                    setGraphic(null);
+                    setGraphic(timeField);
+                    timeField.setText(getString());
+                    if (oldTime == 0) {
+                        timeField.setText("-");
+                    }
+                    else {
+                        timeField.setText(AllData.formatWorkTime(oldTime));
+                    }
+
+                    timeField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                        @Override
+                        public void handle(KeyEvent event) {
+                            KeyCode keyCode = event.getCode();
+                            if (keyCode == KeyCode.ENTER) {
+                                //double oldTime = wd.getWorkTimeForDesigner(user.getIDNumber());
+                                String oldText = AllData.formatWorkTime(oldTime);
+                                String newText = formatStringInput(oldText, timeField.getText());
+
+                                boolean added = false;
+                                if (newText.equals("0")) {
+                                    added = AllData.addWorkTime(myProjectID, LocalDate.now(), user.getIDNumber(), 0);
+                                }
+                                else {
+                                    double newTime = AllData.getDoubleFromText(oldTime, newText, 1);
+                                    added = AllData.addWorkTime(myProjectID, LocalDate.now(), user.getIDNumber(), newTime);
+                                }
+
+                                if (added) {
+                                    updateEditProjectWindow();
+
+                                    if (AllData.staffWindowController != null) {
+                                        AllData.staffWindowController.initializeTable();
+                                    }
+                                    if (AllData.statisticManagerWindowController != null) {
+                                        AllData.statisticManagerWindowController.handleButtonReloadBarChart();
+                                    }
+                                }
+                                else {
+                                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                                    alert.setTitle("Ошибка добавления времени");
+                                    alert.setHeaderText("Не удалось добавить / изменить рабочее время в проекте id-" + myProjectID);
+                                    alert.showAndWait();
+                                    initialize();
+                                }
+                            }
+                        }
+                    });
+
                 }
+
             }
         }
 
-        private void createTextField() {
-            String oldText = getString();
-            textField = new TextField((java.lang.String) oldText);
-            textField.setAlignment(Pos.CENTER);
-            textField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
-            textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    if (fillChartMode.equals(FillChartMode.TIME)) {
-                        textField.setText("");
-                    }
-                }
-            });
-            textField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent event) {
-                    KeyCode keyCode = event.getCode();
-                    if (keyCode == KeyCode.ENTER) {
-                        if (fillChartMode.equals(FillChartMode.TIME)) {
-                            commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
-                        }
+        private String formatStringInput(String oldText, String input) {
+            String newText = input.replaceAll(" ", ".");
+            newText = newText.replaceAll("-", ".");
+            newText = newText.replaceAll(",", ".");
+            newText = newText.replaceAll("=", ".");
 
-                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().requestFocus();
-                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().getSelectionModel().selectAll();
+            if (newText.equals("0")) {
+                return "-";
+            }
 
-                    }
-                }
-            });
-            textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (!newValue) {
-                        if (fillChartMode.equals(FillChartMode.TIME)) {
-                            commitEdit((String) AllData.formatStringInputDouble((java.lang.String) oldText, textField.getText(), 1));
-                        }
-                        else {
-                            commitEdit((String) AllData.formatStringInputInteger((java.lang.String) oldText, textField.getText()));
-                        }
-                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().requestFocus();
-                        com.horovod.timecountfxprobe.view.EditingCell.this.getTableView().getSelectionModel().selectAll();
-                    }
-                }
-            });
-            com.horovod.timecountfxprobe.view.EditingCell.this.textField.selectAll();
+            Double newTimeDouble = null;
+            try {
+                newTimeDouble = Double.parseDouble(newText);
+            } catch (NumberFormatException e) {
+                return oldText;
+            }
+            if (newTimeDouble != null) {
+                newText = AllData.formatWorkTime(newTimeDouble);
+                //newText = String.valueOf(AllData.formatDouble(newTimeDouble, 2));
 
+                return newText;
+            }
+
+            System.out.println("return oldText");
+
+            return oldText;
         }
 
         private String getString() {
-            return (String) (getItem() == null ? "" : getItem().toString());
+            return getItem() == null ? "-" : getItem();
         }
 
-    }
-    // конец класса EditingCell*/
+    }*/
 
 
 }

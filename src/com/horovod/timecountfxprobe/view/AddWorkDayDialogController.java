@@ -137,7 +137,7 @@ public class AddWorkDayDialogController {
 
             AllData.tableProjectsManagerController.initialize();
             if (AllData.editProjectWindowControllers.get(projectIDnumber) != null) {
-                AllData.editProjectWindowControllers.get(projectIDnumber).initializeTable();
+                AllData.editProjectWindowControllers.get(projectIDnumber).updateEditProjectWindow();
             }
             if (AllData.staffWindowController != null) {
                 AllData.staffWindowController.initializeTable();

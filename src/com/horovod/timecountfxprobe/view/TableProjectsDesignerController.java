@@ -33,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -73,6 +74,8 @@ public class TableProjectsDesignerController {
     private ObservableList<String> datesForChart;
     private ObservableList<XYChart.Data<String, Integer>> workTimeForChart;
     private XYChart.Series<String, Integer> series;
+
+    private int myIdNumber;
 
     //private DoubleProperty dayWorkSumProperty = new SimpleDoubleProperty(0);
 
@@ -173,19 +176,38 @@ public class TableProjectsDesignerController {
 
 
     @FXML
-    public void initialize() {
-
-        /** TODO сюда или в mainApp добавить setStageTitle("Имя пользователя")
-         * */
+    private void initialize() {
 
         /** TODO В чистовой версии перенести все поля по суммам рабочего времени за день, неделю, месяц и год
          * сюда внутрь класса, а в AllData оставить только глобальные суммы по всем дизайнерам */
 
-        // Отработка методов данных
+        myIdNumber = AllUsers.getCurrentUser();
+
+        AllData.primaryStage.setTitle(AllUsers.getOneUser(myIdNumber).getFullName());
+
+        initTextFields();
+        initObservableLists();
+        handleFilters();
+        sortTableProjects();
+        initializeTable();
+        initializeChart();
+        initLoggedUsersChoiceBox();
+        initClosing();
+
+    }
+
+
+    public void handleShowArchiveProjectsCheckBox() {
+        handleFilters();
+        sortTableProjects();
+        updateDesignerWindow();
+    }
+
+    private void initTextFields() {
 
         LocalDate today = LocalDate.now();
 
-        if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+        if (AllUsers.getOneUser(myIdNumber).isRetired()) {
             dayWorkSumLabel.setText("-");
             ratingPositionLabel.setText("-");
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
@@ -202,11 +224,9 @@ public class TableProjectsDesignerController {
             AllData.rebuildDesignerYearWorkSumProperty(today.getYear());
             topColoredPane.setStyle(null);
         }
+    }
 
-        //AllData.resetStatus();
-
-
-
+    private void initObservableLists() {
         if (tableProjects == null && showArchiveProjectsCheckBox.isSelected()) {
             tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
         }
@@ -217,36 +237,29 @@ public class TableProjectsDesignerController {
         if (filterData == null) {
             filterData = new FilteredList<>(tableProjects, p -> true);
         }
+
         if (filterPredicate == null) {
             filterPredicate = p -> true;
-
         }
+
         if (filterDataWrapper == null) {
             filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
         }
         if (sortedList == null) {
-            sortedList = new SortedList<>(filterDataWrapper);
+            sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
+                @Override
+                public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                    int compare = compareTime(o1, o2);
+                    if (compare == 0) {
+                        compare = o2.getKey().compareTo(o1.getKey());
+                    }
+                    return compare;
+                }
+            });
         }
-
-        handleFilters();
-
-        sortTableProjects();
-
-        initializeTable();
-
-        initializeChart();
-        initLoggedUsersChoiceBox();
-        initClosing();
-
     }
 
-
-    public void handleShowArchiveProjectsCheckBox() {
-        handleFilters();
-        initializeTable();
-    }
-
-    public void initializeTable() {
+    private void initializeTable() {
 
         columnAction.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map.Entry<Integer, Project>, Boolean>, ObservableValue<Boolean>>() {
             @Override
@@ -274,7 +287,7 @@ public class TableProjectsDesignerController {
 
 
         Callback<TableColumn<Map.Entry<Integer, Project>, String>, TableCell<Map.Entry<Integer, Project>, String>> cellFactory =
-                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new EditingCellTime();
+                (TableColumn<Map.Entry<Integer, Project>, String> p) -> new DesignerCellField();
 
         columnTime.setCellFactory(cellFactory);
 
@@ -284,12 +297,12 @@ public class TableProjectsDesignerController {
                 // Для списка менеджера – просто все рабочее время
                 //return param.getValue().getValue().workSumProperty();
 
-                int time = param.getValue().getValue().getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now());
+                int time = param.getValue().getValue().getWorkSumForDesignerAndDate(myIdNumber, LocalDate.now());
                 return new SimpleStringProperty(AllData.formatWorkTime(AllData.intToDouble(time)));
             }
         });
 
-        columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
+        /*columnTime.setOnEditCommit(new EventHandler<TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String>>() {
             @Override
             public void handle(TableColumn.CellEditEvent<Map.Entry<Integer, Project>, String> event) {
 
@@ -297,8 +310,8 @@ public class TableProjectsDesignerController {
                 //double newTimeDouble = Double.parseDouble(event.getNewValue());
 
                 Project project = (Project) event.getTableView().getItems().get(event.getTablePosition().getRow()).getValue();
-                double newTimeDouble = AllData.getDoubleFromText(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())), event.getNewValue(), 1);
-                boolean added = AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), AllUsers.getCurrentUser(), newTimeDouble);
+                double newTimeDouble = AllData.getDoubleFromText(AllData.intToDouble(project.getWorkSumForDesignerAndDate(myIdNumber, LocalDate.now())), event.getNewValue(), 1);
+                boolean added = AllData.addWorkTime(project.getIdNumber(), LocalDate.now(), myIdNumber, newTimeDouble);
 
                 if (added) {
                     // код для мгновенного обновления страниц у менеджера
@@ -318,10 +331,10 @@ public class TableProjectsDesignerController {
                     initialize();
                 }
 
-                /*filterField.setText("-");
-                filterField.clear();*/
+                *//*filterField.setText("-");
+                filterField.clear();*//*
             }
-        });
+        });*/
 
         columnTime.setStyle("-fx-alignment: CENTER;");
 
@@ -372,12 +385,10 @@ public class TableProjectsDesignerController {
             }
         });
 
-        filterDataWrapper.setPredicate(filterPredicate);
 
+        /*filterDataWrapper.setPredicate(filterPredicate);
 
-
-
-        SortedList<Map.Entry<Integer, Project>> sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
+        sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
             @Override
             public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
                 int compare = compareTime(o1, o2);
@@ -386,10 +397,20 @@ public class TableProjectsDesignerController {
                 }
                 return compare;
             }
-        });
+        });*/
 
         projectsTable.setItems(sortedList);
+
         sortedList.comparatorProperty().bind(projectsTable.comparatorProperty());
+
+    }
+
+    public void updateDesignerWindow() {
+
+        initTextFields();
+        handleFilters();
+        sortTableProjects();
+        initializeChart();
 
     }
 
@@ -399,6 +420,11 @@ public class TableProjectsDesignerController {
         filterPredicate = new Predicate<Map.Entry<Integer, Project>>() {
             @Override
             public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
+
+                /*double d = Math.random() * 5;
+                int i = (int) d;
+                if (i%2 == 0) {return true;}
+                else {return false;}*/
 
                 String newValue = filterField.getText();
 
@@ -420,16 +446,6 @@ public class TableProjectsDesignerController {
                         }
                     }
 
-                    /*for (String s : allParts) {
-                        boolean res = containsString(integerProjectEntry.getValue(), s);
-                        resultList.add(res);
-                    }
-                    for (boolean b : resultList) {
-                        result = b;
-                        if (!b) {break;}
-                    }*/
-                    //return result;
-
                 }
                 else {
                     result = containsString(integerProjectEntry.getValue(), lowerCaseFilter);
@@ -438,14 +454,14 @@ public class TableProjectsDesignerController {
             }
         };
 
-        initialize();
+        filterDataWrapper.setPredicate(filterPredicate);
     }
 
 
     private boolean containsString(Project project, String input) {
         String workTimeInTable = "0.0";
         if (project.containsWorkTime()) {
-            workTimeInTable = String.valueOf(AllData.intToDouble(project.getWorkSumForDesignerAndDate(AllUsers.getCurrentUser(), LocalDate.now())));
+            workTimeInTable = String.valueOf(AllData.intToDouble(project.getWorkSumForDesignerAndDate(myIdNumber, LocalDate.now())));
         }
         if (String.valueOf(project.getIdNumber()).contains(input)) {
             return true;
@@ -477,7 +493,7 @@ public class TableProjectsDesignerController {
             usersLoggedChoiceBox.getItems().add(AllData.toLoginWindow);
         }
 
-        usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
+        usersLoggedChoiceBox.setValue(AllUsers.getOneUser(myIdNumber).getFullName());
 
         usersLoggedChoiceBox.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -493,7 +509,7 @@ public class TableProjectsDesignerController {
                         AllData.rootLayout.setCenter(null);
                         AllData.mainApp.showLoginWindow();
                     }
-                    else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
+                    else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(myIdNumber).getFullName())) {
 
                         closeAllWindows();
 
@@ -593,12 +609,12 @@ public class TableProjectsDesignerController {
 
     private void fillXYChartSeries(LocalDate from, LocalDate till) {
 
-        List<Project> myProjects = AllData.getAllProjectsForDesignerAndPeriod(AllUsers.getCurrentUser(), from, till);
+        List<Project> myProjects = AllData.getAllProjectsForDesignerAndPeriod(myIdNumber, from, till);
         Map<String, Integer> decadeWorkSums = new TreeMap<>();
 
         for (Project p : myProjects) {
             for (WorkTime wt : p.getWork()) {
-                if (wt.getDesignerID() == AllUsers.getCurrentUser()) {
+                if (wt.getDesignerID() == myIdNumber) {
                     String dateWork = wt.getDateString();
                     if (decadeWorkSums.containsKey(dateWork)) {
                         int currentSum = decadeWorkSums.get(dateWork);
@@ -660,16 +676,22 @@ public class TableProjectsDesignerController {
     public void handleShowMyProjectsCheckBox() {
         //checkDatePicker(showMyProjectsCheckBox);
         handleFilters();
+        sortTableProjects();
+        updateDesignerWindow();
     }
 
     public void handleFromDatePicker() {
         checkDatePicker(fromDatePicker);
         handleFilters();
+        sortTableProjects();
+        updateDesignerWindow();
     }
 
     public void handleTillDatePicker() {
         checkDatePicker(tillDatePicker);
         handleFilters();
+        sortTableProjects();
+        updateDesignerWindow();
     }
 
     private void checkDatePicker(Node node) {
@@ -716,15 +738,28 @@ public class TableProjectsDesignerController {
         LocalDate tillDate = tillDatePicker.getValue();
 
         if (showArchiveProjectsCheckBox.isSelected()) {
-            tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+            //tableProjects = FXCollections.observableArrayList(AllData.getAllProjects().entrySet());
+            tableProjects.clear();
+            tableProjects.addAll(AllData.getAllProjects().entrySet());
         }
         else {
-            tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+            //tableProjects = FXCollections.observableArrayList(AllData.getActiveProjects().entrySet());
+            tableProjects.clear();
+            tableProjects.addAll(AllData.getActiveProjects().entrySet());
         }
 
-        filterData = new FilteredList<>(tableProjects, p -> true);
+        /*filterData = new FilteredList<>(tableProjects, p -> true);
         filterDataWrapper = new FilteredList<>(filterData, filterPredicate);
-        sortedList = new SortedList<>(filterDataWrapper);
+        sortedList = new SortedList<>(filterDataWrapper, new Comparator<Map.Entry<Integer, Project>>() {
+            @Override
+            public int compare(Map.Entry<Integer, Project> o1, Map.Entry<Integer, Project> o2) {
+                int compare = compareTime(o1, o2);
+                if (compare == 0) {
+                    compare = o2.getKey().compareTo(o1.getKey());
+                }
+                return compare;
+            }
+        });*/
 
         if (fromDate != null && tillDate != null) {
             if (showMyProjectsCheckBox.isSelected()) {
@@ -744,7 +779,7 @@ public class TableProjectsDesignerController {
                             }
                         }
                         else {
-                            if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser(), fromDate, tillDate)) {
+                            if (integerProjectEntry.getValue().containsWorkTime(myIdNumber, fromDate, tillDate)) {
                                 return true;
                             }
                         }
@@ -752,7 +787,6 @@ public class TableProjectsDesignerController {
                         return false;
                     }
                 });
-
             }
             else {
                 filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
@@ -772,7 +806,7 @@ public class TableProjectsDesignerController {
                 filterData.setPredicate(new Predicate<Map.Entry<Integer, Project>>() {
                     @Override
                     public boolean test(Map.Entry<Integer, Project> integerProjectEntry) {
-                        if (integerProjectEntry.getValue().containsWorkTime(AllUsers.getCurrentUser())) {
+                        if (integerProjectEntry.getValue().containsWorkTime(myIdNumber)) {
                             return true;
                         }
                         return false;
@@ -789,9 +823,6 @@ public class TableProjectsDesignerController {
                 });
             }
         }
-
-        sortTableProjects();
-        initializeTable();
     }
 
 
@@ -799,10 +830,12 @@ public class TableProjectsDesignerController {
         fromDatePicker.setValue(null);
         tillDatePicker.setValue(null);
         handleFilters();
+        sortTableProjects();
+        updateDesignerWindow();
     }
 
     public void handleReloadButton() {
-        initialize();
+        updateDesignerWindow();
     }
 
     public void handleStatisticButton() {
@@ -871,14 +904,14 @@ public class TableProjectsDesignerController {
         int time2 = 0;
 
         for (WorkTime wt1 : timeList1) {
-            if ((wt1.getDesignerID() == AllUsers.getCurrentUser()) && (AllData.parseDate(wt1.getDateString()).equals(LocalDate.now()))) {
+            if ((wt1.getDesignerID() == myIdNumber) && (AllData.parseDate(wt1.getDateString()).equals(LocalDate.now()))) {
                 time1 = wt1.getTime();
                 break;
             }
         }
 
         for (WorkTime wt2 : timeList2) {
-            if ((wt2.getDesignerID() == AllUsers.getCurrentUser()) && (AllData.parseDate(wt2.getDateString()).equals(LocalDate.now()))) {
+            if ((wt2.getDesignerID() == myIdNumber) && (AllData.parseDate(wt2.getDateString()).equals(LocalDate.now()))) {
                 time2 = wt2.getTime();
                 break;
             }
@@ -953,62 +986,99 @@ public class TableProjectsDesignerController {
 
 
     class DesignerCellField extends TableCell<Map.Entry<Integer, Project>, String> {
-        private TextField timeField = new TextField("-");
 
-        {
-            timeField.setMinWidth(40);
-            timeField.setMinHeight(20);
-            timeField.setEditable(true);
-            timeField.setAlignment(Pos.CENTER);
+        private TextField timeField;
+
+        public DesignerCellField() {
         }
 
         @Override
         protected void updateItem(String item, boolean empty) {
+
             if (empty) {
+                setText(null);
                 setGraphic(null);
             }
             else {
-                Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
-                //timeField.setAlignment(Pos.CENTER);
-                //timeField.setMinWidth(this.getWidth() - this.getGraphicTextGap() * 2);
 
-                timeField = new TextField(this.getString());
+                Project pr = getTableView().getItems().get(getIndex()).getValue();
 
-                timeField.setOnAction(new EventHandler<ActionEvent>() {
+                timeField = new TextField("");
+                timeField.setMinWidth(50);
+                timeField.setMaxWidth(55);
+                timeField.setMinHeight(20);
+                timeField.setAlignment(Pos.CENTER);
+                if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    timeField.setEditable(false);
+                }
+                else {timeField.setEditable(true);}
+
+                timeField.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
-                    public void handle(ActionEvent event) {
+                    public void handle(MouseEvent event) {
                         timeField.selectAll();
                     }
                 });
-                timeField.setOnKeyPressed(new EventHandler<KeyEvent>() {
-                    @Override
-                    public void handle(KeyEvent event) {
-                        KeyCode keyCode = event.getCode();
-                        if (keyCode == KeyCode.ENTER) {
-                            String oldText = getString();
-                            String newText = formatStringInput(oldText, timeField.getText());
-                            timeField.setText(newText);
-                            commitEdit(newText);
-                            //DesignerCellField.this.getTableView().requestFocus();
-                            //DesignerCellField.this.getTableView().getSelectionModel().selectAll();
-                            AllData.updateAllWindows();
 
-                        }
+
+                if (isEditing()) {
+                    if (timeField != null) {
+                        timeField.setText("-");
                     }
-                });
+                }
+                else {
+                    setGraphic(timeField);
+                    timeField.setText(getString());
+                    if (pr.containsWorkTime(myIdNumber, LocalDate.now())) {
+                        timeField.setText(AllData.formatWorkTime(AllData.intToDouble(pr.getWorkSumForDesignerAndDate(myIdNumber, LocalDate.now()))));
+                    }
 
-                HBox hbox = new HBox();
-                hbox.getChildren().addAll(timeField);
-                hbox.setAlignment(Pos.CENTER);
-                hbox.setSpacing(2);
-                setGraphic(hbox);
+                    timeField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                        @Override
+                        public void handle(KeyEvent event) {
+                            KeyCode keyCode = event.getCode();
+                            if (keyCode == KeyCode.ENTER) {
+                                double oldTime = AllData.intToDouble(pr.getWorkSumForDesignerAndDate(myIdNumber, LocalDate.now()));
+                                String oldText = AllData.formatWorkTime(oldTime);
+                                String newText = formatStringInput(oldText, timeField.getText());
+
+                                boolean added = false;
+                                if (newText.equals("0")) {
+                                    added = AllData.addWorkTime(pr.getIdNumber(), LocalDate.now(), myIdNumber, 0);
+                                }
+                                else {
+                                    double newTime = AllData.getDoubleFromText(oldTime, newText, 1);
+                                    added = AllData.addWorkTime(pr.getIdNumber(), LocalDate.now(), myIdNumber, newTime);
+                                }
+
+                                if (added) {
+                                    updateDesignerWindow();
+                                }
+                                else {
+                                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                                    alert.setTitle("Ошибка добавления времени");
+                                    alert.setHeaderText("Не удалось добавить / изменить рабочее время в проекте id-" + pr.getIdNumber());
+                                    alert.showAndWait();
+                                    initialize();
+                                }
+                            }
+                        }
+                    });
+
+                }
+
             }
         }
+
         private String formatStringInput(String oldText, String input) {
             String newText = input.replaceAll(" ", ".");
             newText = newText.replaceAll("-", ".");
             newText = newText.replaceAll(",", ".");
             newText = newText.replaceAll("=", ".");
+
+            if (newText.equals("0")) {
+                return "-";
+            }
 
             Double newTimeDouble = null;
             try {
@@ -1017,9 +1087,13 @@ public class TableProjectsDesignerController {
                 return oldText;
             }
             if (newTimeDouble != null) {
-                newText = String.valueOf(AllData.formatDouble(newTimeDouble, 2));
+                newText = AllData.formatWorkTime(newTimeDouble);
+                //newText = String.valueOf(AllData.formatDouble(newTimeDouble, 2));
+
                 return newText;
             }
+
+            System.out.println("return oldText");
 
             return oldText;
         }
@@ -1027,7 +1101,10 @@ public class TableProjectsDesignerController {
         private String getString() {
             return getItem() == null ? "-" : getItem();
         }
+
     } // конец класса DesignerCellField
+
+
 
     class DesignerCell extends TableCell<Map.Entry<Integer, Project>, Boolean> {
 
@@ -1044,12 +1121,11 @@ public class TableProjectsDesignerController {
 
                 Map.Entry<Integer, Project> entry = getTableView().getItems().get(getIndex());
 
-
                 if (entry.getValue().isArchive()) {
                     openFolderButton.setDisable(true);
                     setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
 
-                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    if (AllUsers.getOneUser(myIdNumber).isRetired()) {
                         infoButton.setDisable(true);
                     }
                     else {
@@ -1060,7 +1136,7 @@ public class TableProjectsDesignerController {
                     openFolderButton.setDisable(false);
                     setStyle(null);
 
-                    if (AllUsers.getOneUser(AllUsers.getCurrentUser()).isRetired()) {
+                    if (AllUsers.getOneUser(myIdNumber).isRetired()) {
                         openFolderButton.setDisable(true);
                         infoButton.setDisable(true);
                     }
@@ -1160,7 +1236,6 @@ public class TableProjectsDesignerController {
                 setGraphic(textField);
                 textField.selectAll();
             }
-
         }
 
         @Override
