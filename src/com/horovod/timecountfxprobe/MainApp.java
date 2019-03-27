@@ -39,6 +39,9 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
+        AllData.pathToHomeFolder = "/Users/swen/Library/Application Support/TimeCountProbeFX";
+        AllData.pathToDownloads = "/Users/swen/Downloads";
+
         AllData.logger.info("-");
         AllData.logger.info("Запускаю JavaFX приложение...");
 
@@ -55,10 +58,6 @@ public class MainApp extends Application {
             alert.showAndWait();
         }
         loader.loadWaitingTasks();
-
-        /** TODO убрать эту строчку в рабочем варианте */
-        //Generator.generateUsers2();
-        //Generator.generateProjects2();
 
 
         /** После создания первого юзера надо будет перезапустить клиента,
@@ -104,7 +103,6 @@ public class MainApp extends Application {
 
             primaryStage.setTitle("Time Count FX Probe");
 
-            RootLayoutController controller = loader.getController();
             AllData.rootLayout = rootLayout;
         } catch (IOException e) {
             e.printStackTrace();

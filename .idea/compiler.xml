@@ -14,8 +14,5 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="--add-modules java.xml.bind" />
-    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="TimeCountFXProbe2" options="--add-modules=java.xml.bind,java.base" />
-    </option>
   </component>
 </project>

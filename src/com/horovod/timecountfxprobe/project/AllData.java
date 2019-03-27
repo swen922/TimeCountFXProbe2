@@ -63,10 +63,10 @@ public class AllData {
     private static DoubleProperty designerMonthWorkSumProperty = new SimpleDoubleProperty(0);
     private static DoubleProperty designerYearWorkSumProperty = new SimpleDoubleProperty(0);
 
-    private static String meUser = System.getProperty("user.name");
+    public static String meUser = System.getProperty("user.name");
     public static String pathToHomeFolder = "/Users/" + meUser + "/Library/Application Support/TimeCountProbeFX";
     public static String pathToDownloads = "/Users/" + meUser + "/Downloads";
-    public static int globalUpdatePeriod = 120;
+    public static int globalUpdatePeriod = 60;
     public static int checkWaitingPeriod = 30;
 
     public static String lastUpdateTime = "";
