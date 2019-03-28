@@ -1,0 +1,26 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" build-on-make="true" name="TimeCountFXProbe2">
+    <output-path>$PROJECT_DIR$/out/artifacts/TimeCountFXProbe2</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="com.horovod.timecountfxprobe.MainApp" />
+        <option name="description" value="" />
+        <option name="height" value="800" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="all" />
+        <option name="title" value="T" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+        <option name="width" value="1200" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="TimeCountFXProbe2.jar">
+        <element id="module-output" name="TimeCountFXProbe2" />
+        <element id="library" level="project" name="log4j:log4j:1.2.17" />
+        <element id="library" level="project" name="javax.xml.bind:jaxb-api:2.2.2" />
+        <element id="library" level="project" name="jackson-annotations-2.9.3" />
+      </element>
+    </root>
+  </artifact>
+</component>
