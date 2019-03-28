@@ -514,6 +514,7 @@ public class TableProjectsDesignerController {
                         closeAllWindows();
 
                         User user = AllUsers.getOneUserForFullName(selectUser);
+                        AllData.primaryStage.setTitle(user.getFullName());
 
                         Role role = user.getRole();
                         if (role.equals(Role.DESIGNER)) {

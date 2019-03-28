@@ -252,7 +252,10 @@ public class AdminWindowController {
                         AllData.mainApp.showLoginWindow();
                     }
                     else if (!selectUser.equalsIgnoreCase(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName())) {
+
                         User user = AllUsers.getOneUserForFullName(selectUser);
+                        AllData.primaryStage.setTitle(user.getFullName());
+
 
                         Role role = user.getRole();
 

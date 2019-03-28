@@ -590,6 +590,7 @@ public class TableProjectsManagerController {
                         closeAllWindows();
 
                         User user = AllUsers.getOneUserForFullName(selectUser);
+                        AllData.primaryStage.setTitle(user.getFullName());
 
                         Role role = user.getRole();
 
@@ -994,6 +995,7 @@ public class TableProjectsManagerController {
             alert.setHeaderText("Ни один проект не переведен в архив.");
             alert.showAndWait();
         }
+        updateManagerWindow();
     }
 
     public void handleReloadButton() {

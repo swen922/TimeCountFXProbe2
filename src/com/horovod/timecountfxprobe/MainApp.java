@@ -39,8 +39,11 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        AllData.pathToHomeFolder = "/Users/swen/Library/Application Support/TimeCountProbeFX";
-        AllData.pathToDownloads = "/Users/swen/Downloads";
+        AllData.meUser = System.getProperty("user.name");
+        AllData.pathToHomeFolder = "/Users/" + AllData.meUser + "/Library/Application Support/TimeCountProbeFX";
+        AllData.pathToDownloads = "/Users/" + AllData.meUser + "/Downloads";
+
+        AllData.setLoggerMode();
 
         AllData.logger.info("-");
         AllData.logger.info("Запускаю JavaFX приложение...");

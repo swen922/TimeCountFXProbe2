@@ -691,11 +691,12 @@ public class Project {
     }
 
     public synchronized void rebuildProperties() {
-        this.idNumberProperty = new SimpleIntegerProperty(idNumber);
-        this.companyProperty = new SimpleStringProperty(company);
-        this.managerProperty = new SimpleStringProperty(manager);
-        this.descriptionProperty = new SimpleStringProperty(description);
-        this.workSumProperty = new SimpleStringProperty(AllData.formatWorkTime(AllData.intToDouble(workSum)));
+        this.idNumberProperty = new SimpleIntegerProperty(this.idNumber);
+        this.companyProperty = new SimpleStringProperty(this.company);
+        this.managerProperty = new SimpleStringProperty(this.manager);
+        this.descriptionProperty = new SimpleStringProperty(this.description);
+        this.workSumProperty = new SimpleStringProperty(AllData.formatWorkTime(AllData.intToDouble(this.workSum)));
+        this.budgetProperty = new SimpleStringProperty(String.valueOf(this.budget));
     }
 
 

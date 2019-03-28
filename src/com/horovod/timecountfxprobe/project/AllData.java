@@ -18,11 +18,14 @@ import javafx.collections.ObservableMap;
 import javafx.concurrent.Task;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import org.apache.log4j.Logger;
+import org.apache.log4j.*;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
 import java.text.ParsePosition;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -37,7 +40,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AllData {
 
 
-    public static final Logger logger = Logger.getLogger(AllData.class);
+    public static Logger logger = Logger.getLogger(AllData.class);
+
+    public static void setLoggerMode() {
+
+        try {
+            LogManager.resetConfiguration();
+
+            String pathToLogFile = pathToHomeFolder + "/AllData.log";
+            File file = new File(pathToLogFile);
+            if (!file.exists()) {
+                Files.createFile(file.toPath());
+            }
+
+            RollingFileAppender appender = new RollingFileAppender();
+            appender.setFile(pathToLogFile, true, true,2048);
+            appender.setMaxFileSize("5MB");
+            appender.setMaxBackupIndex(6);
+            Layout layout = new PatternLayout();
+            ((PatternLayout) layout).setConversionPattern("%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n");
+            appender.setLayout(layout);
+            logger.removeAllAppenders();
+            logger.addAppender(appender);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     //private static volatile AtomicInteger idNumber = new AtomicInteger(0);
     //private static volatile IntegerProperty idNumberProperty = new SimpleIntegerProperty(idNumber.get());
