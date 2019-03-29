@@ -14,6 +14,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
@@ -98,6 +99,8 @@ public class StatisticWindowController {
         projectNumberTextField.setText("");
         projectNumberTextArea.setText("");*/
 
+        initTextFieldClicked();
+
         initializeChoiceBoxes();
 
         LocalDate now = LocalDate.now();
@@ -109,6 +112,15 @@ public class StatisticWindowController {
         yearWorkSumLabel.textProperty().bind(AllData.designerYearWorkSumProperty().asString());
         monthWorkSumLabel.textProperty().bind(AllData.designerMonthWorkSumProperty().asString());
         weekWorkSumLabel.textProperty().bind(AllData.designerWeekWorkSumProperty().asString());
+    }
+
+    private void initTextFieldClicked() {
+        projectNumberTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                projectNumberTextField.selectAll();
+            }
+        });
     }
 
     private void initializeChoiceBoxes() {

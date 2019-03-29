@@ -10,6 +10,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 
 
 public class EditingCellDay extends TableCell<WorkDay, String> {
@@ -92,6 +93,12 @@ public class EditingCellDay extends TableCell<WorkDay, String> {
                 }
             }
         });
+        textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                textField.selectAll();
+            }
+        });
         EditingCellDay.this.textField.selectAll();
 
     }
@@ -117,6 +124,6 @@ public class EditingCellDay extends TableCell<WorkDay, String> {
     }
 
     private String getString() {
-        return getItem() == null ? "" : getItem().toString();
+        return getItem() == null ? "-" : getItem().isEmpty() ? "-" : getItem().toString();
     }
 }

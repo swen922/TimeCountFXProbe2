@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableView?>
@@ -19,29 +20,24 @@
          <children>
             <AnchorPane prefHeight="65.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label fx:id="idNumberLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="3.0">
+                  <Label fx:id="idNumberLabel" alignment="CENTER" contentDisplay="CENTER" text="0" textAlignment="CENTER" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="18.0">
                      <font>
-                        <Font name="System Bold" size="20.0" />
+                        <Font name="System Bold" size="22.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" contentDisplay="CENTER" text="Создано:" textAlignment="CENTER" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
-                     <font>
-                        <Font size="10.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="dateCreationLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" text="дата" textAlignment="CENTER" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
                </children>
             </AnchorPane>
-            <CheckBox fx:id="archiveCheckBox" layoutX="696.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleArchiveCheckBox" text="Архивный" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+            <CheckBox fx:id="archiveCheckBox" layoutX="696.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleArchiveCheckBox" prefWidth="90.0" text="Архивный" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="115.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></CheckBox>
-            <TextArea fx:id="descriptionTextArea" editable="false" layoutX="207.0" layoutY="-75.0" onKeyTyped="#listenChanges" prefHeight="50.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="5.0" />
-            <Button fx:id="openFolderButton" alignment="CENTER" contentDisplay="CENTER" layoutX="562.0" layoutY="15.0" mnemonicParsing="false" onAction="#initOpenFolderButton" prefHeight="40.0" prefWidth="70.0" text="Открыть папку" textAlignment="CENTER" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="10.0">
+            <TextArea fx:id="descriptionTextArea" editable="false" layoutX="207.0" layoutY="-75.0" onKeyTyped="#listenChanges" prefHeight="50.0" wrapText="true" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="5.0" />
+            <Button fx:id="openFolderButton" alignment="CENTER" contentDisplay="CENTER" layoutX="562.0" layoutY="15.0" mnemonicParsing="false" onAction="#initOpenFolderButton" prefHeight="40.0" prefWidth="70.0" text="Открыть папку" textAlignment="CENTER" wrapText="true" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="220.0" AnchorPane.topAnchor="10.0">
                <font>
                   <Font size="11.0" />
                </font>
             </Button>
+            <DatePicker fx:id="dateCreationDatePicker" layoutX="830.0" layoutY="19.0" onAction="#listenChanges" prefHeight="27.0" prefWidth="190.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
          </children>
       </AnchorPane>
       <Separator prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0" />

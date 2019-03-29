@@ -31,6 +31,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -180,6 +181,7 @@ public class TableProjectsManagerController {
         myIdNumber = AllUsers.getCurrentUser();
         AllData.primaryStage.setTitle(AllUsers.getOneUser(myIdNumber).getFullName());
 
+        initFilterFieldOnClick();
         initTextFields();
         initObservableLists();
         initializeTable();
@@ -200,6 +202,15 @@ public class TableProjectsManagerController {
         projectsProjectsLabel.setText(AllData.formatProjects(sortedList.size()));
 
 
+    }
+
+    private void initFilterFieldOnClick() {
+        filterField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                filterField.selectAll();
+            }
+        });
     }
 
 
@@ -1569,12 +1580,19 @@ public class TableProjectsManagerController {
                     }
                 }
             });
+            textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    textField.selectAll();
+                }
+            });
             TableProjectsManagerController.EditingCellString.this.textField.selectAll();
 
         }
 
         private String getString() {
-            return getItem() == null ? "" : getItem().toString();
+
+            return getItem() == null ? "-" : getItem().isEmpty() ? "-" : getItem().toString();
         }
     } // Конец класса EditingCellString
 

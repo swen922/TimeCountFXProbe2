@@ -71,7 +71,7 @@ public class EditProjectWindowController {
     private Label idNumberLabel;
 
     @FXML
-    private Label dateCreationLabel;
+    private DatePicker dateCreationDatePicker;
 
     @FXML
     private Button openFolderButton;
@@ -164,14 +164,12 @@ public class EditProjectWindowController {
     }
 
 
-
-
     private void initProjectFields() {
 
         // id-номер проекта
         idNumberLabel.setText(String.valueOf(myProjectID));
 
-        dateCreationLabel.setText(myProject.getDateCreationString());
+        dateCreationDatePicker.setValue(AllData.parseDate(myProject.getDateCreationString()));
 
         descriptionTextArea.setText(myProject.getDescription());
         textAreas.put(descriptionTextArea, descriptionTextArea.getText());
@@ -212,6 +210,7 @@ public class EditProjectWindowController {
 
     private void updateTextFields() {
         hoursSum.setText(AllData.formatHours(AllData.formatWorkTime(myProject.getWorkSumDouble())));
+
     }
 
 
@@ -438,6 +437,7 @@ public class EditProjectWindowController {
         if (myProject.isArchive()) {
             archiveCheckBox.setSelected(true);
             topColoredPane.setStyle("-fx-background-color: linear-gradient(#99ccff 0%, #77acff 100%, #e0e0e0 100%);");
+            dateCreationDatePicker.setDisable(true);
             openFolderButton.setDisable(true);
             companyNameTextArea.setEditable(false);
             managerTextArea.setEditable(false);
@@ -452,6 +452,7 @@ public class EditProjectWindowController {
         else {
             archiveCheckBox.setSelected(false);
             topColoredPane.setStyle(null);
+            dateCreationDatePicker.setDisable(false);
             openFolderButton.setDisable(false);
             companyNameTextArea.setEditable(true);
             managerTextArea.setEditable(true);
@@ -493,6 +494,7 @@ public class EditProjectWindowController {
             }
         }
     }
+
 
     public void handleAddWorkDayButton() {
         AllData.mainApp.showAddWorkDayDialog(myProjectID, myStage, this);
@@ -740,7 +742,21 @@ public class EditProjectWindowController {
 
     }
 
+    private void checkDatePicker() {
+        LocalDate newCreationDate = dateCreationDatePicker.getValue();
+        if (newCreationDate == null) {
+            dateCreationDatePicker.setValue(AllData.parseDate(myProject.getDateCreationString()));
+            return;
+        }
+
+        if (newCreationDate.isAfter(LocalDate.now())) {
+            dateCreationDatePicker.setValue(LocalDate.now());
+        }
+    }
+
     public void listenChanges() {
+
+        checkDatePicker();
 
         if (myStage != null) {
             myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -777,6 +793,9 @@ public class EditProjectWindowController {
         changedAreas.put(POnumberTextField, POnumberTextField.getText());
         changedAreas.put(pathToFolderTextField, pathToFolderTextField.getText());
 
+        String currentDateString = myProject.getDateCreationString();
+        String newDateString = AllData.formatDate(dateCreationDatePicker.getValue());
+
         Iterator<Map.Entry<Node, String>> iter = textAreas.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry<Node, String> entry = iter.next();
@@ -811,6 +830,10 @@ public class EditProjectWindowController {
             }
         }
 
+        if (!currentDateString.equals(newDateString)) {
+            isChanged = true;
+        }
+
         initSaveButtons();
     }
 
@@ -830,6 +853,7 @@ public class EditProjectWindowController {
 
     public void handleRevertButton() {
 
+        dateCreationDatePicker.setValue(AllData.parseDate(myProject.getDateCreationString()));
         companyNameTextArea.setText(textAreas.get(companyNameTextArea));
         managerTextArea.setText(textAreas.get(managerTextArea));
         descriptionTextArea.setText(textAreas.get(descriptionTextArea));
@@ -874,6 +898,8 @@ public class EditProjectWindowController {
 
 
     public void handleSaveButton() {
+
+        myProject.setDateCreationString(AllData.formatDate(dateCreationDatePicker.getValue()));
         textAreas.put(descriptionTextArea, descriptionTextArea.getText());
         myProject.setDescription(descriptionTextArea.getText());
         textAreas.put(companyNameTextArea, companyNameTextArea.getText());

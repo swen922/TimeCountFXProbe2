@@ -16,6 +16,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
@@ -106,6 +107,7 @@ public class StatisticManagerWindowController {
     @FXML
     private void initialize() {
 
+        initTextFieldClicked();
         initUsersChoiceBoxes();
 
         initializeChoiceBoxes();
@@ -122,6 +124,15 @@ public class StatisticManagerWindowController {
         initWorkSumLabels();
         initUserDateText();
         initUserProjectText();
+    }
+
+    private void initTextFieldClicked() {
+        projectNumberTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                projectNumberTextField.selectAll();
+            }
+        });
     }
 
     public void updateStatisticManagerWindow() {
@@ -591,10 +602,14 @@ public class StatisticManagerWindowController {
                     if (userForProjectChoiceBox.getValue().equals(allUsers)) {
                         for (WorkTime wt : allWorks) {
                             sb.append("\n").append(wt.getDateString()).append(":\n");
-                            sb.append(AllUsers.getOneUser(wt.getDesignerID()).getFullName()).append(" = ");
-                            String hour = AllData.formatWorkTime(wt.getTimeDouble());
-                            sb.append(hour).append(" ").append(AllData.formatHours(hour)).append("\n");
-                            sum += wt.getTime();
+
+                            User user = AllUsers.getOneUser(wt.getDesignerID());
+                            if (user != null) {
+                                sb.append(user.getFullName()).append(" = ");
+                                String hour = AllData.formatWorkTime(wt.getTimeDouble());
+                                sb.append(hour).append(" ").append(AllData.formatHours(hour)).append("\n");
+                                sum += wt.getTime();
+                            }
                         }
                     }
                     else {

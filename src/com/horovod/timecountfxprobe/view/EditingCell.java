@@ -126,12 +126,19 @@ public class EditingCell<T, String> extends TableCell<T, String> {
                 }
             }
         });
+        textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                textField.selectAll();
+            }
+        });
         EditingCell.this.textField.selectAll();
 
     }
 
     private String getString() {
-        return (String) (getItem() == null ? "" : getItem().toString());
+
+        return (String) (getItem() == null ? "-" : getItem().toString());
     }
 
 }

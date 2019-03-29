@@ -115,30 +115,23 @@ public class AdminWindowController {
     @FXML
     private ChoiceBox<String> usersLoggedChoiceBox;
     @FXML
-    private Button ExitNoSaveButton;
-    @FXML
     private Button ExitButton;
 
 
     @FXML
     private void initialize() {
-
         initStatisticTextFields();
         initTextFields();
         initPeriods();
         initLoggedUsersChoiceBox();
         initRadioButtons();
         initClosing();
-
     }
 
     public void updateAdmin() {
-
         initStatisticTextFields();
         initTextFields();
     }
-
-
 
     private void initStatisticTextFields() {
         this.userListSizeLabel.setText(String.valueOf(AllUsers.getUsers().size()));
@@ -146,6 +139,7 @@ public class AdminWindowController {
         this.taskQueueSizeLabel.setText(String.valueOf(Updater.tasksQueue.size()));
         this.waitingTaskSizeLabel.setText(String.valueOf(AllData.waitingTasks.size()));
     }
+
     private void initTextFields() {
         this.currentIDprojectsTextField.setText(String.valueOf(AllData.createProjectID.get()));
         this.currentIDUsersTextField.setText(String.valueOf(AllUsers.createUserID.get()));
@@ -229,14 +223,6 @@ public class AdminWindowController {
         if (!usersLoggedChoiceBox.getItems().contains(AllData.toLoginWindow)) {
             usersLoggedChoiceBox.getItems().add(AllData.toLoginWindow);
         }
-
-        /*System.out.println("usersLoggedChoiceBox = " + usersLoggedChoiceBox);
-        System.out.println("usersLoggedChoiceBox.getItems().size() = " + usersLoggedChoiceBox.getItems().size());
-        for (String val : usersLoggedChoiceBox.getItems()) {
-            System.out.println("val = " + val);
-        }
-        System.out.println("AllUsers.getCurrentUser() = " + AllUsers.getCurrentUser());
-        System.out.println("AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName() = " + AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());*/
 
         usersLoggedChoiceBox.setValue(AllUsers.getOneUser(AllUsers.getCurrentUser()).getFullName());
 

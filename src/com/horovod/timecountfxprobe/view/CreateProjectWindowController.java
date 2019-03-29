@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.time.LocalDate;
@@ -78,6 +79,13 @@ public class CreateProjectWindowController {
             }
         });
 
+        existingProjectTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                existingProjectTextField.selectAll();
+            }
+        });
+
         companyTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -85,6 +93,13 @@ public class CreateProjectWindowController {
                 if (keyCode == KeyCode.TAB) {
                     managerTextArea.requestFocus();
                 }
+            }
+        });
+
+        companyTextField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                companyTextField.selectAll();
             }
         });
 
@@ -98,6 +113,13 @@ public class CreateProjectWindowController {
             }
         });
 
+        managerTextArea.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                managerTextArea.selectAll();
+            }
+        });
+
         descriptionTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
@@ -105,6 +127,13 @@ public class CreateProjectWindowController {
                 if (keyCode == KeyCode.TAB) {
                     createButton.requestFocus();
                 }
+            }
+        });
+
+        descriptionTextArea.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                descriptionTextArea.selectAll();
             }
         });
 

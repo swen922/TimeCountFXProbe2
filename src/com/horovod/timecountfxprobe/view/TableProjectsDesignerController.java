@@ -185,6 +185,7 @@ public class TableProjectsDesignerController {
 
         AllData.primaryStage.setTitle(AllUsers.getOneUser(myIdNumber).getFullName());
 
+        initFilterFieldOnClick();
         initTextFields();
         initObservableLists();
         handleFilters();
@@ -194,6 +195,15 @@ public class TableProjectsDesignerController {
         initLoggedUsersChoiceBox();
         initClosing();
 
+    }
+
+    private void initFilterFieldOnClick() {
+        filterField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                filterField.selectAll();
+            }
+        });
     }
 
 

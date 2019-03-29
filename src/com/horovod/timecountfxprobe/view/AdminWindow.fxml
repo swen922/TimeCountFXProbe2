@@ -214,7 +214,6 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </ChoiceBox>
-            <Button fx:id="ExitNoSaveButton" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти без сохранения" />
             <Button fx:id="ExitButton" minWidth="70.0" mnemonicParsing="false" onAction="#handleExitButton" text="Выйти" />
          </children>
       </HBox>
